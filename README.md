@@ -1,6 +1,6 @@
 # Dict-tiny
 
-Dict-tiny is a tiny command-line utility to look up English words or Chinese words from [youdao.com](youdao.com). Just for fun :)
+Dict-tiny is a tiny command-line utility to look up English words or Chinese words from youdao.com. Just for fun :)
 
 You can use `dict-tiny` in this way:
 
