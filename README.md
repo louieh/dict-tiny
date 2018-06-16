@@ -24,5 +24,5 @@ vt.write
 You can install `dict-tiny` via the pip package manager.
 
 ```shell
-$ pip333 install dict-tiny
+$ pip3 install dict-tiny
 ```
