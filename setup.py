@@ -27,8 +27,8 @@ setuptools.setup(
     },
     classifiers=(
         "Environment :: Console",
-        "Intenden Audience :: Developers",
-        "Opersting System :: OS Independent",
+        "Intended Audience :: Developers",
+        "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
     )
 
