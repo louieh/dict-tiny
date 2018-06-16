@@ -15,7 +15,7 @@ tiny dictionary
 
 class Dict_tiny(cli.Application):
     PROGNAME = "Dict-tiny"
-    VERSION = "0.1"
+    VERSION = "0.1.1"
     DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
 
     # verbose = cli.Flag(["v", "verbose"], help="If given, I will be very talkative")
@@ -122,4 +122,4 @@ class Dict_tiny(cli.Application):
 
 
 if __name__ == "__main__":
-    Dict_tiny.run()
+    Dict_tiny()
