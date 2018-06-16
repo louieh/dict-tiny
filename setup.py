@@ -1,6 +1,6 @@
 import setuptools
 
-VERSION = '0.1'
+VERSION = '0.1.1'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -22,7 +22,7 @@ setuptools.setup(
     ],
     entry_points={
       'console_scripts':[
-          'dict-tiny = dict_tiny.main:main'
+          'dict-tiny = dict_tiny.main:Dict_tiny'
       ]
     },
     classifiers=(
