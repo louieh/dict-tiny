@@ -26,7 +26,7 @@ setuptools.setup(
       ]
     },
     classifiers=(
-        "Enviroment :: Console",
+        "Environment :: Console",
         "Intenden Audience :: Developers",
         "Opersting System :: OS Independent",
         "Programming Language :: Python :: 3",
