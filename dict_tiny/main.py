@@ -47,11 +47,11 @@ class Dict_tiny(cli.Application):
         print(word)
         for i in range(len(word) - 1):
             print("=", end="")
-        print("=")
+        print("==")
         if len(content) >= 1:
             for each_result in content:
                 print(each_result)
-                return
+            return
         else:
             print("None.")
             # print("------------------")
@@ -81,6 +81,10 @@ class Dict_tiny(cli.Application):
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
         if content:
+            print(word)
+            for i in range(len(word) - 1):
+                print("=", end="")
+            print("==")
             print(content)
             return
         else:
