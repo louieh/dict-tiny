@@ -3,3 +3,4 @@ build/
 dict_tiny.egg-info/
 dist/
 __pycache__/
+en_detail/__pycache__
