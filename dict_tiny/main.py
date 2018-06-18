@@ -8,6 +8,8 @@ import re
 import argparse
 from plumbum import cli
 
+from en_detail.get_detail import get_data, print_basetrans, print_detailtrans
+
 APP_DESC = """
 tiny dictionary
 """
@@ -57,6 +59,23 @@ class Dict_tiny(cli.Application):
             # print("------------------")
             # self.help()
             return
+
+    @cli.switch(["-m", "--more"],str)
+    def trans_en_more(self, word):
+        """
+        English_Chinese_detail
+        """
+        self.IS_TRANS = 1
+
+        if self.is_alphabet(word) != 'en':
+            print("[Error!] You should enter an English word.")
+            print("------------------")
+            self.help()
+            return
+
+        data_base = get_data(word)
+        print_basetrans(data_base)
+        print_detailtrans(data_base)
 
     @cli.switch(["-c", "--chinese"], str)
     def trans_cn(self, word):
