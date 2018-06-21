@@ -51,16 +51,19 @@ def print_basetrans(data_base):
         print(each_data.get("tr")[0].get("l").get("i")[0])
 
 
-def print_detailtrans(data_base, row=3, pa=False):
+def print_detailtrans(data_base, row=3, printall=False):
     '''
     print detail trans, default row=3
+    printall has a high priority：
+    If printall == True:
+        row is invalid
     '''
     detailtrans_dict = get_detailtrans_21(data_base)  # get detailtrans_dict from get_detailtrans_21 function
     print("\nmore detail:")
     for each_pos in detailtrans_dict.keys():
         print("======== %s ========" % each_pos)
         detailtrans_dict_dict = detailtrans_dict.get(each_pos)
-        real_row = len(detailtrans_dict_dict) if pa else min(len(detailtrans_dict_dict), row)
+        real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
         for i in range(real_row):
             print(i + 1, end="")
             print(":")
