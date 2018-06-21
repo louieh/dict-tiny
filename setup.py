@@ -18,7 +18,8 @@ setuptools.setup(
     install_requires=[
         'requests',
         'lxml',
-        'plumbum'
+        'plumbum',
+        'pyperclip'
     ],
     entry_points={
       'console_scripts':[
