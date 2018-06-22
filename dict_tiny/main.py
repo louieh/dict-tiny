@@ -16,14 +16,18 @@ tiny dictionary
 """
 
 
+# TODO color
+
 class Dict_tiny(cli.Application):
     PROGNAME = "Dict-tiny"
     VERSION = "0.1.1"
     DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
 
-    # verbose = cli.Flag(["v", "verbose"], help="If given, I will be very talkative")
+    moredetail = cli.Flag(["-m", "--more"],
+                          help="If given, more detail translation will be shown. You need to give a word or -c.")
     # more = cli.switch(["m","more"], help="Getting more detial.")
-    IS_TRANS = 0
+    IS_TRANS = 0  # Has this word been translated
+    targetWord = ""  # record the word and it must be translatable word
 
     FAKE_HEADER = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -37,7 +41,6 @@ class Dict_tiny(cli.Application):
         """
         English_Chinese
         """
-        self.IS_TRANS = 1
 
         data = self.downloader(word)
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
@@ -48,24 +51,22 @@ class Dict_tiny(cli.Application):
         if len(content) >= 1:
             for each_result in content:
                 print(each_result)
-            return
+            self.targetWord = word
         else:
             print("No translation found for this word.")
-            return
+        return
 
-    @cli.switch(["-m", "--more"], str)
     def trans_en_more(self, word, row=3, printall=True):
         """
         English_Chinese_detail
         """
-        self.IS_TRANS = 1
 
         if self.is_alphabet(word) != 'en':
-            print("[Error!] You should enter an English word.")
+            print("\nSorry! Currently only English words support detail translation.")
             return
 
         data_base = get_data(word)
-        print_basetrans(data_base)
+        # print_basetrans(data_base)
         print_detailtrans(data_base, row, printall)  # two parameters：row=3, printall=False
         return
 
@@ -73,7 +74,6 @@ class Dict_tiny(cli.Application):
         """
         Chinese_English
         """
-        self.IS_TRANS = 1
 
         data = self.downloader(word)
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
@@ -90,10 +90,10 @@ class Dict_tiny(cli.Application):
                 print("=", end="")
             print("==")
             print(content)
-            return
+            self.targetWord = word
         else:
             print("No translation found for this word.")
-            return
+        return
 
     @cli.switch(["-c", "--clipboard"])
     def trans_clipboard(self):
@@ -101,17 +101,18 @@ class Dict_tiny(cli.Application):
         Translate the content of the current clipboard if it`s an English word or a Chinese word.
         No parameter required.
         """
-        self.IS_TRANS = 1
 
         try:
             clipboard_data = pyperclip.paste().strip().replace('\n', '')
         except:
+            self.IS_TRANS = 1
             print("[Error!] Cannot get clipboard content.")
             return
 
         if clipboard_data:
             self.main_(clipboard_data)
         else:
+            self.IS_TRANS = 1
             print("There is no content in the clipboard.")
         return
 
@@ -143,6 +144,9 @@ class Dict_tiny(cli.Application):
             return 'other'
 
     def main_(self, word):
+
+        self.IS_TRANS = 1
+
         if self.is_alphabet(word) == 'en':
             self.trans_en(word)
         elif self.is_alphabet(word) == 'cn':
@@ -158,10 +162,14 @@ class Dict_tiny(cli.Application):
             if len(word) > 1:
                 print(
                     "Oops! You may want to translate a sentence, but I can only choose the first word as the target word.")
-                word = word[0]
-                self.main_(word)
-        # if self.verbose:
-        #     print("")
+            word = word[0]
+            self.main_(word)
+
+        # -m
+        # targetWord == 1 ==> IS_TRANS == 1
+        # IS_TRANS == 1 <> targetWord == 1
+        if self.targetWord and self.moredetail:
+            self.trans_en_more(self.targetWord)
         return
 
 
