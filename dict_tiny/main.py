@@ -51,23 +51,20 @@ class Dict_tiny(cli.Application):
         if len(content) >= 1:
             for each_result in content:
                 print(each_result)
-            self.targetWord = word
+            self.targetWord = word + "_en"
         else:
-            print("No translation found for this word.")
+            print("The translation of this word cannot be found at this time. Please try again.")
         return
 
-    def trans_en_more(self, word, row=3, printall=True):
+    def show_more(self, word, type, row=3, printall=True):
         """
         English_Chinese_detail
         """
 
-        if self.is_alphabet(word) != 'en':
-            print("\nSorry! Currently only English words support detail translation.")
-            return
-
         data_base = get_data(word)
         # print_basetrans(data_base)
-        print_detailtrans(data_base, row, printall)  # two parameters：row=3, printall=False
+        print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
+        # print("[Error!] Cannot get detail translation.")
         return
 
     def trans_cn(self, word):
@@ -90,9 +87,9 @@ class Dict_tiny(cli.Application):
                 print("=", end="")
             print("==")
             print(content)
-            self.targetWord = word
+            self.targetWord = word + "_cn"
         else:
-            print("No translation found for this word.")
+            print("The translation of this word cannot be found at this time. Please try again.")
         return
 
     @cli.switch(["-c", "--clipboard"])
@@ -169,7 +166,8 @@ class Dict_tiny(cli.Application):
         # targetWord == 1 ==> IS_TRANS == 1
         # IS_TRANS == 1 <> targetWord == 1
         if self.targetWord and self.moredetail:
-            self.trans_en_more(self.targetWord)
+            self.targetWord, type = self.targetWord.split("_")
+            self.show_more(self.targetWord, type)
         return
 
 
