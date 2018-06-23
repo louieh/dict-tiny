@@ -6,7 +6,7 @@ You can use `dict-tiny` in this way:
 
 
 
-####Translate an English word or Chinese word
+#### Translate an English word or Chinese word
 
 ```shell
 $ dict-tiny book
@@ -22,7 +22,7 @@ vt.write
 ```
 
 
-####Translate the word in clipboard
+#### Translate the word in clipboard
 
 Use `-c`/`--clipboard` to translate the word in clipboard:
 
@@ -38,7 +38,7 @@ command line
 
 
 
-####Get more detail translation about the word
+#### Get more detail translation about the word
 
 Use `-m`/`--more` to get more detail translation:
 
