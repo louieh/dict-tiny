@@ -23,7 +23,10 @@ def get_data(word):
     '''
     # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
     requests_url = "http://dict.youdao.com/jsonapi?q=%s" % word
-    resp = requests.get(requests_url, headers=FAKE_HEADER).text
+    try:
+        resp = requests.get(requests_url, headers=FAKE_HEADER).text
+    except:
+        return None
     data_base = json.loads(resp)
 
     return data_base
@@ -74,7 +77,10 @@ def print_detailtrans(data_base, type, row=3, printall=True):
         return
     print("\nmore detail:")
     for each_pos in detailtrans_dict.keys():
-        print("======== %s ========" % each_pos)
+        if each_pos == None:
+            print("====================")
+        else:
+            print("======== %s ========" % each_pos)
         detailtrans_dict_dict = detailtrans_dict.get(each_pos)
         real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
         for i in range(real_row):
