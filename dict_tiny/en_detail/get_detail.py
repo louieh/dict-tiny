@@ -4,8 +4,18 @@
 import requests
 import json
 
+# TODO print source
 
-# TODO Fake_header
+
+FAKE_HEADER = {
+    "Host": "dict.youdao.com",
+    "Accept": "*/*",
+    "User-Agent": "YoudaoDict/139 CFNetwork/901.1 Darwin/17.6.0 (x86_64)",
+    "Accept-Language": "en-us",
+    "Accept-Encoding": "gzip",
+    "Connection": "keep-alive",
+}
+
 
 def get_data(word):
     '''
@@ -13,7 +23,7 @@ def get_data(word):
     '''
     # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
     requests_url = "http://dict.youdao.com/jsonapi?q=%s" % word
-    resp = requests.get(requests_url).text
+    resp = requests.get(requests_url, headers=FAKE_HEADER).text
     data_base = json.loads(resp)
 
     return data_base
@@ -51,14 +61,17 @@ def print_basetrans(data_base):
         print(each_data.get("tr")[0].get("l").get("i")[0])
 
 
-def print_detailtrans(data_base, row=3, printall=False):
+def print_detailtrans(data_base, type, row=3, printall=True):
     '''
     print detail trans, default row=3
     printall has a high priority：
     If printall == True:
         row is invalid
     '''
-    detailtrans_dict = get_detailtrans_21(data_base)  # get detailtrans_dict from get_detailtrans_21 function
+    detailtrans_dict = get_detailtrans_21cn(data_base, type)  # get detailtrans_dict from get_detailtrans_21 function
+    if not detailtrans_dict:
+        print("\nNo more detail translation.")
+        return
     print("\nmore detail:")
     for each_pos in detailtrans_dict.keys():
         print("======== %s ========" % each_pos)
@@ -71,31 +84,34 @@ def print_detailtrans(data_base, row=3, printall=False):
                 print('\t', end="")
                 print(each)
         print('\t')
+    return
 
 
-def get_detailtrans_21(data_base):
+def get_detailtrans_21cn(data_base, type):
     '''
     get 21 detail trans dict
     '''
-    data21 = data_base.get("ec21")
 
+    data21cn = data_base.get("ec21") if type == 'en' else data_base.get("ce_new")
+    if not data21cn:
+        return None
     # -----source
-    source21 = data21.get("source").get("name")
+    # source21cn = data21cn.get("source").get("name")
 
     # -----word
-    # word = data21.get("return-phrase").get("l").get("i")[0]
+    # word = data21cn.get("return-phrase").get("l").get("i")[0]
 
     # -----detail trans
     detailtrans_dict = {}
-    data21 = data21.get("word")[0]
+    data21cn = data21cn.get("word")[0]
     # data21.keys(): dict_keys(['phone', 'phrs', 'return-phrase', 'trs'])
     # data21_phrs = data21.get("phrs")
-    data21_trs = data21.get("trs")
+    data21cn_trs = data21cn.get("trs")
     # len(data21_trs): 4: n. vt. vi. adj.
-    for each_data21_trs in data21_trs:
+    for each_data21cn_trs in data21cn_trs:
         temp_dict = {}
-        pos = each_data21_trs.get("pos")
-        temp = each_data21_trs.get("tr")
+        pos = each_data21cn_trs.get("pos")
+        temp = each_data21cn_trs.get("tr")
         for i in range(len(temp)):
             if temp[i].get("l").get("i"):
                 interpre_list = [temp[i].get("l").get("i")[0]]
@@ -120,6 +136,6 @@ def get_detailtrans_21(data_base):
 
 
 if __name__ == "__main__":
-    data_base = get_data(word="user")
-    print_basetrans(data_base)
-    print_detailtrans(data_base, row=3)
+    data_base = get_data(word="重大的")
+    # print_basetrans(data_base)
+    print_detailtrans(data_base, type='cn')
