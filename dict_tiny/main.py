@@ -9,7 +9,7 @@ import argparse
 from plumbum import cli
 import pyperclip
 
-from en_detail.get_detail import get_data, print_basetrans, print_detailtrans
+from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans
 
 APP_DESC = """
 tiny dictionary
@@ -17,10 +17,12 @@ tiny dictionary
 
 
 # TODO color
+# TODO Command line interaction
+# TODO phone
 
 class Dict_tiny(cli.Application):
     PROGNAME = "Dict-tiny"
-    VERSION = "0.1.1"
+    VERSION = "0.2.1"
     DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
 
     moredetail = cli.Flag(["-m", "--more"],
@@ -62,7 +64,10 @@ class Dict_tiny(cli.Application):
         """
 
         data_base = get_data(word)
-        # print_basetrans(data_base)
+        if not data_base:
+            print("The detail translation of this word cannot be found at this time. Please try again later.")
+            return
+            # print_basetrans(data_base)
         print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
         # print("[Error!] Cannot get detail translation.")
         return
