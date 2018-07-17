@@ -45,8 +45,13 @@ class Dict_tiny(cli.Application):
         """
 
         data = self.downloader(word)
+        phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
-        print(word)
+        print(word, end='  ')
+        for each_phone in phone:
+            if each_phone:
+                print(each_phone.strip(), end="")
+        print("\n", end="")
         for i in range(len(word) - 1):
             print("=", end="")
         print("==")
@@ -67,7 +72,7 @@ class Dict_tiny(cli.Application):
         if not data_base:
             print("The detail translation of this word cannot be found at this time. Please try again later.")
             return
-            # print_basetrans(data_base)
+        # print_basetrans(data_base)
         print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
         # print("[Error!] Cannot get detail translation.")
         return
@@ -78,6 +83,7 @@ class Dict_tiny(cli.Application):
         """
 
         data = self.downloader(word)
+        phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
         for i in range(len(content)):
             if "\n" in content[i]:
@@ -87,7 +93,11 @@ class Dict_tiny(cli.Application):
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
         if content:
-            print(word)
+            print(word, end='  ')
+            for each_phone in phone:
+                if each_phone:
+                    print(each_phone.strip(), end="")
+            print("\n", end="")
             for i in range(len(word) - 1):
                 print("=", end="")
             print("==")
