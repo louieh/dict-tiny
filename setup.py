@@ -1,6 +1,6 @@
 import setuptools
 
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -12,6 +12,7 @@ setuptools.setup(
     author_email="louiehan1015@gmail.com",
     description="A tiny command-line dictionary that scrapes youdao.com.",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/louieh/dict-tiny",
     keywords='youdao dictionary command-line plumbum',
     packages=setuptools.find_packages(),
