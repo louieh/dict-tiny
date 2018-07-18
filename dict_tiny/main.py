@@ -21,7 +21,7 @@ tiny dictionary
 
 class Dict_tiny(cli.Application):
     PROGNAME = colors.green | "Dict-tiny"
-    VERSION = "0.2.2"
+    VERSION = colors.yellow | "0.2.3"
     DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
 
     moredetail = cli.Flag(["-m", "--more"],
