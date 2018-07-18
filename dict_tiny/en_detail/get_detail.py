@@ -3,6 +3,7 @@
 
 import requests
 import json
+from plumbum import colors
 
 # TODO print source
 
@@ -73,14 +74,15 @@ def print_detailtrans(data_base, type, row=3, printall=True):
     '''
     detailtrans_dict = get_detailtrans_21cn(data_base, type)  # get detailtrans_dict from get_detailtrans_21 function
     if not detailtrans_dict:
-        print("\nNo more detail translation.")
+        print(colors.yellow | "\nNo more detail translation.")
         return
-    print("\nmore detail:")
+    # print("\033[95m" + "\nmore ===detail:" + "\033[0m")
+    print(colors.green | "\nmore detail:")
     for each_pos in detailtrans_dict.keys():
         if each_pos == None:
-            print("====================")
+            print(colors.green | "====================")
         else:
-            print("======== %s ========" % each_pos)
+            print(colors.green | "======== %s ========" % each_pos)
         detailtrans_dict_dict = detailtrans_dict.get(each_pos)
         real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
         for i in range(real_row):
@@ -142,6 +144,6 @@ def get_detailtrans_21cn(data_base, type):
 
 
 if __name__ == "__main__":
-    data_base = get_data(word="重大的")
+    data_base = get_data(word="book")
     # print_basetrans(data_base)
-    print_detailtrans(data_base, type='cn')
+    print_detailtrans(data_base, type='en')

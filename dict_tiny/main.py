@@ -7,6 +7,7 @@ from lxml import html
 import re
 import argparse
 from plumbum import cli
+from plumbum import colors
 import pyperclip
 
 from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans
@@ -16,12 +17,10 @@ tiny dictionary
 """
 
 
-# TODO color
 # TODO Command line interaction
-# TODO phone
 
 class Dict_tiny(cli.Application):
-    PROGNAME = "Dict-tiny"
+    PROGNAME = colors.green | "Dict-tiny"
     VERSION = "0.2.1"
     DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
 
@@ -44,23 +43,25 @@ class Dict_tiny(cli.Application):
         English_Chinese
         """
 
+        count = 2
         data = self.downloader(word)
         phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
-        print(word, end='  ')
+        print(colors.green | word, end='  ')
         for each_phone in phone:
             if each_phone:
-                print(each_phone.strip(), end="")
+                print(colors.green | each_phone.strip(), end="")
+                count += len(each_phone.strip())
         print("\n", end="")
-        for i in range(len(word) - 1):
-            print("=", end="")
-        print("==")
+        for i in range(len(word) - 1 + count):
+            print(colors.green | "=", end="")
+        print(colors.green | "==")
         if len(content) >= 1:
             for each_result in content:
                 print(each_result)
             self.targetWord = word + "_en"
         else:
-            print("The translation of this word cannot be found at this time. Please try again.")
+            print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
         return
 
     def show_more(self, word, type, row=3, printall=True):
@@ -70,7 +71,8 @@ class Dict_tiny(cli.Application):
 
         data_base = get_data(word)
         if not data_base:
-            print("The detail translation of this word cannot be found at this time. Please try again later.")
+            print(
+                colors.yellow | "The detail translation of this word cannot be found at this time. Please try again later.")
             return
         # print_basetrans(data_base)
         print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
@@ -82,6 +84,7 @@ class Dict_tiny(cli.Application):
         Chinese_English
         """
 
+        count = 2
         data = self.downloader(word)
         phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
@@ -93,18 +96,19 @@ class Dict_tiny(cli.Application):
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
         if content:
-            print(word, end='  ')
+            print(colors.green | word, end='  ')
             for each_phone in phone:
                 if each_phone:
-                    print(each_phone.strip(), end="")
+                    print(colors.green | each_phone.strip(), end="")
+                    count += len(each_phone.strip())
             print("\n", end="")
-            for i in range(len(word) - 1):
-                print("=", end="")
-            print("==")
+            for i in range(len(word) - 1 + count):
+                print(colors.green | "=", end="")
+            print(colors.green | "==")
             print(content)
             self.targetWord = word + "_cn"
         else:
-            print("The translation of this word cannot be found at this time. Please try again.")
+            print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
         return
 
     @cli.switch(["-c", "--clipboard"])
@@ -118,14 +122,14 @@ class Dict_tiny(cli.Application):
             clipboard_data = pyperclip.paste().strip().replace('\n', '')
         except:
             self.IS_TRANS = 1
-            print("[Error!] Cannot get clipboard content.")
+            print(colors.red | "[Error!] Cannot get clipboard content.")
             return
 
         if clipboard_data:
             self.main_(clipboard_data)
         else:
             self.IS_TRANS = 1
-            print("There is no content in the clipboard.")
+            print(colors.yellow | "There is no content in the clipboard.")
         return
 
     def downloader(self, word):
@@ -164,7 +168,7 @@ class Dict_tiny(cli.Application):
         elif self.is_alphabet(word) == 'cn':
             self.trans_cn(word)
         else:
-            print("[Error!] This is not an English word or a Chinese word.")
+            print(colors.red | "[Error!] This is not an English word or a Chinese word.")
         return
 
     def main(self, *word):
@@ -172,8 +176,8 @@ class Dict_tiny(cli.Application):
             self.help()
         elif word and not self.IS_TRANS:
             if len(word) > 1:
-                print(
-                    "Oops! You may want to translate a sentence, but I can only choose the first word as the target word.")
+                print(colors.yellow |
+                      "Oops! You may want to translate a sentence, but I can only choose the first word as the target word.")
             word = word[0]
             self.main_(word)
 
