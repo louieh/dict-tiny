@@ -10,13 +10,17 @@ You can use `dict-tiny` in this way:
 
 ```shell
 $ dict-tiny book
+book  英[bʊk]美[bʊk]
+===================
 n. 书籍；卷；账簿；名册；工作簿
 vt. 预订；登记
-n. (Book)人名；(中)卜(广东话·威妥玛)；(朝)北；(英)布克；(瑞典)博克
+n. (Book)人名；(中)卜(广东话·威妥玛)；(朝)北；(英)布
 ```
 
 ```shell
 $ dict-tiny 书
+书  [shū]
+=========
 n.book;letter;script
 vt.write
 ```
@@ -28,8 +32,8 @@ Use `-c`/`--clipboard` to translate the word in clipboard:
 
 ```shell
 $ dict-tiny -c
-命令行
-====
+命令行  
+======
 command line
 ```
 **Note:**
@@ -44,8 +48,8 @@ Use `-m`/`--more` to get more detail translation:
 
 ```shell
 $ dict-tiny 曾经 -m
-曾经
-===
+曾经  [céng jīng]
+================
 adv.once;ever
 
 more detail:
@@ -56,20 +60,20 @@ more detail:
         他曾经在上海住过。
         She has taken part in a major battle for oil.
         她曾经参加过石油大会战。
-
+        
 ```
 
 ```shell
 $ dict-tiny html -m
-html
-=====
+html  [,eitʃ ti: em 'el]
+=========================
 abbr. 超文本标记语言（Hypertext Markup Language）
 
 more detail:
 ======== abbr. ========
 1:
         hypertext markup language 【计算机】超文本标记语言
-
+        
 ```
 
 **Note:**
