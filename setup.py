@@ -1,16 +1,17 @@
 import setuptools
+from dict_tiny import version
 
-VERSION = '0.2.3'
+VERSION = version.__version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="dict-tiny",
+    name=version.name,
     version=VERSION,
     author="louie",
     author_email="louiehan1015@gmail.com",
-    description="A tiny command-line dictionary that scrapes youdao.com.",
+    description=version.DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/louieh/dict-tiny",
@@ -23,9 +24,9 @@ setuptools.setup(
         'pyperclip'
     ],
     entry_points={
-      'console_scripts':[
-          'dict-tiny = dict_tiny.main:Dict_tiny'
-      ]
+        'console_scripts': [
+            'dict-tiny = dict_tiny.main:Dict_tiny'
+        ]
     },
     classifiers=(
         "Environment :: Console",
