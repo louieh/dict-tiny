@@ -11,18 +11,21 @@ from plumbum import colors
 import pyperclip
 
 from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans
+from dict_tiny import version
 
 APP_DESC = """
 tiny dictionary
 """
+APP_NAME = version.name
+APP_VERSION = version.__version__
 
 
 # TODO Command line interaction
 
 class Dict_tiny(cli.Application):
-    PROGNAME = colors.green | "Dict-tiny"
-    VERSION = colors.yellow | "0.2.3"
-    DESCRIPTION = "A tiny command-line dictionary that scrapes youdao.com. Just for fun."
+    PROGNAME = colors.green | APP_NAME
+    VERSION = colors.yellow | APP_VERSION
+    DESCRIPTION = version.DESCRIPTION
 
     moredetail = cli.Flag(["-m", "--more"],
                           help="If given, more detail translation will be shown. You need to give a word or -c.")
@@ -44,7 +47,9 @@ class Dict_tiny(cli.Application):
         """
 
         count = 2
-        data = self.downloader(word)
+        data, status_code = self.downloader(word)
+        if data is None:  # no internet
+            return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
         print(colors.green | word, end='  ')
@@ -61,7 +66,10 @@ class Dict_tiny(cli.Application):
                 print(each_result)
             self.targetWord = word + "_en"
         else:
-            print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
+            if status_code == 200:  # no translation
+                print(colors.yellow | "Did not find an explanation for this word.")
+            else:  # 403?
+                print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
         return
 
     def show_more(self, word, type, row=3, printall=True):
@@ -85,7 +93,9 @@ class Dict_tiny(cli.Application):
         """
 
         count = 2
-        data = self.downloader(word)
+        data, status_code = self.downloader(word)
+        if data is None:  # no internet
+            return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
         for i in range(len(content)):
@@ -108,7 +118,10 @@ class Dict_tiny(cli.Application):
             print(content)
             self.targetWord = word + "_cn"
         else:
-            print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
+            if status_code == 200:  # no translation
+                print(colors.yellow | "Did not find an explanation for this word.")
+            else:  # 403?
+                print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
         return
 
     @cli.switch(["-c", "--clipboard"])
@@ -134,9 +147,16 @@ class Dict_tiny(cli.Application):
 
     def downloader(self, word):
         request_url = "http://youdao.com/w/%s" % word
-        result = requests.get(request_url, headers=self.FAKE_HEADER).text
-        result_selector = html.etree.HTML(result)
-        return result_selector
+        try:
+            result = requests.get(request_url, headers=self.FAKE_HEADER)
+            result_selector = html.etree.HTML(result.text)
+            resp_code = result.status_code
+        except requests.exceptions.ConnectionError as e:
+            print(colors.red | "[Error!] Unable to download webpage.")
+            print("<%s>" % e)
+            result_selector = None
+            resp_code = None
+        return result_selector, resp_code
 
     def is_alphabet(self, word):
         is_alphabet = {
