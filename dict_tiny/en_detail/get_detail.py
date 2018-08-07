@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+import os
 import requests
 import json
 from plumbum import colors
@@ -16,6 +17,8 @@ FAKE_HEADER = {
     "Accept-Encoding": "gzip",
     "Connection": "keep-alive",
 }
+
+TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
 
 
 def get_data(word):
@@ -57,9 +60,14 @@ def print_basetrans(data_base):
         print("美[%s]" % usphone)
 
     # -----basic trans
-    for i in range(len(word) - 1):
-        print("=", end="")
-    print("==")
+    if len(word) - 1 + 2 > TERMINAL_SIZE_COLUMN:
+        for i in range(TERMINAL_SIZE_COLUMN - 1):
+            print(colors.green | "=", end="")
+        print(colors.green | "=")
+    else:
+        for i in range(len(word) - 1):
+            print(colors.green | "=", end="")
+        print(colors.green | "==")
     data = data.get("trs")
     for each_data in data:
         print(each_data.get("tr")[0].get("l").get("i")[0])
@@ -78,11 +86,22 @@ def print_detailtrans(data_base, type, row=3, printall=True):
         return
     # print("\033[95m" + "\nmore ===detail:" + "\033[0m")
     print(colors.green | "\nmore detail:")
+
     for each_pos in detailtrans_dict.keys():
         if each_pos == None:
-            print(colors.green | "====================")
+            if TERMINAL_SIZE_COLUMN < 20:
+                for j in range(TERMINAL_SIZE_COLUMN - 1):
+                    print(colors.green | "=", end="")
+                print(colors.green | "=")
+            else:
+                print(colors.green | "====================")
         else:
-            print(colors.green | "======== %s ========" % each_pos)
+            if TERMINAL_SIZE_COLUMN < 16 + len(each_pos):
+                for j in range(TERMINAL_SIZE_COLUMN - 1):
+                    print(colors.green | "=", end="")
+                print(colors.green | "=")
+            else:
+                print(colors.green | "======== %s ========" % each_pos)
         detailtrans_dict_dict = detailtrans_dict.get(each_pos)
         real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
         for i in range(real_row):

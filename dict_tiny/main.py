@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import sys
+import os
 import requests
 from lxml import html
 import re
@@ -21,17 +22,20 @@ APP_VERSION = version.__version__
 
 
 # TODO Command line interaction
+# TODO 奇怪的问题：真的没有找到解释还是网络问题
 
 class Dict_tiny(cli.Application):
     PROGNAME = colors.green | APP_NAME
     VERSION = colors.yellow | APP_VERSION
     DESCRIPTION = version.DESCRIPTION
+    COLOR_GROUPS = {"Switches": colors.green}
 
     moredetail = cli.Flag(["-m", "--more"],
                           help="If given, more detail translation will be shown. You need to give a word or -c.")
     # more = cli.switch(["m","more"], help="Getting more detial.")
     IS_TRANS = 0  # Has this word been translated
     targetWord = ""  # record the word and it must be translatable word
+    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
 
     FAKE_HEADER = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -58,9 +62,17 @@ class Dict_tiny(cli.Application):
                 print(colors.green | each_phone.strip(), end="")
                 count += len(each_phone.strip())
         print("\n", end="")
-        for i in range(len(word) - 1 + count):
-            print(colors.green | "=", end="")
-        print(colors.green | "==")
+
+        # print =
+        if len(word) - 1 + count + 2 > self.TERMINAL_SIZE_COLUMN:
+            for i in range(self.TERMINAL_SIZE_COLUMN - 1):
+                print(colors.green | "=", end="")
+            print(colors.green | "=")
+        else:
+            for i in range(len(word) - 1 + count):
+                print(colors.green | "=", end="")
+            print(colors.green | "==")
+
         if len(content) >= 1:
             for each_result in content:
                 print(each_result)
@@ -105,16 +117,25 @@ class Dict_tiny(cli.Application):
                 content[i] = content[i].replace(" ", "")
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
-        if content:
-            print(colors.green | word, end='  ')
-            for each_phone in phone:
-                if each_phone:
-                    print(colors.green | each_phone.strip(), end="")
-                    count += len(each_phone.strip())
-            print("\n", end="")
+
+        print(colors.green | word, end='  ')
+        for each_phone in phone:
+            if each_phone:
+                print(colors.green | each_phone.strip(), end="")
+                count += len(each_phone.strip())
+        print("\n", end="")
+
+        # print =
+        if len(word) - 1 + count + 2 > self.TERMINAL_SIZE_COLUMN:
+            for i in range(self.TERMINAL_SIZE_COLUMN - 1):
+                print(colors.green | "=", end="")
+            print(colors.green | "=")
+        else:
             for i in range(len(word) - 1 + count):
                 print(colors.green | "=", end="")
             print(colors.green | "==")
+
+        if content:
             print(content)
             self.targetWord = word + "_cn"
         else:
