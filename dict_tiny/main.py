@@ -11,7 +11,7 @@ from plumbum import cli
 from plumbum import colors
 import pyperclip
 
-from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans
+from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans, print_detailtrans_collins
 from dict_tiny import version
 
 APP_DESC = """
@@ -35,7 +35,10 @@ class Dict_tiny(cli.Application):
     # more = cli.switch(["m","more"], help="Getting more detial.")
     IS_TRANS = 0  # Has this word been translated
     targetWord = ""  # record the word and it must be translatable word
-    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
+    try:
+        TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
+    except:
+        TERMINAL_SIZE_COLUMN = 20
 
     FAKE_HEADER = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -50,8 +53,8 @@ class Dict_tiny(cli.Application):
         English_Chinese
         """
 
-        count = 2
-        data, status_code = self.downloader(word)
+        count = 2  # there are two chinere characters
+        data, status_code = self.downloader(word)  # result will be deleted
         if data is None:  # no internet
             return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
@@ -64,14 +67,14 @@ class Dict_tiny(cli.Application):
         print("\n", end="")
 
         # print =
-        if len(word) - 1 + count + 2 > self.TERMINAL_SIZE_COLUMN:
+        if len(word) + count + 2 > self.TERMINAL_SIZE_COLUMN:
             for i in range(self.TERMINAL_SIZE_COLUMN - 1):
                 print(colors.green | "=", end="")
             print(colors.green | "=")
         else:
-            for i in range(len(word) - 1 + count):
+            for i in range(len(word) + count + 1):
                 print(colors.green | "=", end="")
-            print(colors.green | "==")
+            print(colors.green | "=")
 
         if len(content) >= 1:
             for each_result in content:
@@ -95,7 +98,10 @@ class Dict_tiny(cli.Application):
                 colors.yellow | "The detail translation of this word cannot be found at this time. Please try again later.")
             return
         # print_basetrans(data_base)
-        print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
+        if type == 'cn':
+            print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
+        elif type == 'en':
+            print_detailtrans_collins(data_base)
         # print("[Error!] Cannot get detail translation.")
         return
 
@@ -104,8 +110,8 @@ class Dict_tiny(cli.Application):
         Chinese_English
         """
 
-        count = 2
-        data, status_code = self.downloader(word)
+        count = len(word)
+        data, status_code = self.downloader(word)  # result will be deleted
         if data is None:  # no internet
             return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
@@ -126,14 +132,14 @@ class Dict_tiny(cli.Application):
         print("\n", end="")
 
         # print =
-        if len(word) - 1 + count + 2 > self.TERMINAL_SIZE_COLUMN:
+        if len(word) + count + 2 > self.TERMINAL_SIZE_COLUMN:
             for i in range(self.TERMINAL_SIZE_COLUMN - 1):
                 print(colors.green | "=", end="")
             print(colors.green | "=")
         else:
-            for i in range(len(word) - 1 + count):
+            for i in range(len(word) + count + 1):
                 print(colors.green | "=", end="")
-            print(colors.green | "==")
+            print(colors.green | "=")
 
         if content:
             print(content)

@@ -7,6 +7,7 @@ import json
 from plumbum import colors
 
 # TODO print source
+# TODO Regular match Chinese
 
 
 FAKE_HEADER = {
@@ -18,7 +19,10 @@ FAKE_HEADER = {
     "Connection": "keep-alive",
 }
 
-TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
+try:
+    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
+except:
+    TERMINAL_SIZE_COLUMN = 20
 
 
 def get_data(word):
@@ -36,81 +40,110 @@ def get_data(word):
     return data_base
 
 
-def print_basetrans(data_base):
+def get_cn_length(string):
     '''
-    print basic trans
+    :return: the number of chinese char
     '''
-    data = data_base.get("ec")
-    # -----word
-    word = data.get("word")[0].get("return-phrase").get("l").get("i")
-    print(word, end="  ")
+    count = 0
+    for each in string:
+        if each >= '\u4e00' and each <= '\u9fff':
+            count += 1
+    return count
 
-    # -----word_type
-    exam_type = data.get("exam_type")
-    if exam_type:
-        exam_type = ", ".join(exam_type)
 
-    # -----word_phone
-    data = data.get("word")[0]
-    ukphone = data.get("ukphone")
-    if ukphone:
-        print("英[%s]" % ukphone, end=" ")
-    usphone = data.get("usphone")
-    if usphone:
-        print("美[%s]" % usphone)
-
-    # -----basic trans
-    if len(word) - 1 + 2 > TERMINAL_SIZE_COLUMN:
-        for i in range(TERMINAL_SIZE_COLUMN - 1):
+def print_equal(string):
+    '''
+    print equal char base on terminal size
+    '''
+    equal_number = TERMINAL_SIZE_COLUMN - len(string) - get_cn_length(string) - 2
+    if equal_number >= 16:  # 8 equal each side
+        print(colors.green | "======== %s ========" % string)
+    elif equal_number <= 1:
+        print(colors.green | string)
+    else:
+        for i in range(int(equal_number / 2)):
+            print(colors.green | "=", end="")
+        print(colors.green | " %s " % string, end="")
+        for i in range(equal_number - int(equal_number / 2) - 1):
             print(colors.green | "=", end="")
         print(colors.green | "=")
-    else:
-        for i in range(len(word) - 1):
-            print(colors.green | "=", end="")
-        print(colors.green | "==")
-    data = data.get("trs")
-    for each_data in data:
-        print(each_data.get("tr")[0].get("l").get("i")[0])
 
 
-def print_detailtrans(data_base, type, row=3, printall=True):
+def get_detailtrans_collins(data_base):
     '''
-    print detail trans, default row=3
-    printall has a high priority：
-    If printall == True:
-        row is invalid
+    :param data_base: get from get_data function
+    :param type: make sure it is en or cn
+    :return: a list to print_detailtrans function
     '''
-    detailtrans_dict = get_detailtrans_21cn(data_base, type)  # get detailtrans_dict from get_detailtrans_21 function
-    if not detailtrans_dict:
+    collins = data_base.get("collins")
+    if not collins:
+        return None
+
+    detailtrans_list = []
+    try:
+        entry = collins.get("collins_entries")[0].get("entries").get("entry")
+    except:
+        return None
+
+    for each_entry in entry:
+        detailtrans_dict = {}
+        each_entry_tran_entry = each_entry.get("tran_entry")[0]
+
+        # ---- pos and pos tips ----
+        pos = each_entry_tran_entry.get("pos_entry")
+        if not pos:  # the case of see alse
+            continue
+        else:
+            pos = pos.get("pos")
+        pos_tips = each_entry_tran_entry.get("pos_entry").get("pos_tips")
+        detailtrans_dict["pos_pos_tips"] = pos + " " + pos_tips
+
+        # ---- tran ----
+        tran = each_entry_tran_entry.get("tran").replace("<b>", "").replace("</b>", "")
+        detailtrans_dict["tran"] = tran
+
+        # ---- exam_sents ----
+        if "exam_sents" in each_entry_tran_entry.keys():
+            sents_list = each_entry_tran_entry.get("exam_sents").get("sent")
+            detailtrans_dict["sents_list"] = sents_list
+
+        detailtrans_list.append(detailtrans_dict)
+
+    return detailtrans_list
+
+
+def print_detailtrans_collins(data_base):
+    '''
+    print collins trans
+    '''
+    detailtrans_list = get_detailtrans_collins(data_base)
+    if not detailtrans_list:
         print(colors.yellow | "\nNo more detail translation.")
         return
-    # print("\033[95m" + "\nmore ===detail:" + "\033[0m")
-    print(colors.green | "\nmore detail:")
 
-    for each_pos in detailtrans_dict.keys():
-        if each_pos == None:
-            if TERMINAL_SIZE_COLUMN < 20:
-                for j in range(TERMINAL_SIZE_COLUMN - 1):
-                    print(colors.green | "=", end="")
-                print(colors.green | "=")
-            else:
-                print(colors.green | "====================")
+    print(colors.green | "\nmore detail (collins):")
+
+    for each_trans in detailtrans_list:
+        print_equal(each_trans["pos_pos_tips"])
+
+        # --- print tran ---
+        tran_cn = each_trans["tran"].split(". ")
+        if len(tran_cn) >= 2:
+            tran_cn = tran_cn[-1]
         else:
-            if TERMINAL_SIZE_COLUMN < 16 + len(each_pos):
-                for j in range(TERMINAL_SIZE_COLUMN - 1):
-                    print(colors.green | "=", end="")
-                print(colors.green | "=")
-            else:
-                print(colors.green | "======== %s ========" % each_pos)
-        detailtrans_dict_dict = detailtrans_dict.get(each_pos)
-        real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
-        for i in range(real_row):
-            print(i + 1, end="")
-            print(":")
-            for each in detailtrans_dict_dict[str(i + 1)]:
-                print('\t', end="")
-                print(each)
-        print('\t')
+            tran_cn = each_trans["tran"].split(" ")[-1]
+        print(" · " + tran_cn, end="\n\n")
+        print(each_trans["tran"].replace(tran_cn, ""))
+
+        print("\n")
+
+        # --- print sents ---
+        if "sents_list" in each_trans.keys():
+            for each_sent in each_trans["sents_list"]:
+                print(" 例: %s" % each_sent.get("eng_sent"))
+                print("     %s" % each_sent.get("chn_sent"))
+
+        print("\n")
     return
 
 
@@ -162,7 +195,84 @@ def get_detailtrans_21cn(data_base, type):
     return detailtrans_dict
 
 
+def print_detailtrans(data_base, type, row=3, printall=True):
+    '''
+    print detail trans, default row=3
+    printall has a high priority：
+    If printall == True:
+        row is invalid
+    '''
+    detailtrans_dict = get_detailtrans_21cn(data_base, type)  # get detailtrans_dict from get_detailtrans_21 function
+    if not detailtrans_dict:
+        print(colors.yellow | "\nNo more detail translation.")
+        return
+    # print("\033[95m" + "\nmore ===detail:" + "\033[0m")
+    print(colors.green | "\nmore detail:")
+
+    for each_pos in detailtrans_dict.keys():
+        if each_pos == None:
+            if TERMINAL_SIZE_COLUMN < 20:
+                for i in range(TERMINAL_SIZE_COLUMN - 1):
+                    print(colors.green | "=", end="")
+                print(colors.green | "=")
+            else:
+                print(colors.green | "====================")
+        else:
+            print_equal(each_pos)
+
+        detailtrans_dict_dict = detailtrans_dict.get(each_pos)
+        real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
+        for i in range(real_row):
+            print(i + 1, end="")
+            print(":")
+            for each in detailtrans_dict_dict[str(i + 1)]:
+                print('  ', end="")
+                print(each)
+        print('\n')
+    return
+
+
+def print_basetrans(data_base):
+    '''
+    print basic trans
+    not be used
+    '''
+    data = data_base.get("ec")
+    # -----word
+    word = data.get("word")[0].get("return-phrase").get("l").get("i")
+    print(word, end="  ")
+
+    # -----word_type
+    exam_type = data.get("exam_type")
+    if exam_type:
+        exam_type = ", ".join(exam_type)
+
+    # -----word_phone
+    data = data.get("word")[0]
+    ukphone = data.get("ukphone")
+    if ukphone:
+        print("英[%s]" % ukphone, end=" ")
+    usphone = data.get("usphone")
+    if usphone:
+        print("美[%s]" % usphone)
+
+    # -----basic trans Not modified because it is not being used
+    if len(word) - 1 + 2 > TERMINAL_SIZE_COLUMN:
+        for i in range(TERMINAL_SIZE_COLUMN - 1):
+            print(colors.green | "=", end="")
+        print(colors.green | "=")
+    else:
+        for i in range(len(word) - 1):
+            print(colors.green | "=", end="")
+        print(colors.green | "==")
+    data = data.get("trs")
+    for each_data in data:
+        print(each_data.get("tr")[0].get("l").get("i")[0])
+    return
+
+
 if __name__ == "__main__":
     data_base = get_data(word="book")
     # print_basetrans(data_base)
-    print_detailtrans(data_base, type='en')
+    # print_detailtrans(data_base, type='en')
+    print_detailtrans_collins(data_base)
