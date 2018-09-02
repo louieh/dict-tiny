@@ -51,31 +51,34 @@ Use `-m`/`--more` to get more detail translation:
 ```shell
 $ dict-tiny 曾经 -m
 曾经  [céng jīng]
-================
+=================
 adv.once;ever
 
 more detail:
 ======== 副词 ========
 1:
-        （表示有过某些行为或情况） once:
-        He once lived in Shanghai.
-        他曾经在上海住过。
-        She has taken part in a major battle for oil.
-        她曾经参加过石油大会战。
-        
+  （表示有过某些行为或情况） once:
+  He once lived in Shanghai.
+  他曾经在上海住过。
+  She has taken part in a major battle for oil.
+  她曾经参加过石油大会战。
 ```
 
 ```shell
-$ dict-tiny html -m
-html  [,eitʃ ti: em 'el]
-=========================
-abbr. 超文本标记语言（Hypertext Markup Language）
+$ dict-tiny dictionary -m
+dictionary  英['dɪkʃ(ə)n(ə)rɪ]美['dɪkʃə'nɛri]
+=============================================
+n. 字典；词典
 
-more detail:
-======== abbr. ========
-1:
-        hypertext markup language 【计算机】超文本标记语言
-        
+more detail (collins):
+======== N-COUNT 可数名词 ========
+ · 词典
+
+A dictionary is a book in which the words and phrases of a language are listed alphabetically, together with their meanings or their translations in another language.
+
+
+ 例: ...a Spanish-English dictionary.
+     …一本西班牙语—英语词典。
 ```
 
 **Note:**
