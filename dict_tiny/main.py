@@ -215,7 +215,7 @@ class Dict_tiny(cli.Application):
         elif self.is_alphabet(word) == 'cn':
             self.trans_cn(word)
         else:
-            print(colors.red | "[Error!] This is not an English word or a Chinese word.")
+            print(colors.red | "[Error!] The content is not an English word or a Chinese word.")
         return
 
     def main(self, *word):
