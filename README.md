@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/)
 
-Dict-tiny is a tiny command-line utility to look up English words or Chinese words from youdao.com. Just for fun :)
+Dict-tiny is a command-line utility that can translate English and Chinese words, which makes it easy to translate words from command-line interface. Just for fun :)
 
 You can use `dict-tiny` in this way:
 
