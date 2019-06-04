@@ -96,7 +96,7 @@ def get_detailtrans_collins(data_base):
         else:
             pos = pos.get("pos")
         pos_tips = each_entry_tran_entry.get("pos_entry").get("pos_tips")
-        detailtrans_dict["pos_pos_tips"] = pos + " " + pos_tips
+        detailtrans_dict["pos_pos_tips"] = pos + " " + pos_tips if pos_tips else pos
 
         # ---- tran ----
         tran = each_entry_tran_entry.get("tran").replace("<b>", "").replace("</b>", "")
@@ -272,7 +272,7 @@ def print_basetrans(data_base):
 
 
 if __name__ == "__main__":
-    data_base = get_data(word="book")
+    data_base = get_data(word="boy")
     # print_basetrans(data_base)
     # print_detailtrans(data_base, type='en')
     print_detailtrans_collins(data_base)
