@@ -5,11 +5,10 @@ import sys
 import os
 import requests
 from lxml import html
-import re
-import argparse
 from plumbum import cli
 from plumbum import colors
 import pyperclip
+import json
 
 from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_detailtrans, print_detailtrans_collins
 from dict_tiny import version
@@ -30,10 +29,17 @@ class Dict_tiny(cli.Application):
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {"Switches": colors.green}
 
-    moredetail = cli.Flag(["-m", "--more"],
+    target_language = cli.SwitchAttr("--target-language", str, excludes=["-m", "--more"], group="google_translate_api",
+                                     envname="DICT_TINY_TARGET_LAN",
+                                     help="Target language for Google Translate api.")
+    source_language = cli.SwitchAttr("--source-language", str, excludes=["-m", "--more"], group="google_translate_api",
+                                     help="Source language for Google Translate api.")
+    if_google_api = cli.Flag("-g", excludes=["-m", "--more"], group="google_translate_api",
+                             help="Using Google Translate api.")
+    moredetail = cli.Flag(["-m", "--more"], excludes=["-g", "--target-language", "--source-language"],
                           help="If given, more detail translation will be shown. You need to give a word or -c.")
-    # more = cli.switch(["m","more"], help="Getting more detial.")
-    IS_TRANS = 0  # Has this word been translated
+
+    IF_STOP = False  # If return directly at main function
     targetWord = ""  # record the word and it must be translatable word
     try:
         TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
@@ -47,6 +53,8 @@ class Dict_tiny(cli.Application):
         'Host': 'youdao.com',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
     }
+
+    Bash_url = "http://localhost:8080/{}"
 
     def trans_en(self, word):
         """
@@ -151,27 +159,6 @@ class Dict_tiny(cli.Application):
                 print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
         return
 
-    @cli.switch(["-c", "--clipboard"])
-    def trans_clipboard(self):
-        """
-        Translate the content of the current clipboard if it`s an English word or a Chinese word.
-        No parameter required.
-        """
-
-        try:
-            clipboard_data = pyperclip.paste().strip().replace('\n', '')
-        except:
-            self.IS_TRANS = 1
-            print(colors.red | "[Error!] Cannot get clipboard content.")
-            return
-
-        if clipboard_data:
-            self.main_(clipboard_data)
-        else:
-            self.IS_TRANS = 1
-            print(colors.yellow | "There is no content in the clipboard.")
-        return
-
     def downloader(self, word):
         request_url = "http://youdao.com/w/%s" % word
         try:
@@ -206,9 +193,47 @@ class Dict_tiny(cli.Application):
         else:
             return 'other'
 
-    def main_(self, word):
+    @cli.switch("--detect-language", str)
+    def detect_language(self, text):
+        """
+        detect language
+        """
+        self.IF_STOP = True
+        try:
+            resp = requests.post(self.Bash_url.format("detect_language"), json={
+                "text": text
+            })
+            for k, v in resp.json().items():
+                print("{}: {}".format(k, v))
+        except Exception as e:
+            print(str(e))
 
-        self.IS_TRANS = 1
+    @cli.switch(["-c", "--clipboard"])
+    def trans_clipboard(self):
+        """
+        Translate the content of the current clipboard if it`s an English word or a Chinese word.
+        No parameter required.
+        """
+
+        try:
+            clipboard_data = pyperclip.paste().strip().replace('\n', '')
+        except:
+            self.IF_STOP = True
+            print(colors.red | "[Error!] Cannot get clipboard content.")
+            return
+
+        if clipboard_data:
+            if self.if_google_api or len(clipboard_data.split(" ")) > 1:
+                self.google_trans(clipboard_data)
+            else:
+                self.you_dao(clipboard_data)
+        else:
+            self.IS_TRANS = True
+            print(colors.yellow | "There is no content in the clipboard.")
+        return
+
+    def you_dao(self, word):
+        self.IF_STOP = True
 
         if self.is_alphabet(word) == 'en':
             self.trans_en(word)
@@ -218,15 +243,28 @@ class Dict_tiny(cli.Application):
             print(colors.red | "[Error!] The content is not an English word or a Chinese word.")
         return
 
+    def google_trans(self, text):
+        print(self.target_language)
+        self.IF_STOP = True
+        try:
+            resp = requests.post(self.Bash_url.format("translate"), json={
+                "text": text,
+                "target": self.target_language,
+                "source": self.source_language,
+            })
+            for k, v in resp.json().items():
+                print("{}: {}".format(k, v))
+        except Exception as e:
+            print(str(e))
+
     def main(self, *word):
-        if not word and not self.IS_TRANS:
+        if not word and self.IF_STOP == False:
             self.help()
-        elif word and not self.IS_TRANS:
-            if len(word) > 1:
-                print(colors.yellow |
-                      "Oops! You may want to translate a sentence, but I can only choose the first word as the target word.")
-            word = word[0]
-            self.main_(word)
+        elif word and self.IF_STOP == False:
+            if self.if_google_api or len(word) > 1:
+                self.google_trans(" ".join(word))
+            else:
+                self.you_dao(word[0])
 
         # -m
         # targetWord == 1 ==> IS_TRANS == 1
@@ -234,7 +272,6 @@ class Dict_tiny(cli.Application):
         if self.targetWord and self.moredetail:
             self.targetWord, type = self.targetWord.split("_")
             self.show_more(self.targetWord, type)
-        return
 
 
 if __name__ == "__main__":
