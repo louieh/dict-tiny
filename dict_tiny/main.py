@@ -54,7 +54,7 @@ class Dict_tiny(cli.Application):
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
     }
 
-    Bash_url = "http://localhost:8080/{}"
+    Base_url = "https://tinydict-translateapi.appspot.com/{}"
 
     def trans_en(self, word):
         """
@@ -200,7 +200,7 @@ class Dict_tiny(cli.Application):
         """
         self.IF_STOP = True
         try:
-            resp = requests.post(self.Bash_url.format("detect_language"), json={
+            resp = requests.post(self.Base_url.format("detect_language"), json={
                 "text": text
             })
             for k, v in resp.json().items():
@@ -244,10 +244,9 @@ class Dict_tiny(cli.Application):
         return
 
     def google_trans(self, text):
-        print(self.target_language)
         self.IF_STOP = True
         try:
-            resp = requests.post(self.Bash_url.format("translate"), json={
+            resp = requests.post(self.Base_url.format("translate"), json={
                 "text": text,
                 "target": self.target_language,
                 "source": self.source_language,
