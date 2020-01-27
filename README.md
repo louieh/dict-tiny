@@ -1,6 +1,6 @@
 # Dict-tiny
 
-[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/)![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 
 
