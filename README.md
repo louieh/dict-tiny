@@ -2,11 +2,36 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/)
 
-Dict-tiny is a command-line utility that can translate English and Chinese words, which makes it easy to translate words from command-line interface. Just for fun :)
-
-You can use `dict-tiny` in this way:
 
 
+Dict-tiny is a command-line utility that can be used as:
+
+* A dictionary of Chinese and English word translation by getting the data of youdao.com.
+* A translator by using Google Translate API. You can also use it to detect the language type.
+
+ Just for fun :)
+
+
+
+## Installation
+
+You can install `dict-tiny` via the pip package manager.
+
+```shell
+$ pip3 install dict-tiny
+```
+
+
+
+## Upgrading
+
+```shell
+$ pip3 install --upgrade dict-tiny
+```
+
+
+
+## Usage
 
 ### Translate an English word or Chinese word
 
@@ -26,21 +51,6 @@ $ dict-tiny 书
 n.book;letter;script
 vt.write
 ```
-
-
-### Translate the word in clipboard
-
-Use `-c`/`--clipboard` to translate the word in clipboard:
-
-```shell
-$ dict-tiny -c
-命令行  
-======
-command line
-```
-**Note:**
-
-* `-c`/`--clipboard` has high priority. If you add `-c` and a word at the same time, the word will be considered invalid.
 
 
 
@@ -88,19 +98,81 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 
 
-## Installation
+### Using Google Translate API
 
-You can install `dict-tiny` via the pip package manager.
-
-```shell
-$ pip3 install dict-tiny
-```
-
-
-
-## Upgrading
+Add `-g` to use Google Translate API:
 
 ```shell
-$ pip3 install --upgrade dict-tiny
+$ dict-tiny -g book
+detectedSourceLanguage: en
+input: book
+translatedText: 书
 ```
 
+You can add `--target-language` to specify what language you want to translate into：
+
+```shell
+$ dict-tiny -g book --target-language japanese
+detectedSourceLanguage: en
+input: book
+translatedText: 本
+```
+
+You can add `--source-language` to specify what language you want to translate, but most of the time you don't need to do this because the api will automatically detect the language type.
+
+So, of course, you can use it to detect the language type:
+
+```shell
+$ dict-tiny --detect-language=书
+confidence: 1
+input: 书
+language: zh-CN
+```
+
+**Note:**
+
+* Setting the environment variable `$DICT_TINY_TARGET_LAN` to the `target language` you prefer so that you do not have to specify the `target language` every time. `Dict-tiny` will first get `target language` from `$DICT_TINY_TARGET_LAN`. Giving the `--target-language` switch on the command line will override the environment variable value.
+
+* If your input is a sentence or more than one word, the Google Translate API will be called automatically. In other word, you don't need to manually add -g when you type a sentence.
+
+* The source and target languages are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes. 
+
+  ```shell
+  $ dict-tiny -g book --target-language zh --source-language en
+  input: book
+  translatedText: 书
+  ```
+
+  You can also enter the ISO language name:
+
+  ```shell
+  $ dict-tiny -g book --target-language chinese --source-language english
+  input: book
+  translatedText: 书
+  ```
+
+
+
+### Translate the word in clipboard
+
+Use `-c`/`--clipboard` to translate the word in clipboard:
+
+```shell
+$ dict-tiny -c
+命令行  
+======
+command line
+```
+
+If you want to use `-g` you need to put it before `-c`.
+
+```python
+$ dict-tiny -g -c
+detectedSourceLanguage: en
+input: clipboard
+translatedText: 剪贴板
+```
+
+**Note:**
+
+* `-c`/`--clipboard` has high priority. If you add `-c` and a word at the same time, the word will be ignored.
