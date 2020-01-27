@@ -4,10 +4,10 @@
 
 
 
-Dict-tiny is a command-line utility that can be used as:
+A command-line utility that can be used as:
 
 * A dictionary of Chinese and English word translation by getting the data of youdao.com.
-* A translator by using Google Translate API. You can also use it to detect the language type.
+* A translator by using Google Translation API. You can also use it to detect the language type.
 
  Just for fun :)
 
@@ -15,10 +15,10 @@ Dict-tiny is a command-line utility that can be used as:
 
 ## Installation
 
-You can install `dict-tiny` via the pip package manager.
+You can install `dict-tiny` via the pip package manager. (Python 3 only)
 
 ```shell
-$ pip3 install dict-tiny
+$ pip install dict-tiny
 ```
 
 
@@ -26,7 +26,7 @@ $ pip3 install dict-tiny
 ## Upgrading
 
 ```shell
-$ pip3 install --upgrade dict-tiny
+$ pip install --upgrade dict-tiny
 ```
 
 
@@ -98,9 +98,9 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 
 
-### Using Google Translate API
+### Using Google Translation API
 
-Add `-g` to use Google Translate API:
+Adding `-g` to use Google Translation API:
 
 ```shell
 $ dict-tiny -g book
@@ -109,7 +109,7 @@ input: book
 translatedText: 书
 ```
 
-You can add `--target-language` to specify what language you want to translate into：
+Adding `--target-language` to specify what language you want to translate into：
 
 ```shell
 $ dict-tiny -g book --target-language japanese
@@ -118,22 +118,23 @@ input: book
 translatedText: 本
 ```
 
-You can add `--source-language` to specify what language you want to translate, but most of the time you don't need to do this because the api will automatically detect the language type.
+Adding `--source-language` to specify what language you want to translate, but most of the time you don't need to do this because the api will automatically detect the language type.
 
 So, of course, you can use it to detect the language type:
 
 ```shell
-$ dict-tiny --detect-language=书
+$ dict-tiny --detect-language book
 confidence: 1
-input: 书
-language: zh-CN
+input: book
+language: en
+name: Armenian
 ```
 
 **Note:**
 
 * Setting the environment variable `$DICT_TINY_TARGET_LAN` to the `target language` you prefer so that you do not have to specify the `target language` every time. `Dict-tiny` will first get `target language` from `$DICT_TINY_TARGET_LAN`. Giving the `--target-language` switch on the command line will override the environment variable value.
 
-* If your input is a sentence or more than one word, the Google Translate API will be called automatically. In other word, you don't need to manually add -g when you type a sentence.
+* If your input is a sentence or more than one word, the Google Translation API will be called automatically. In other word, you don't need to manually add -g when you type a sentence.
 
 * The source and target languages are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes. 
 
