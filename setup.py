@@ -15,7 +15,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/louieh/dict-tiny",
-    keywords='youdao dictionary command-line plumbum',
+    keywords='python youdao dictionary command-line plumbum translator google-translation-api',
     packages=setuptools.find_packages(),
     install_requires=[
         'requests',
