@@ -186,7 +186,7 @@ class Dict_tiny(cli.Application):
                     each_letter >= '\u0061' and each_letter <= '\u007a'):
                 is_alphabet['en'] += 1
 
-        if is_alphabet['cn'] == len(word):
+        if is_alphabet['cn'] / len(word) >= 0.8:
             return 'cn'
         elif is_alphabet['en'] == len(word):
             return 'en'
@@ -260,7 +260,7 @@ class Dict_tiny(cli.Application):
         if not word and self.IF_STOP == False:
             self.help()
         elif word and self.IF_STOP == False:
-            if self.if_google_api or len(word) > 1:
+            if self.if_google_api or len(word) > 1 or (len(word) == 1 and self.is_alphabet(word[0]) == 'cn'):
                 self.google_trans(" ".join(word))
             else:
                 self.you_dao(word[0])
