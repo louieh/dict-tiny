@@ -152,11 +152,13 @@ name: Armenian
   translatedText: 书
   ```
 
+* The default `target-language` is `ENGLISH_ISO_639='en'` if you do not specify a `target-language` includes giving `--target-language` switch on the command line and setting `$DICT_TINY_TARGET_LAN` environment variable. _(If the input is alse English then the default `target-language` will be Chinese.)_
 
+  
 
 ### Translate the word in clipboard
 
-Use `-c`/`--clipboard` to translate the word in clipboard:
+Using `-c`/`--clipboard` to translate the word in clipboard:
 
 ```shell
 $ dict-tiny -c
