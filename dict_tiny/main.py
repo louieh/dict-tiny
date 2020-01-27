@@ -14,7 +14,7 @@ from dict_tiny.en_detail.get_detail import get_data, print_basetrans, print_deta
 from dict_tiny import version
 
 APP_DESC = """
-tiny dictionary
+tiny translator
 """
 APP_NAME = version.name
 APP_VERSION = version.__version__
