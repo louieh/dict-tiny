@@ -260,7 +260,7 @@ class Dict_tiny(cli.Application):
         if not word and self.IF_STOP == False:
             self.help()
         elif word and self.IF_STOP == False:
-            if self.if_google_api or len(word) > 1 or (len(word) == 1 and self.is_alphabet(word[0]) == 'cn'):
+            if self.if_google_api or len(word) > 1 or (len(word) == 1 and len(word[0]) > 4 and self.is_alphabet(word[0]) == 'cn'):
                 self.google_trans(" ".join(word))
             else:
                 self.you_dao(word[0])

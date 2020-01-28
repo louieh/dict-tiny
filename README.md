@@ -33,7 +33,7 @@ $ pip install --upgrade dict-tiny
 
 ## Usage
 
-### Translate an English word or Chinese word
+### One word
 
 ```shell
 $ dict-tiny book
@@ -54,7 +54,7 @@ vt.write
 
 
 
-### Get more detail translation about the word
+### Getting more detail
 
 Use `-m`/`--more` to get more detail translation:
 
@@ -179,3 +179,9 @@ translatedText: 剪贴板
 **Note:**
 
 * `-c`/`--clipboard` has high priority. If you add `-c` and a word at the same time, the word will be ignored.
+
+  
+
+## License
+
+[MIT](https://github.com/louieh/dict-tiny/blob/master/LICENSE)
