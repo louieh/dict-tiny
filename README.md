@@ -1,6 +1,6 @@
 # Dict-tiny
 
-[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/louieh/dict-tiny/Upload Dict-tiny Python Package) ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/louieh/dict-tiny/Upload%20Dict-tiny%20Python%20Package) ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 
 
