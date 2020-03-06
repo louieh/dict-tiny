@@ -127,7 +127,7 @@ $ dict-tiny --detect-language book
 confidence: 1
 input: book
 language: en
-name: Armenian
+name: English
 ```
 
 **Note:**
