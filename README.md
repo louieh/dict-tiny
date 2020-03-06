@@ -7,7 +7,7 @@
 A command-line utility that can be used as:
 
 * A dictionary of Chinese and English word translation by getting the data of youdao.com.
-* A translator by using Google Translation API. You can also use it to detect the language type.
+* A translator by using Google Translation API. It can alse be used to detect language type.
 
  Just for fun :)
 
@@ -93,7 +93,7 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 **Note:**
 
-* You can use `-c` and `-m` at the same time, which means get more detail translation about the word in clipboard.
+* Adding `-c` and `-m` at the same time, which means get more detail translation about the word in clipboard.
 * Some words have a lot of translation that may occupy the entire screen.
 
 
@@ -167,7 +167,7 @@ $ dict-tiny -c
 command line
 ```
 
-If you want to use `-g` you need to put it before `-c`.
+Put `-g` in front of `-c` if you want to use both `-g` and `-c`.
 
 ```python
 $ dict-tiny -g -c
