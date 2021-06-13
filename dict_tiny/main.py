@@ -8,8 +8,6 @@ from plumbum import colors
 import pyperclip
 import json
 
-from sources.googleTrans import detect_language, google_trans
-from sources.youdao import youdao_trans, show_more
 from util import is_alphabet
 import version
 
