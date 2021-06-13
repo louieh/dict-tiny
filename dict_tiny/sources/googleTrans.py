@@ -1,6 +1,6 @@
 import requests
 
-from Dict_tiny.setting import GOOGLE_TANS_API_BASE_URL
+from setting import GOOGLE_TANS_API_BASE_URL
 
 
 def google_trans(text, target_language, source_language):

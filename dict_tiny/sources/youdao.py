@@ -1,8 +1,8 @@
 import json
 import requests
 
-from Dict_tiny.setting import YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_FAKE_HEADER, YOUDAO_BASE_URL, TERMINAL_SIZE_COLUMN
-from Dict_tiny.util import downloader, downloader_plain, is_alphabet
+from setting import YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_FAKE_HEADER, YOUDAO_BASE_URL, TERMINAL_SIZE_COLUMN
+from util import downloader, downloader_plain, is_alphabet
 from plumbum import colors
 
 
