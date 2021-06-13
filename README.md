@@ -178,7 +178,7 @@ translatedText: 剪贴板
 
 **Note:**
 
-* `-c`/`--clipboard` has high priority. If you add `-c` and a word at the same time, the word will be ignored.
+* `-c`/`--clipboard` has low priority. If you add `-c` and a word at the same time, the switch `-c` will be ignored.
 
   
 
