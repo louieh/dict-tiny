@@ -10,7 +10,7 @@ import json
 
 from dict_tiny.sources.googleTrans import detect_language, google_trans
 from dict_tiny.sources.youdao import youdao_trans, show_more
-from util import is_alphabet
+from dict_tiny.util import is_alphabet
 import version
 
 APP_DESC = """
