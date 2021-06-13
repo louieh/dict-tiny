@@ -118,7 +118,7 @@ input: book
 translatedText: 本
 ```
 
-Adding `--source-language` to specify what language you want to translate, but most of the time you don't need to do this because the api will automatically detect the language type.
+Adding `--source-language` to specify what language you want to translate, but most of the time you don't need to do this because the API will automatically detect the language type.
 
 So, of course, you can use it to detect the language type:
 
@@ -152,7 +152,7 @@ name: English
   translatedText: 书
   ```
 
-* The default `target-language` is `ENGLISH_ISO_639='en'` if you do not specify a `target-language` includes giving `--target-language` switch on the command line and setting `$DICT_TINY_TARGET_LAN` environment variable. _(If the input is alse English then the default `target-language` will be Chinese.)_
+* The default `target-language` is `ENGLISH_ISO_639='en'` if you do not specify a `target-language` includes giving `--target-language` switch on the command line and setting `$DICT_TINY_TARGET_LAN` environment variable. _(If the input is also English then the default `target-language` will be Chinese.)_
 
   
 
@@ -167,7 +167,7 @@ $ dict-tiny -c
 command line
 ```
 
-Put `-g` in front of `-c` if you want to use both `-g` and `-c`.
+You can use both `-g` and `-c`.
 
 ```python
 $ dict-tiny -g -c
