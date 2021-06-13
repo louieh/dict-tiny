@@ -72,7 +72,7 @@ class Dict_tiny(cli.Application):
         # stop, return directly
         if self.IF_STOP: return
 
-        wordFinal = word or self.clipBoardContent
+        wordFinal = word or self.clipBoardContent  # word has high priority
         # no word, print help
         if not wordFinal:
             self.help()
