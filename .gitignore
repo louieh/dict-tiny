@@ -4,4 +4,6 @@ dict_tiny.egg-info/
 dist/
 __pycache__/
 en_detail/__pycache__
-translate_api/
+translate_api/*
+!translate_api/main.py
+!translate_api/utils
