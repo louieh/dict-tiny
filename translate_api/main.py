@@ -3,7 +3,7 @@
 
 from flask import Flask, jsonify, request, abort
 from utils.google_translate import GoogleTranslate
-import six
+from utils.util import reformat_text
 
 # TODO 限制输入字数
 # TODO 限制访问频率
@@ -52,50 +52,22 @@ def hello():
 
 @app.route('/get_languages')
 def get_languages():
-    try:
-        res = google_trans_client.get_languages()
-        return jsonify({"message": "OK: list languages", "data": res})
-    except:
-        abort(404)
-
-
-def reformat_text(text):
-    if not text:
-        abort(401)
-    if isinstance(text, six.binary_type):
-        try:
-            text = text.decode('utf-8')
-        except:
-            abort(401)
-    if not isinstance(text, str):
-        try:
-            text = str(text)
-        except:
-            abort(401)
-    return text
+    res = google_trans_client.get_languages()
+    return jsonify({"message": "OK: list languages", "data": res})
 
 
 @app.route('/check_valid_lan', methods=["POST"])
-def check_valid_lan(language=None):
-    res = get_languages()
-    if not language:
-        language = reformat_text(request.json.get("language"))
-    res.json["data"].append({'language': 'zh-CN', 'name': 'Chinese'})
-    for lan_dict in res.json.get("data"):
-        if language.lower() == lan_dict.get("language").lower() or language.lower() in lan_dict.get("language").lower():
-            return jsonify({"status": True, "language": lan_dict.get("language"), "name": lan_dict.get("name")})
-    return jsonify({"status": False})
+def check_valid_lan():
+    language = reformat_text(request.json.get("language"))
+    ret = google_trans_client.check_valid_lan(language)
+    return jsonify(ret)
 
 
 @app.route('/detect_language', methods=["POST"])
-def detect_language(text=None):
-    if not text:
-        text = reformat_text(request.json.get("text"))
-    detect_result = client.detect_language(text)
-    valid_lan_dict = check_valid_lan(detect_result.get("language"))
-    if valid_lan_dict.json.get("status"):
-        detect_result.update({"name": valid_lan_dict.json.get("name")})
-    return jsonify(detect_result)
+def detect_language():
+    text = reformat_text(request.json.get("text"))
+    ret = google_trans_client.detect_language(text)
+    return jsonify(ret)
 
 
 @app.route('/translate', methods=["POST"])
@@ -103,25 +75,8 @@ def translate_text():
     text = reformat_text(request.json.get("text"))
     target_language = request.json.get("target")
     source_language = request.json.get("source")
-    tar_lan_dict = check_valid_lan(target_language).json if target_language else None
-    if tar_lan_dict and not tar_lan_dict.get("status"):
-        abort(400)
-    sou_lan_dict = check_valid_lan(source_language).json if source_language else None
-    if sou_lan_dict and not sou_lan_dict.get("status"):
-        abort(400)
-    detect_res = detect_language(text)
-    try:
-        source_language = sou_lan_dict.get("language") if sou_lan_dict else None
-        if not tar_lan_dict:
-            if detect_res.json.get("language") == "en":
-                res = client.translate(text, target_language="zh", source_language=source_language)
-            else:
-                res = client.translate(text, source_language=source_language)
-        else:
-            res = client.translate(text, target_language=tar_lan_dict.get("language"), source_language=source_language)
-        return jsonify(res)
-    except Exception as e:
-        abort(404)
+    ret = google_trans_client.translate(text, target_language, source_language)
+    return jsonify(ret)
 
 
 if __name__ == '__main__':
