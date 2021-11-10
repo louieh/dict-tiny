@@ -3,6 +3,7 @@
 
 from flask import Flask, jsonify, request, abort
 from utils.google_translate import GoogleTranslate
+from utils.deepl import DeepL
 from utils.util import reformat_text
 
 # TODO 限制输入字数
@@ -23,6 +24,10 @@ def handle_bad_request_401(e):
 # def handle_bad_request_400(e):
 #     return 'Invalid language input.', 400
 
+@app.errorhandler(417)
+def handle_bad_request_417(e):
+    return 'api error: {}'.format(str(e)), 417
+
 
 @app.errorhandler(404)
 def handle_bad_request_404(e):
@@ -37,8 +42,10 @@ def handle_bad_request_500(e):
 @app.before_first_request
 def before_first_request():
     global google_trans_client
+    global deepl_trans_client
     try:
         google_trans_client = GoogleTranslate()
+        deepl_trans_client = DeepL()
     except Exception as e:
         print("init error: {}".format(str(e)))
 
@@ -47,36 +54,46 @@ def before_first_request():
 def hello():
     if not google_trans_client:
         abort(500)
-    return 'dict tiny translate api'
+    return jsonify({"code": 200, "msg": "dict tiny translate api", "data": None})
 
 
-@app.route('/get_languages')
+@app.route('/goog/get_languages')
 def get_languages():
-    res = google_trans_client.get_languages()
-    return jsonify({"message": "OK: list languages", "data": res})
+    ret = google_trans_client.get_languages()
+    if ret.get("status"):
+        return jsonify({"code": 200, "msg": "ok", "data": ret.get("data")})
+    else:
+        return jsonify({"code": 417, "msg": ret.get("error")})
 
 
-@app.route('/check_valid_lan', methods=["POST"])
-def check_valid_lan():
-    language = reformat_text(request.json.get("language"))
-    ret = google_trans_client.check_valid_lan(language)
-    return jsonify(ret)
-
-
-@app.route('/detect_language', methods=["POST"])
-def detect_language():
+@app.route('/goog/detect_language', methods=["POST"])
+def goog_detect_language():
     text = reformat_text(request.json.get("text"))
     ret = google_trans_client.detect_language(text)
-    return jsonify(ret)
+    if ret.get("status"):
+        return jsonify({"code": 200, "msg": "ok", "data": ret.get("data")})
+    return jsonify({"code": 417, "msg": ret.get("error")})
 
 
-@app.route('/translate', methods=["POST"])
-def translate_text():
+@app.route('/goog/translate', methods=["POST"])
+def goog_translate_text():
     text = reformat_text(request.json.get("text"))
     target_language = request.json.get("target")
     source_language = request.json.get("source")
     ret = google_trans_client.translate(text, target_language, source_language)
-    return jsonify(ret)
+    if ret.get("status"):
+        return jsonify({"code": 200, "msg": "ok", "data": ret.get("data")})
+    return jsonify({"code": 417, "msg": ret.get("error")})
+
+
+@app.route('/deep/translate', methods=["POST"])
+def deep_translate_text():
+    text = request.json.get("text")
+    target_language = request.json.get("target", "ZH")
+    ret = deepl_trans_client.translate(text, target_language)
+    if ret.get("status"):
+        return jsonify({"code": 200, "msg": "ok", "data": ret.get("data")})
+    return jsonify({"code": 417, "msg": ret.get("error")})
 
 
 if __name__ == '__main__':

@@ -7,10 +7,10 @@ class GoogleTranslate(object):
 
     def get_languages(self):
         res = self.client.get_languages()
-        return res
+        return {"status": True, "data": res}
 
     def check_valid_lan(self, language):
-        lan_res = self.get_languages()
+        lan_res = self.get_languages().get("data")
         lan_res.append({'language': 'zh-CN', 'name': 'Chinese'})
         for lan_dict in lan_res:
             if language.lower() == lan_dict.get("language").lower() or language.lower() in lan_dict.get(
@@ -23,7 +23,8 @@ class GoogleTranslate(object):
         valid_lan_dict = self.check_valid_lan(detect_result.get("language"))
         if valid_lan_dict.get("status"):
             detect_result.update({"name": valid_lan_dict.get("name")})
-        return detect_result
+            return {"status": True, "data": detect_result}
+        return {"status": False, "error": ""}
 
     def translate(self, text, target_language, source_language=None):
         tar_lan_dict = self.check_valid_lan(target_language) if target_language else None
@@ -43,6 +44,6 @@ class GoogleTranslate(object):
             else:
                 res = self.client.translate(text, target_language=tar_lan_dict.get("language"),
                                             source_language=source_language)
-            return res
+            return {"status": True, "data": res}
         except Exception as e:
-            print("translate error: {}".format(str(e)))
+            return {"status": False, "error": str(e)}
