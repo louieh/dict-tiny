@@ -1,6 +1,6 @@
 import requests
 
-from dict_tiny.setting import GOOGLE_TANS_API_BASE_URL
+from dict_tiny.setting import GOOGLE_TRANS_API_BASE_URL
 
 
 def google_trans(text, target_language, source_language):
@@ -12,7 +12,7 @@ def google_trans(text, target_language, source_language):
     :return:
     """
     try:
-        resp = requests.post(GOOGLE_TANS_API_BASE_URL.format("translate"), json={
+        resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("translate"), json={
             "text": text,
             "target": target_language,
             "source": source_language,
@@ -30,7 +30,7 @@ def detect_language(text):
     :return:
     """
     try:
-        resp = requests.post(GOOGLE_TANS_API_BASE_URL.format("detect_language"), json={
+        resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={
             "text": text
         })
         for k, v in resp.json().items():

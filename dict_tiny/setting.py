@@ -1,3 +1,5 @@
+import os
+
 # YOUDAO
 YOUDAO_WEB_FAKE_HEADER = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -19,7 +21,10 @@ YOUDAO_API_FAKE_HEADER = {
 YOUDAO_BASE_URL = "http://youdao.com/w/{}"
 
 # GOOGLE TRANS
-GOOGLE_TANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/{}"
+GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
+
+# DEEPL TRANS
+DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # SYSTEM
 try:

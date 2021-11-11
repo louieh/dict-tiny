@@ -8,8 +8,9 @@ from plumbum import colors
 import pyperclip
 import json
 
-from dict_tiny.sources.googleTrans import detect_language, google_trans
+from dict_tiny.sources.google_trans import detect_language, google_trans
 from dict_tiny.sources.youdao import youdao_trans, show_more
+from dict_tiny.sources.deepl_trans import deepl_trans
 from dict_tiny.util import is_alphabet
 from dict_tiny import version
 
@@ -34,8 +35,10 @@ class Dict_tiny(cli.Application):
                                      help="Target language for Google Translate api.")
     source_language = cli.SwitchAttr("--source-language", str, excludes=["-m", "--more"], group="google_translate_api",
                                      help="Source language for Google Translate api.")
-    if_google_api = cli.Flag("-g", excludes=["-m", "--more"], group="google_translate_api",
+    if_google_api = cli.Flag("-g", excludes=["-m", "--more", "-d"], group="google_translate_api",
                              help="Using Google Translate api.")
+    if_deep_api = cli.Flag("-d", excludes=["-m", "--more", "-g"], group="deepl_translate_api",
+                           help="Using DeepL Translate api.")
     more_detail = cli.Flag(["-m", "--more"],
                            excludes=["-g", "--target-language", "--source-language", "--detect-language"],
                            help="If given, more detail Youdao translation will be shown. You need to give a word or switch -c.")
@@ -78,8 +81,13 @@ class Dict_tiny(cli.Application):
             self.help()
         # wordFinal, do trans
         else:
-            if self.if_google_api or len(wordFinal) > 1 or (
+            if self.if_deep_api or len(wordFinal) > 1 or (
                     len(wordFinal) == 1 and len(wordFinal[0]) > 4 and is_alphabet(wordFinal[0]) == 'cn'):
+                if not self.target_language and is_alphabet(wordFinal[0]) == 'cn':
+                    self.target_language = "EN-US"
+                deepl_trans(" ".join(wordFinal), self.target_language)
+                return
+            elif self.if_google_api:
                 google_trans(" ".join(wordFinal), self.target_language, self.source_language)
                 return
             else:
