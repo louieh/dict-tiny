@@ -30,10 +30,10 @@ class Dict_tiny(cli.Application):
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {"Switches": colors.green}
 
-    target_language = cli.SwitchAttr("--target-language", str, excludes=["-m", "--more"], group="google_translate_api",
+    target_language = cli.SwitchAttr("--target-language", str, excludes=["-m", "--more"],
                                      envname="DICT_TINY_TARGET_LAN",
                                      help="Target language for Google Translate api.")
-    source_language = cli.SwitchAttr("--source-language", str, excludes=["-m", "--more"], group="google_translate_api",
+    source_language = cli.SwitchAttr("--source-language", str, excludes=["-m", "--more"],
                                      help="Source language for Google Translate api.")
     if_google_api = cli.Flag("-g", excludes=["-m", "--more", "-d"], group="google_translate_api",
                              help="Using Google Translate api.")
@@ -49,6 +49,9 @@ class Dict_tiny(cli.Application):
 
     @cli.switch("--detect-language", str)
     def detect_language(self, text):
+        """
+        Detect the language of the given text.
+        """
         self.IF_STOP = True
         detect_language(text)
 
