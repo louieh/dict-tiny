@@ -22,8 +22,12 @@ def deepl_trans(text, target_language=None):
             print("DeepL error, code: ", resp_json["code"])
         else:
             print(colors.green | ">>> DeepL Translator")
-            print("input: ", text)
-            for k, v in resp_json["data"].items():
+            res = {
+                "detected language": resp_json["data"]["detected_source_lang"],
+                "input": text,
+                "output": resp_json["data"]["text"]
+            }
+            for k, v in res.items():
                 print("{}: {}".format(k, v))
     except Exception as e:
         # print("DeepL error: ", str(e))

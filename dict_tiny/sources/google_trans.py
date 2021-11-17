@@ -21,7 +21,12 @@ def google_trans(text, target_language, source_language):
         if resp_json["code"] != 200:
             print("Google translate error, code: ", resp_json["code"])
         print(colors.green | ">>> Google Translate")
-        for k, v in resp_json["data"].items():
+        res = {
+            "detected language": resp_json["data"]["detectedSourceLanguage"],
+            "input": text,
+            "output": resp_json["data"]["translatedText"]
+        }
+        for k, v in res.items():
             print("{}: {}".format(k, v))
     except Exception as e:
         # print(str(e))
