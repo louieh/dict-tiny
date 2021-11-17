@@ -1,3 +1,4 @@
+from collections import defaultdict
 from lxml import html
 import requests
 from plumbum import colors
@@ -9,10 +10,9 @@ def is_alphabet(word):
     :param word:
     :return:
     """
-    is_alphabet = {
-        'cn': 0,
-        'en': 0,
-    }
+    is_alphabet = defaultdict(int)
+    word = word.replace(' ', '')
+    word_len = len(word)
     for each_letter in word:
         if each_letter >= '\u4e00' and each_letter <= '\u9fff':
             is_alphabet['cn'] += 1
@@ -21,10 +21,12 @@ def is_alphabet(word):
         elif (each_letter >= '\u0041' and each_letter <= '\u005a') or (
                 each_letter >= '\u0061' and each_letter <= '\u007a'):
             is_alphabet['en'] += 1
+        else:
+            is_alphabet['other'] += 1
 
-    if is_alphabet['cn'] / len(word) >= 0.8:
+    if is_alphabet['cn'] / word_len >= 0.8:
         return 'cn'
-    elif is_alphabet['en'] == len(word):
+    elif is_alphabet['en'] / word_len >= 0.8:
         return 'en'
     else:
         return 'other'
