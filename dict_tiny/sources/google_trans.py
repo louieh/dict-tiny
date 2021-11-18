@@ -12,20 +12,24 @@ def google_trans(text, target_language, source_language):
     :return:
     """
     try:
-        resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("translate"), json={
-            "text": text,
-            "target": target_language,
-            "source": source_language,
-        })
+        data = {"text": text}
+        if target_language:
+            data["target"] = target_language
+        if source_language:
+            data["source"] = source_language
+        resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
         resp_json = resp.json()
         if resp_json["code"] != 200:
             print("Google translate error, code: ", resp_json["code"])
         print(colors.green | ">>> Google Translate")
         res = {
-            "detected language": resp_json["data"]["detectedSourceLanguage"],
             "input": text,
             "output": resp_json["data"]["translatedText"]
         }
+        if not source_language:
+            res.update({"detected language": resp_json["data"]["detectedSourceLanguage"]})
+        else:
+            res.update({"source language": source_language})
         for k, v in res.items():
             print("{}: {}".format(k, v))
     except Exception as e:
@@ -46,7 +50,7 @@ def detect_language(text):
         resp_json = resp.json()
         if resp_json["code"] != 200:
             print("Google detect language error: ", resp_json["code"])
-        print(colors.green | ">>> Google detect language")
+        print(colors.green | ">>> Google language detection")
         for k, v in resp_json["data"].items():
             print("{}: {}".format(k, v))
     except Exception as e:
