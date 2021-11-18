@@ -13,8 +13,8 @@ class GoogleTranslate(object):
         lan_res = self.get_languages().get("data")
         lan_res.append({'language': 'zh-CN', 'name': 'Chinese'})
         for lan_dict in lan_res:
-            if language.lower() == lan_dict.get("language").lower() or language.lower() in lan_dict.get(
-                    "language").lower():
+            if language.lower() == lan_dict.get("language").lower() or language.lower() == lan_dict.get(
+                    "name").lower() or language.lower() in lan_dict.get("language").lower():
                 return {"status": True, "language": lan_dict.get("language"), "name": lan_dict.get("name")}
         return {"status": False}
 
@@ -26,7 +26,7 @@ class GoogleTranslate(object):
             return {"status": True, "data": detect_result}
         return {"status": False, "error": ""}
 
-    def translate(self, text, target_language, source_language=None):
+    def translate(self, text, target_language="en", source_language=None):
         tar_lan_dict = self.check_valid_lan(target_language) if target_language else None
         if tar_lan_dict and not tar_lan_dict.get("status"):
             return {"status": False, "error": "target language is not valid"}

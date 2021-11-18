@@ -7,7 +7,7 @@ class DeepL(object):
         DEEPL_AUTH_KEY = os.getenv("DEEPL_AUTH_KEY")
         self.translator = deepl.Translator(DEEPL_AUTH_KEY)
 
-    def translate(self, text, target_lang="ZH"):
+    def translate(self, text, target_lang="EN-US"):
         try:
             res = self.translator.translate_text(text, target_lang=target_lang)
             return {"status": True, "data": {
