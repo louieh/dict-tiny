@@ -15,7 +15,7 @@ from dict_tiny.util import is_alphabet
 from dict_tiny import version
 
 APP_DESC = """
-tiny translator
+tiny command-line translator
 """
 APP_NAME = version.name
 APP_VERSION = version.__version__
