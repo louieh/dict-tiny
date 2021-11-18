@@ -32,15 +32,18 @@ class Dict_tiny(cli.Application):
 
     target_language = cli.SwitchAttr("--target-language", str, excludes=["-m", "--more"],
                                      envname="DICT_TINY_TARGET_LAN",
-                                     help="Target language for Google Translate api.")
+                                     help="what language you want to translate into")
     source_language = cli.SwitchAttr("--source-language", str, excludes=["-m", "--more"],
-                                     help="Source language for Google Translate api.")
-    if_google_api = cli.Flag("-g", excludes=["-m", "--more", "-d"], group="google_translate_api",
-                             help="Using Google Translate api.")
-    if_deep_api = cli.Flag("-d", excludes=["-m", "--more", "-g"], group="deepl_translate_api",
-                           help="Using DeepL Translate api.")
-    more_detail = cli.Flag(["-m", "--more"],
-                           excludes=["-g", "--target-language", "--source-language", "--detect-language"],
+                                     help="what language you want to translate")
+    if_google_api = cli.Flag(["-g", "--google"], excludes=["-m", "--more", "-d"], group="google_translate_api",
+                             help="Using Google Translation API.")
+    if_deep_api = cli.Flag(["-d", "--deepl"], excludes=["-m", "--more", "-g"], group="deepl_translate_api",
+                           help="Using DeepL Translator API.")
+    # if_youdao_api = cli.Flag(["-y", "--youdao"], excludes=["-g", "-d"], group="youdao_translate_api",
+    #                          help="Youdao translate")
+    more_detail = cli.Flag(["-m", "--more"], group="youdao_translate_api",
+                           excludes=["-g", "-d", "--deepl", "--google", "--target-language", "--source-language",
+                                     "--detect-language"],
                            help="If given, more detail Youdao translation will be shown. You need to give a word or switch -c.")
 
     IF_STOP = False  # If return directly at main function
@@ -84,17 +87,26 @@ class Dict_tiny(cli.Application):
             self.help()
         # wordFinal, do trans
         else:
-            if self.if_deep_api or len(wordFinal) > 1 or (
-                    len(wordFinal) == 1 and len(wordFinal[0]) > 4 and is_alphabet(wordFinal[0]) == 'cn'):
-                if not self.target_language and is_alphabet(wordFinal[0]) == 'cn':
-                    self.target_language = "EN-US"
-                deepl_trans(" ".join(wordFinal), self.target_language)
-                return
+            if_sentence = True if len(wordFinal) > 1 or len(wordFinal) == 1 and len(wordFinal[0]) > 4 and is_alphabet(
+                wordFinal[0]) == 'cn' else False
+            if_english = True if len(wordFinal) > 1 or len(wordFinal) == 1 and is_alphabet(
+                wordFinal[0]) == 'en' else False
+            wordFinal = " ".join(wordFinal)
+            if not self.target_language:
+                if self.if_google_api:
+                    self.target_language = "zh" if if_english else "en"
+                else:
+                    self.target_language = "ZH" if if_english else "EN-US"
+
+            if self.if_deep_api:
+                deepl_trans(wordFinal, self.target_language)
             elif self.if_google_api:
-                google_trans(" ".join(wordFinal), self.target_language, self.source_language)
-                return
+                google_trans(wordFinal, self.target_language, self.source_language)
             else:
-                self.needDetailWord = youdao_trans(wordFinal[0])
+                if if_sentence:
+                    deepl_trans(wordFinal, self.target_language)
+                    return
+                self.needDetailWord = youdao_trans(wordFinal)
 
         # -m, print detail
         if self.needDetailWord and self.more_detail:
