@@ -64,7 +64,7 @@ output: ça va, ça vient
 
 Adding `-g` / `--google` to use Google Translation API:
 
-```shell
+```python
 $ dict-tiny -g book
 >>> Google Translate
 detected language: en
@@ -74,7 +74,7 @@ output: 书
 
 Adding `--target-language` to specify what language you want to translate into：
 
-```shell
+```python
 $ dict-tiny -g book --target-language japanese
 >>> Google Translate
 detected language: en
@@ -86,7 +86,7 @@ Adding `--source-language` to specify what language you want to translate, but m
 
 So, of course, you can use it to detect the language type:
 
-```shell
+```python
 $ dict-tiny --detect-language book
 >>> Google detect language
 confidence: 1
@@ -99,7 +99,7 @@ name: English
 
 * The source and target languages for Google Translate are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes. 
 
-  ```shell
+  ```python
   $ dict-tiny -g book --target-language zh --source-language en
   >>> Google Translate
   input: book
@@ -109,7 +109,7 @@ name: English
 
   You can also enter the ISO language name:
 
-  ```shell
+  ```python
   $ dict-tiny -g book --target-language German --source-language English
   >>> Google Translate
   input: book
@@ -137,7 +137,7 @@ name: English
 
 * If your input is a word and you don't add any switch, then the default behavior is to use youdao.com to translate between English and Chinese. In other words, you have to input a Chinese words or an English words, forgive me, because I am an English learner :smile_cat: 
 
-```shell
+```python
 $ dict-tiny book
 book  英[bʊk]美[bʊk]
 ===================
@@ -146,7 +146,7 @@ vt. 预订；登记
 n. (Book)人名；(中)卜(广东话·威妥玛)；(朝)北；(英)布
 ```
 
-```shell
+```python
 $ dict-tiny 书
 书  [shū]
 =========
@@ -156,7 +156,7 @@ vt.write
 
 Use `-m`/`--more` to get more detail translation for word:
 
-```shell
+```python
 $ dict-tiny 曾经 -m
 曾经  [céng jīng]
 =================
@@ -172,7 +172,7 @@ more detail:
   她曾经参加过石油大会战。
 ```
 
-```shell
+```python
 $ dict-tiny dictionary -m
 dictionary  英['dɪkʃ(ə)n(ə)rɪ]美['dɪkʃə'nɛri]
 =============================================
@@ -201,7 +201,7 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 Using `-c`/`--clipboard` to translate the word in clipboard:
 
-```shell
+```python
 $ dict-tiny -c
 命令行  
 ======
