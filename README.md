@@ -1,6 +1,6 @@
 # Dict-tiny
 
-[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/louieh/dict-tiny/Upload%20Dict-tiny%20Python%20Package)](https://github.com/louieh/dict-tiny/actions?query=workflow%3A%22Upload+Dict-tiny+Python+Package%22) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)[![Downloads](https://pepy.tech/badge/dict-tiny)](https://pepy.tech/project/dict-tiny)
+[![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/louieh/dict-tiny/Upload%20Dict-tiny%20Python%20Package)](https://github.com/louieh/dict-tiny/actions?query=workflow%3A%22Upload+Dict-tiny+Python+Package%22) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/dict-tiny)](https://pepy.tech/project/dict-tiny)
 
 
 A command line translator that integrates with Google Translate, DeepL Translator and youdao.com
@@ -55,6 +55,8 @@ output: ça va, ça vient
 
 * The target-language parameter is required for deepl translator API. The default target-language is ZH.
 * You can view the list of target languages [here](https://www.deepl.com/docs-api/translating-text/request/).
+
+
 
 
 
@@ -117,6 +119,8 @@ name: English
 
 
 
+
+
 ### Target language
 
 * Setting the environment variable `$DICT_TINY_TARGET_LAN` to the `target language` you prefer so that you do not have to specify the `target language` every time. `Dict-tiny` will first get `target language` from `$DICT_TINY_TARGET_LAN`. Giving the `--target-language` switch on the command line will override the environment variable value.
@@ -126,8 +130,6 @@ name: English
 
 
 
-
-If your input is a sentence or more than one word, the Google Translation API will be called automatically. In other word, you don't need to manually add -g when you type a sentence.
 
 ### Default behavior
 
@@ -193,6 +195,8 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 
 
+
+
 ### Translate the word in clipboard
 
 Using `-c`/`--clipboard` to translate the word in clipboard:
@@ -220,7 +224,8 @@ detected language: en
 
 * `-c`/`--clipboard` has low priority. If you add `-c` and a word at the same time, the switch `-c` will be ignored.
 
-  
+
+
 
 ## License
 
