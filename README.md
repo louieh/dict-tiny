@@ -33,7 +33,7 @@ $ pip install --upgrade dict-tiny
 
 Adding `-d` / `--deepl` to use DeepL Translator API:
 
-```shell
+```python
 $ dict-tiny -d easy come easy go
 >>> DeepL Translator
 detected language: EN
@@ -43,7 +43,7 @@ output: 来得容易去得快
 
 Specify the target translation language as French via the `--target-language`:
 
-```shell
+```python
 $ dict-tiny -d easy come easy go  --target-language FR
 >>> DeepL Translator
 detected language: EN
