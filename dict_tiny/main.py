@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import sys
-import os
 from plumbum import cli
 from plumbum import colors
 import pyperclip
-import json
 
 from dict_tiny.sources.google_trans import detect_language, google_trans
 from dict_tiny.sources.youdao import youdao_trans, show_more
