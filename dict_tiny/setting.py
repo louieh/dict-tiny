@@ -18,6 +18,8 @@ YOUDAO_API_FAKE_HEADER = {
     "Connection": "keep-alive",
 }
 
+TIME_OUT = 5
+
 YOUDAO_BASE_URL = "http://youdao.com/w/{}"
 
 # GOOGLE TRANS
