@@ -97,6 +97,8 @@ name: English
 
 **Note:**
 
+* Make sure the google service is available in your network environment.
+
 * The source and target languages for Google Translate are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes. 
 
   ```python
