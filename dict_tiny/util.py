@@ -2,6 +2,7 @@ from collections import defaultdict
 from lxml import html
 import requests
 from plumbum import colors
+from dict_tiny.setting import TIME_OUT
 
 
 def is_alphabet(word):
@@ -12,7 +13,6 @@ def is_alphabet(word):
     """
     is_alphabet = defaultdict(int)
     word = word.replace(' ', '')
-    word_len = len(word)
     for each_letter in word:
         if each_letter >= '\u4e00' and each_letter <= '\u9fff':
             is_alphabet['cn'] += 1
@@ -24,12 +24,12 @@ def is_alphabet(word):
         else:
             is_alphabet['other'] += 1
 
-    if is_alphabet['cn'] / word_len >= 0.8:
-        return 'cn'
-    elif is_alphabet['en'] / word_len >= 0.8:
-        return 'en'
-    else:
-        return 'other'
+    is_alphabet['en'] /= 4
+
+    for len_type, num in is_alphabet.items():
+        if num >= sum(is_alphabet.values()) * 0.7:
+            return len_type
+    return 'other'
 
 
 def downloader(url, header):
@@ -39,11 +39,11 @@ def downloader(url, header):
     :return:
     """
     try:
-        result = requests.get(url, headers=header)
+        result = requests.get(url, headers=header, timeout=TIME_OUT)
         result_selector = html.etree.HTML(result.text)
         resp_code = result.status_code
     except requests.exceptions.ConnectionError as e:
-        print(colors.red | "[Error!] Unable to download webpage.")
+        print(colors.red | "[Error!] Time out.")
         print("<%s>" % e)
         result_selector = None
         resp_code = None
