@@ -53,6 +53,8 @@ output: ça va, ça vient
 
 **Note:**
 
+* Make sure the google service is available in your network environment.
+
 * The target-language parameter is required for deepl translator API. The default target-language is ZH.
 * You can view the list of target languages [here](https://www.deepl.com/docs-api/translating-text/request/).
 
