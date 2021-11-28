@@ -1,4 +1,5 @@
 import requests
+from html import unescape
 from plumbum import colors
 from dict_tiny.setting import GOOGLE_TRANS_API_BASE_URL, TIME_OUT
 
@@ -28,7 +29,7 @@ def google_trans(text, target_language, source_language):
     print(colors.green | ">>> Google Translate")
     res = {
         "input": text,
-        "output": resp_json["data"]["translatedText"]
+        "output": unescape(resp_json["data"]["translatedText"])
     }
     if not source_language:
         res.update({"detected language": resp_json["data"]["detectedSourceLanguage"]})
