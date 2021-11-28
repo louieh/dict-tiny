@@ -84,10 +84,9 @@ class Dict_tiny(cli.Application):
             self.help()
         # wordFinal, do trans
         else:
-            wordFinal = " ".join(wordFinal)
-
             if_sentence = True if len(wordFinal) > 1 or len(wordFinal) == 1 and len(wordFinal[0]) > 4 and is_alphabet(
                 wordFinal[0]) == 'cn' else False
+            wordFinal = " ".join(wordFinal)
             if_english = True if is_alphabet(wordFinal) == 'en' else False
 
             if not self.target_language:
