@@ -11,7 +11,7 @@ Just for fun :)
 
 ## Installation
 
-You can install `dict-tiny` via the pip package manager. (Python 3 only)
+You can install `dict-tiny` via pip. (Python 3 only)
 
 ```shell
 $ pip install dict-tiny
@@ -139,7 +139,7 @@ name: English
 
 * If your input is a sentence or more than one word, the DeepL Translator will be called automatically.
 
-* If your input is a word and you don't add any switch, then the default behavior is to use youdao.com to translate between English and Chinese. In other words, you have to input a Chinese words or an English words, forgive me, because I am an English learner :smile_cat: 
+* If your input is a word and you don't add any switch, then the default behavior is to use youdao.com to translate between English and Chinese. In other words, you have to input a Chinese word or an English word, forgive me, because I am an English learner :smile_cat: 
 
 ```python
 $ dict-tiny book
