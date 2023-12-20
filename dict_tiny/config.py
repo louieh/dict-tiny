@@ -1,6 +1,7 @@
 import os
 
 # YOUDAO
+YOUDAO_SEPARATOR = ">>> Youdao Dict <<<"
 YOUDAO_WEB_FAKE_HEADER = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
@@ -8,7 +9,6 @@ YOUDAO_WEB_FAKE_HEADER = {
     'Host': 'youdao.com',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
 }
-
 YOUDAO_API_FAKE_HEADER = {
     "Host": "dict.youdao.com",
     "Accept": "*/*",
@@ -17,15 +17,15 @@ YOUDAO_API_FAKE_HEADER = {
     "Accept-Encoding": "gzip",
     "Connection": "keep-alive",
 }
-
-TIME_OUT = 5
-
+TIMEOUT = 5
 YOUDAO_BASE_URL = "http://youdao.com/w/{}"
 
 # GOOGLE TRANS
+GOOGLE_SEPARATOR = ">>> Google Translate <<<"
 GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
 
 # DEEPL TRANS
+DEEPL_SEPARATOR = ">>> DeepL Translate <<<"
 DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # SYSTEM

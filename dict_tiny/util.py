@@ -1,8 +1,10 @@
 from collections import defaultdict
-from lxml import html
+
 import requests
+from lxml import html
 from plumbum import colors
-from dict_tiny.setting import TIME_OUT
+
+from dict_tiny.config import TIMEOUT
 
 
 def is_alphabet(word):
@@ -39,7 +41,7 @@ def downloader(url, header):
     :return:
     """
     try:
-        result = requests.get(url, headers=header, timeout=TIME_OUT)
+        result = requests.get(url, headers=header, timeout=TIMEOUT)
         result_selector = html.etree.HTML(result.text)
         resp_code = result.status_code
     except requests.exceptions.ConnectionError as e:
