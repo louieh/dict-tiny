@@ -28,7 +28,7 @@ class GoogleTrans(DefaultTrans):
         dict_tiny_cls.detect_language = cli.SwitchAttr("--detect-language", str,
                                                        group="Google translate",
                                                        help="Detect the language of the given text")
-        # TODO 看下这里应该怎么处理
+        # TODO
         # @cli.switch("--detect-language", str)
         # def detect_language(self, text):
         #     """

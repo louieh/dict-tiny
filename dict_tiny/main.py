@@ -16,10 +16,6 @@ APP_NAME = version.name
 APP_VERSION = version.__version__
 
 
-# TODO 奇怪的问题：真的没有找到解释还是网络问题
-# TODO 考虑下分隔符样式与样式是否要统一
-# TODO 提高请求速度
-
 class Dict_tiny(cli.Application):
     PROGNAME = colors.green | APP_NAME
     VERSION = colors.yellow | APP_VERSION
@@ -30,7 +26,7 @@ class Dict_tiny(cli.Application):
         "Youdao dict": colors.green
     }
 
-    stop = False  # whether return  directly in main
+    stop = False  # whether return directly in main
     clipBoardContent = None  # Record the word in clipboard
 
     def main(self, *words):
