@@ -154,7 +154,7 @@ name: English
 ### Target language
 
 * Setting the environment variable `$DICT_TINY_TARGET_LAN` to the `target language` you prefer so that you do not have to specify the `target language` every time. `Dict-tiny` will first get `target language` from `$DICT_TINY_TARGET_LAN`. Giving the `--target-language` switch on the command line will override the environment variable value.
-* The default `target-language` for Goole Translate and DeepL are `ENGLISH_ISO_639='en'` and `EN-US` if you do not specify a `target-language` includes giving `--target-language` switch on the command line and setting `$DICT_TINY_TARGET_LAN` environment variable.
+* The default `target-language` for Goole Translate are `ENGLISH_ISO_639='en'`  if the content you input is not in English.
 
 ### ~~DeepL Translate~~
 
