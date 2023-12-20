@@ -49,7 +49,11 @@ class Dict_tiny(cli.Application):
             trans_obj.translate()
 
 
-if __name__ == "__main__":
+def run():
     for translator in _ALL_TRANSLATORS:
         translator.attr_setter(Dict_tiny)
     Dict_tiny()
+
+
+if __name__ == "__main__":
+    run()
