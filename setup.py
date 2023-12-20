@@ -25,7 +25,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'dict-tiny = dict_tiny.main:Dict_tiny'
+            'dict-tiny = dict_tiny.main:run'
         ]
     },
     classifiers=(
