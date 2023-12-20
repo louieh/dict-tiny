@@ -7,3 +7,5 @@ _ALL_TRANSLATORS = [
     GoogleTrans,
     # DeepLTrans
 ]
+
+DEFAULT_TRANSLATOR = YoudaoTrans

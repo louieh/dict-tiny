@@ -7,7 +7,7 @@ from plumbum import colors
 from dict_tiny.util import is_alphabet
 from dict_tiny import version
 
-from dict_tiny.translators import _ALL_TRANSLATORS
+from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 
 APP_DESC = """
 tiny command-line translator
@@ -17,9 +17,7 @@ APP_VERSION = version.__version__
 
 
 # TODO 奇怪的问题：真的没有找到解释还是网络问题
-# TODO 修改 readme
-# TODO 思考下默认翻译器
-# TODO 考虑下样式是否要统一
+# TODO 考虑下分隔符样式与样式是否要统一
 # TODO 提高请求速度
 
 class Dict_tiny(cli.Application):
@@ -48,7 +46,8 @@ class Dict_tiny(cli.Application):
             self.target_language = "zh" if if_english else "en"
 
         trans_objs = [translator.trans_obj_getter(text, self) for translator in _ALL_TRANSLATORS]
-        if not any(trans_objs): self.help()
+        if not any(trans_objs):
+            trans_objs.append(DEFAULT_TRANSLATOR(text, self))
         for trans_obj in trans_objs:
             if trans_obj is None: continue
             trans_obj.translate()

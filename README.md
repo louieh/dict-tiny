@@ -90,6 +90,7 @@ A dictionary is a book in which the words and phrases of a language are listed a
 **Note:**
 
 * Some words have a lot of translation that may occupy the entire screen.
+* Only supports English or Chinese words currently.
 
 ### Google Translate
 
@@ -161,9 +162,8 @@ For some reason I am no longer allowed to use deepl pro, so deepl is no longer s
 
 ### Default behavior
 
-* ~~If your input is a sentence or more than one word, the DeepL Translator will be called automatically.~~
-
-* If your input is a word and you don't add any switch, then the default behavior is to use youdao.com to translate between English and Chinese. In other words, you have to input a Chinese word or an English word, forgive me, because I am an English learner :smile_cat: 
+* Youdao Dict is the default translator, which means Youdao Dict will be used when no translator is specified.
+* If the target language is not specified, Chinese or English will be set as the default target language.
 
 ### Use clipboard content
 
