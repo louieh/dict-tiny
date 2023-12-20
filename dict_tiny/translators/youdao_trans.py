@@ -2,7 +2,7 @@ import json
 
 from plumbum import colors, cli
 
-from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL
+from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL,YOUDAO_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import downloader, downloader_plain, is_alphabet
 
@@ -16,11 +16,11 @@ class YoudaoTrans(DefaultTrans):
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_youdaotrans = cli.Flag(["-y", "--youdao"],
-                                                 group="youdao_translate_api",
-                                                 help="Youdao translate")
+                                                 group="Youdao dict",
+                                                 help="Use Youdao Dictionary, currently only supports English or Chinese words")
         dict_tiny_cls.more_detail = cli.Flag(["-m", "--more"],
-                                             group="youdao_translate_api",
-                                             help="If given, more detail Youdao translation will be shown. You need to give a word or switch -c.")
+                                             group="Youdao dict",
+                                             help="Get more details")
 
     def translate(self):
         """
@@ -28,9 +28,10 @@ class YoudaoTrans(DefaultTrans):
         :param word: a word need to by translated
         :return: self.needDetailWord in main.py
         """
+        print(colors.bold & colors.yellow | YOUDAO_SEPARATOR)
         en_or_cn = is_alphabet(self.text)
         if en_or_cn != "en" and en_or_cn != "cn":
-            print(colors.red | "[Error!] The content is not an English word or a Chinese word.")
+            print(colors.red | "[Error!] The input content is neither an English word nor a Chinese word.")
             return
         res = self.trans_en(self.text) if en_or_cn == "en" else self.trans_cn(self.text)
         if not self.dict_tiny_obj.more_detail:

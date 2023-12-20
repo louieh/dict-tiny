@@ -3,7 +3,7 @@ from html import unescape
 import requests
 from plumbum import colors, cli
 
-from dict_tiny.config import TIMEOUT, GOOGLE_TRANS_API_BASE_URL
+from dict_tiny.config import TIMEOUT, GOOGLE_TRANS_API_BASE_URL, GOOGLE_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
 
 
@@ -16,15 +16,18 @@ class GoogleTrans(DefaultTrans):
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_googletrans = cli.Flag(["-g", "--google"],
-                                                 group="google_translate_api",
-                                                 help="Using Google Translation API.")
+                                                 group="Google translate",
+                                                 help="Use Google Translate")
         dict_tiny_cls.target_language = cli.SwitchAttr("--target-language", str,
+                                                       group="Google translate",
                                                        envname="DICT_TINY_TARGET_LAN",
                                                        help="what language you want to translate into")
         dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
+                                                       group="Google translate",
                                                        help="what language you want to translate")
         dict_tiny_cls.detect_language = cli.SwitchAttr("--detect-language", str,
-                                                       help="Detect the language of the given text.")
+                                                       group="Google translate",
+                                                       help="Detect the language of the given text")
         # TODO 看下这里应该怎么处理
         # @cli.switch("--detect-language", str)
         # def detect_language(self, text):
@@ -61,7 +64,7 @@ class GoogleTrans(DefaultTrans):
         if resp_json["code"] != 200:
             print("Google translate error, code: ", resp_json["code"])
             return
-        print(colors.green | ">>> Google Translate")
+        print(colors.bold & colors.yellow | GOOGLE_SEPARATOR)
         res = {
             "input": self.text,
             "output": unescape(resp_json["data"]["translatedText"])
@@ -90,6 +93,6 @@ class GoogleTrans(DefaultTrans):
         if resp_json["code"] != 200:
             print("Google detect language error: ", resp_json["code"])
             return
-        print(colors.green | ">>> Google language detection")
+        print(colors.bold & colors.yellow | GOOGLE_SEPARATOR)
         for k, v in resp_json["data"].items():
             print("{}: {}".format(k, v))

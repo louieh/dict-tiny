@@ -17,26 +17,31 @@ APP_VERSION = version.__version__
 
 
 # TODO 奇怪的问题：真的没有找到解释还是网络问题
-# TODO 调整样式
-# TODO 调整帮助信息
-# TODO 扩大 youdao 语言范围
 # TODO 修改 readme
+# TODO 思考下默认翻译器
+# TODO 考虑下样式是否要统一
+# TODO 提高请求速度
 
 class Dict_tiny(cli.Application):
     PROGNAME = colors.green | APP_NAME
     VERSION = colors.yellow | APP_VERSION
     DESCRIPTION = version.DESCRIPTION
-    COLOR_GROUPS = {"Switches": colors.green}
+    COLOR_GROUPS = {
+        "Switches": colors.yellow,
+        "Google translate": colors.green,
+        "Youdao dict": colors.green
+    }
 
     stop = False  # whether return  directly in main
     clipBoardContent = None  # Record the word in clipboard
 
-    def main(self, *word):
+    def main(self, *words):
         if self.stop: return
-        text = " ".join(word) or self.clipBoardContent  # word has high priority
+        text = words or self.clipBoardContent  # word has high priority
         if not text:
             self.help()
             return
+        text = " ".join(text)
 
         if_english = True if is_alphabet(text) == 'en' else False
         if not self.target_language and self.use_googletrans:

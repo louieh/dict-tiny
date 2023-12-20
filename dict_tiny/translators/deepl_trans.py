@@ -3,7 +3,7 @@ from html import unescape
 import requests
 from plumbum import colors, cli
 
-from dict_tiny.config import TIMEOUT, DEEPL_TRANS_API_BASE_URL
+from dict_tiny.config import TIMEOUT, DEEPL_TRANS_API_BASE_URL, DEEPL_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
 
 
@@ -45,7 +45,7 @@ class DeepLTrans(DefaultTrans):
                 print("DeepL error, code: ", resp_json["code"])
             return
         else:
-            print(colors.green | ">>> DeepL Translator")
+            print(colors.bold & colors.yellow | DEEPL_SEPARATOR)
             res = {
                 "detected language": resp_json["data"]["detected_source_lang"],
                 "input": self.text,

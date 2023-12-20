@@ -13,8 +13,7 @@ class DefaultTrans(object):
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
             """
-            Use clipboard content if it`s an English word or a Chinese word.
-            No parameter required.
+            Use the contents of the clipboard.
             """
 
             try:

@@ -2,4 +2,4 @@
 
 name = "dict-tiny"
 __version__ = '1.1.4'
-DESCRIPTION = "A command-line translator was implemented in Plumbum. Google Translate and DeepL Translator and Youdao. Just for fun :)"
+DESCRIPTION = "A command-line translator was implemented in Plumbum. Google Translate and Youdao Dict. Just for fun :)"
