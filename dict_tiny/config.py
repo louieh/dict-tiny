@@ -53,6 +53,11 @@ GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
 DEEPL_NAME = "DeepL Translate"
 DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
+# GEMINI
+GEMINI_NAME = "Gemini"
+DEFAULT_GEMINI_MODEL = "gemini-pro"
+GEMINI_API_KEY_ENV_NAME = "GEMINI_API_KEY"
+
 # SYSTEM
 try:
     TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
