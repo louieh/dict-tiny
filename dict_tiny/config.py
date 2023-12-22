@@ -19,6 +19,7 @@ YOUDAO_API_FAKE_HEADER = {
 }
 TIMEOUT = 5
 YOUDAO_BASE_URL = "http://youdao.com/w/{}"
+YOUDAO_API_BASE_URL = "http://dict.youdao.com/jsonapi?q={}"
 
 # GOOGLE TRANS
 GOOGLE_SEPARATOR = ">>> Google Translate <<<"

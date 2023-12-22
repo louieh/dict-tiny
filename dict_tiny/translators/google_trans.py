@@ -1,10 +1,10 @@
 from html import unescape
 
-import requests
 from plumbum import colors, cli
 
-from dict_tiny.config import TIMEOUT, GOOGLE_TRANS_API_BASE_URL, GOOGLE_SEPARATOR
+from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
+from dict_tiny.util import downloader
 
 
 class GoogleTrans(DefaultTrans):
@@ -55,12 +55,12 @@ class GoogleTrans(DefaultTrans):
             data["target"] = self.dict_tiny_obj.target_language
         if self.dict_tiny_obj.source_language:
             data["source"] = self.dict_tiny_obj.source_language
+        resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
+        if not resp: return
         try:
-            resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data, timeout=TIMEOUT)
-        except requests.exceptions.ConnectionError as e:
-            print(colors.red | "[Error!] Time out.")
+            resp_json = resp.json()
+        except Exception as e:
             return
-        resp_json = resp.json()
         if resp_json["code"] != 200:
             print("Google translate error, code: ", resp_json["code"])
             return
@@ -82,14 +82,13 @@ class GoogleTrans(DefaultTrans):
         :param text: text need to be detected
         :return:
         """
+
+        resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={"text": text})
+        if not resp: return
         try:
-            resp = requests.post(GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={
-                "text": text
-            }, timeout=TIMEOUT)
-        except requests.exceptions.ConnectionError as e:
-            print(colors.red | "[Error!] Time out.")
+            resp_json = resp.json()
+        except Exception as e:
             return
-        resp_json = resp.json()
         if resp_json["code"] != 200:
             print("Google detect language error: ", resp_json["code"])
             return

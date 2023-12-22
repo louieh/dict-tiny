@@ -1,7 +1,6 @@
 from collections import defaultdict
 
 import requests
-from lxml import html
 from plumbum import colors
 
 from dict_tiny.config import TIMEOUT
@@ -34,32 +33,26 @@ def is_alphabet(word):
     return 'other'
 
 
-def downloader(url, header):
+def downloader(method, url, **kwargs) -> requests.Response:
     """
-    :param url: url need to be downloaded
-    :param header: fake header
-    :return:
+    normal download method
+    :param method: request method
+    :param url: url to download
+    :param kwargs: additional arguments: headers, data, json
+    :return: Response object
     """
     try:
-        result = requests.get(url, headers=header, timeout=TIMEOUT)
-        result_selector = html.etree.HTML(result.text)
-        resp_code = result.status_code
+        resp = requests.request(method, url, timeout=TIMEOUT, **kwargs)
+        if resp.status_code == 200: return resp
+        normal_color_printer(f"Download error, status code: {resp.status_code}", colors.yellow)
     except requests.exceptions.ConnectionError as e:
-        print(colors.red | "[Error!] Time out.")
-        print("<%s>" % e)
-        result_selector = None
-        resp_code = None
-    return result_selector, resp_code
+        normal_color_printer("[Error!] Time out. Please try again.", colors.red)
+    except Exception as e:
+        normal_color_printer("[Error!] Something went wrong. Please try again.", colors.red)
 
 
-def downloader_plain(url, header):
-    """
-    plain download. Do not make the resp to selector
-    :param url:
-    :param header:
-    :return:
-    """
-    try:
-        return requests.get(url, headers=header).text
-    except:
-        return None
+def normal_color_printer(text, color=None, **kwargs):
+    if color is None:
+        print(text, **kwargs)
+    else:
+        print(color | text, **kwargs)

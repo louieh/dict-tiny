@@ -1,10 +1,12 @@
 import json
 
 from plumbum import colors, cli
+from lxml import html
 
-from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL,YOUDAO_SEPARATOR
+from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL, \
+    YOUDAO_SEPARATOR, YOUDAO_API_BASE_URL
 from dict_tiny.translators.translator import DefaultTrans
-from dict_tiny.util import downloader, downloader_plain, is_alphabet
+from dict_tiny.util import downloader, is_alphabet, normal_color_printer
 
 
 class YoudaoTrans(DefaultTrans):
@@ -34,19 +36,36 @@ class YoudaoTrans(DefaultTrans):
             print(colors.red | "[Error!] The input content is neither an English word nor a Chinese word.")
             return
         res = self.trans_en(self.text) if en_or_cn == "en" else self.trans_cn(self.text)
-        if not self.dict_tiny_obj.more_detail:
+        if not self.dict_tiny_obj.more_detail or not res:
             return res
-        if res:
-            self.show_more(*res.split("_"))
+        self.show_more(self.text, en_or_cn)
 
     def youdao_download(self, word):
         """
-        youdao web download
+        download from web
         :param word:
         :return:
         """
-        request_url = YOUDAO_BASE_URL.format(word)
-        return downloader(request_url, YOUDAO_WEB_FAKE_HEADER)
+        resp = downloader("GET", YOUDAO_BASE_URL.format(word), headers=YOUDAO_WEB_FAKE_HEADER)
+        if not resp: return
+        return html.etree.HTML(resp.text)
+
+    def youdao_api_download(self, word):
+        """
+        download data from API
+        :param word:
+        :return:
+        """
+
+        # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
+        resp = downloader("GET", YOUDAO_API_BASE_URL.format(word), headers=YOUDAO_API_FAKE_HEADER)
+        if not resp: return
+        try:
+            return json.loads(resp.text)
+        except json.JSONDecodeError as e:
+            pass
+        except Exception as e:
+            pass
 
     def trans_en(self, word):
         """
@@ -56,37 +75,18 @@ class YoudaoTrans(DefaultTrans):
         """
 
         count = 2  # there are two chinere characters
-        data, status_code = self.youdao_download(word)  # result will be deleted
-        if data is None:  # no internet
-            return
+        data = self.youdao_download(word)
+        if data is None: return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
-        print(colors.green | word, end='  ')
+        normal_color_printer(word, colors.green, end=' ')
         for each_phone in phone:
             if each_phone:
-                print(colors.green | each_phone.strip(), end="")
+                normal_color_printer(each_phone.strip(), colors.green, end="")
                 count += len(each_phone.strip())
-        print("\n", end="")
+        normal_color_printer("\n", end="")
 
-        # print =
-        if len(word) + count + 2 > TERMINAL_SIZE_COLUMN:
-            for i in range(TERMINAL_SIZE_COLUMN - 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
-        else:
-            for i in range(len(word) + count + 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
-
-        if len(content) >= 1:
-            for each_result in content:
-                print(each_result)
-            return word + "_en"
-        else:
-            if status_code == 200:  # no translation
-                print(colors.yellow | "Did not find an explanation for this word.")
-            else:  # 403?
-                print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
+        self.print_equal_for_simple_trans(word, count, content)
 
     def trans_cn(self, word):
         """
@@ -96,9 +96,8 @@ class YoudaoTrans(DefaultTrans):
         """
 
         count = len(word)
-        data, status_code = self.youdao_download(word)  # result will be deleted
-        if data is None:  # no internet
-            return
+        data = self.youdao_download(word)
+        if data is None: return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
         for i in range(len(content)):
@@ -109,31 +108,33 @@ class YoudaoTrans(DefaultTrans):
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
 
-        print(colors.green | word, end='  ')
+        normal_color_printer(word, colors.green, end='  ')
         for each_phone in phone:
             if each_phone:
-                print(colors.green | each_phone.strip(), end="")
+                normal_color_printer(each_phone.strip(), colors.green, end="")
                 count += len(each_phone.strip())
-        print("\n", end="")
+        normal_color_printer("\n", end="")
 
+        self.print_equal_for_simple_trans(word, count, content)
+
+    def print_equal_for_simple_trans(self, word, count, content):
         # print =
         if len(word) + count + 2 > TERMINAL_SIZE_COLUMN:
             for i in range(TERMINAL_SIZE_COLUMN - 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
+                normal_color_printer("=", colors.green, end="")
+            normal_color_printer("=", colors.green)
         else:
             for i in range(len(word) + count + 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
+                normal_color_printer("=", colors.green, end="")
+            normal_color_printer("=", colors.green)
 
-        if content:
-            print(content)
-            return word + "_cn"
-        else:
-            if status_code == 200:  # no translation
-                print(colors.yellow | "Did not find an explanation for this word.")
-            else:  # 403?
-                print(colors.yellow | "The translation of this word cannot be found at this time. Please try again.")
+        if not content:
+            normal_color_printer("Did not find an explanation for this word.", colors.yellow)
+            return
+        if isinstance(content, str):
+            content = [content]
+        for each in content:
+            normal_color_printer(each)
 
     def show_more(self, word, type, row=3, printall=True):
         """
@@ -145,10 +146,11 @@ class YoudaoTrans(DefaultTrans):
         :return:
         """
 
-        data_base = self.get_data(word)
+        data_base = self.youdao_api_download(word)
         if not data_base:
-            print(
-                colors.yellow | "The detail translation of this word cannot be found at this time. Please try again later.")
+            normal_color_printer(
+                "The detail translation of this word cannot be found at this time. Please try again later.",
+                colors.yellow)
             return
         # print_basetrans(data_base)
         if type == 'cn':
@@ -156,20 +158,6 @@ class YoudaoTrans(DefaultTrans):
         elif type == 'en':
             self.print_detailtrans_collins(data_base)
         # print("[Error!] Cannot get detail translation.")
-
-    def get_data(self, word):
-        """
-        download data from API
-        :param word:
-        :return:
-        """
-
-        # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
-        requests_url = "http://dict.youdao.com/jsonapi?q=%s" % word
-        resp = downloader_plain(requests_url, YOUDAO_API_FAKE_HEADER)
-        if resp:
-            return json.loads(resp)
-        return None
 
     def print_detailtrans(self, data_base, type, row=3, printall=True):
         '''
