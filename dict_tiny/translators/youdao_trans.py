@@ -1,12 +1,13 @@
 import json
 
-from plumbum import colors, cli
+from plumbum import cli
 from lxml import html
 
 from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL, \
     YOUDAO_SEPARATOR, YOUDAO_API_BASE_URL
 from dict_tiny.translators.translator import DefaultTrans
-from dict_tiny.util import downloader, is_alphabet, normal_color_printer
+from dict_tiny.util import downloader, is_alphabet, normal_title_printer, normal_info_printer, normal_warn_printer, \
+    normal_error_printer, normal_separator_printer
 
 
 class YoudaoTrans(DefaultTrans):
@@ -30,15 +31,14 @@ class YoudaoTrans(DefaultTrans):
         :param word: a word need to by translated
         :return: self.needDetailWord in main.py
         """
-        print(colors.bold & colors.yellow | YOUDAO_SEPARATOR)
+        normal_separator_printer(YOUDAO_SEPARATOR)
         en_or_cn = is_alphabet(self.text)
         if en_or_cn != "en" and en_or_cn != "cn":
-            print(colors.red | "[Error!] The input content is neither an English word nor a Chinese word.")
+            normal_error_printer("[Error!] The input content is neither an English word nor a Chinese word.")
             return
-        res = self.trans_en(self.text) if en_or_cn == "en" else self.trans_cn(self.text)
-        if not self.dict_tiny_obj.more_detail or not res:
-            return res
-        self.show_more(self.text, en_or_cn)
+        self.trans_en(self.text) if en_or_cn == "en" else self.trans_cn(self.text)
+        if self.dict_tiny_obj.more_detail:
+            self.show_more(self.text, en_or_cn)
 
     def youdao_download(self, word):
         """
@@ -79,12 +79,12 @@ class YoudaoTrans(DefaultTrans):
         if data is None: return
         phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
-        normal_color_printer(word, colors.green, end=' ')
+        normal_title_printer(word, end=' ')
         for each_phone in phone:
             if each_phone:
-                normal_color_printer(each_phone.strip(), colors.green, end="")
+                normal_title_printer(each_phone.strip(), end="")
                 count += len(each_phone.strip())
-        normal_color_printer("\n", end="")
+        normal_info_printer("\n", end="")
 
         self.print_equal_for_simple_trans(word, count, content)
 
@@ -108,12 +108,12 @@ class YoudaoTrans(DefaultTrans):
                 content[i - 1] = content[i + 1] = ""
         content = "".join(content[:-1])
 
-        normal_color_printer(word, colors.green, end='  ')
+        normal_title_printer(word, end='  ')
         for each_phone in phone:
             if each_phone:
-                normal_color_printer(each_phone.strip(), colors.green, end="")
+                normal_title_printer(each_phone.strip(), end="")
                 count += len(each_phone.strip())
-        normal_color_printer("\n", end="")
+        normal_info_printer("\n", end="")
 
         self.print_equal_for_simple_trans(word, count, content)
 
@@ -121,20 +121,20 @@ class YoudaoTrans(DefaultTrans):
         # print =
         if len(word) + count + 2 > TERMINAL_SIZE_COLUMN:
             for i in range(TERMINAL_SIZE_COLUMN - 1):
-                normal_color_printer("=", colors.green, end="")
-            normal_color_printer("=", colors.green)
+                normal_title_printer("=", end="")
+            normal_title_printer("=")
         else:
             for i in range(len(word) + count + 1):
-                normal_color_printer("=", colors.green, end="")
-            normal_color_printer("=", colors.green)
+                normal_title_printer("=", end="")
+            normal_title_printer("=")
 
         if not content:
-            normal_color_printer("Did not find an explanation for this word.", colors.yellow)
+            normal_warn_printer("Did not find an explanation for this word.")
             return
         if isinstance(content, str):
             content = [content]
         for each in content:
-            normal_color_printer(each)
+            normal_info_printer(each)
 
     def show_more(self, word, type, row=3, printall=True):
         """
@@ -148,16 +148,14 @@ class YoudaoTrans(DefaultTrans):
 
         data_base = self.youdao_api_download(word)
         if not data_base:
-            normal_color_printer(
-                "The detail translation of this word cannot be found at this time. Please try again later.",
-                colors.yellow)
+            normal_warn_printer(
+                "The detail translation of this word cannot be found at this time. Please try again later.")
             return
         # print_basetrans(data_base)
         if type == 'cn':
             self.print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
         elif type == 'en':
             self.print_detailtrans_collins(data_base)
-        # print("[Error!] Cannot get detail translation.")
 
     def print_detailtrans(self, data_base, type, row=3, printall=True):
         '''
@@ -169,31 +167,30 @@ class YoudaoTrans(DefaultTrans):
         detailtrans_dict = self.get_detailtrans_21cn(data_base,
                                                      type)  # get detailtrans_dict from get_detailtrans_21 function
         if not detailtrans_dict:
-            print(colors.yellow | "\nNo more detail translation.")
+            normal_warn_printer("\nNo more detail translation.")
             return
-        # print("\033[95m" + "\nmore ===detail:" + "\033[0m")
-        print(colors.green | "\nmore detail:")
+        normal_title_printer("\nmore detail:")
 
         for each_pos in detailtrans_dict.keys():
             if each_pos == None:
                 if TERMINAL_SIZE_COLUMN < 20:
                     for i in range(TERMINAL_SIZE_COLUMN - 1):
-                        print(colors.green | "=", end="")
-                    print(colors.green | "=")
+                        normal_title_printer("=", end="")
+                    normal_title_printer("=")
                 else:
-                    print(colors.green | "====================")
+                    normal_title_printer("====================")
             else:
                 self.print_equal(each_pos)
 
             detailtrans_dict_dict = detailtrans_dict.get(each_pos)
             real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
             for i in range(real_row):
-                print(i + 1, end="")
-                print(":")
+                normal_info_printer(i + 1, end="")
+                normal_info_printer(":")
                 for each in detailtrans_dict_dict[str(i + 1)]:
-                    print('  ', end="")
-                    print(each)
-            print('\n')
+                    normal_info_printer('  ', end="")
+                    normal_info_printer(each)
+            normal_info_printer('\n')
 
     def get_detailtrans_collins(self, data_base):
         '''
@@ -248,10 +245,10 @@ class YoudaoTrans(DefaultTrans):
 
         detailtrans_list = self.get_detailtrans_collins(data_base)
         if not detailtrans_list:
-            print(colors.yellow | "\nNo more detail translation.")
+            normal_warn_printer("\nNo more detail translation.")
             return
 
-        print(colors.green | "\nmore detail (collins):")
+        normal_title_printer("\nmore detail (collins):")
 
         for each_trans in detailtrans_list:
             self.print_equal(each_trans["pos_pos_tips"])
@@ -263,16 +260,16 @@ class YoudaoTrans(DefaultTrans):
                     tran_cn = tran_cn[-1]
                 else:
                     tran_cn = each_trans["tran"].split(" ")[-1]
-                print(" · " + tran_cn, end="\n\n")
-                print(each_trans["tran"].replace(tran_cn, ""))
-                print("\n")
+                normal_info_printer(" · " + tran_cn, end="\n\n")
+                normal_info_printer(each_trans["tran"].replace(tran_cn, ""))
+                normal_info_printer("\n")
 
             # --- print sents ---
             if "sents_list" in each_trans:
                 for each_sent in each_trans["sents_list"]:
-                    print(" 例: %s" % each_sent.get("eng_sent"))
-                    print("     %s" % each_sent.get("chn_sent"))
-                print("\n")
+                    normal_info_printer(" 例: %s" % each_sent.get("eng_sent"))
+                    normal_info_printer("     %s" % each_sent.get("chn_sent"))
+                normal_info_printer("\n")
         return
 
     def get_detailtrans_21cn(self, data_base, type):
@@ -347,16 +344,16 @@ class YoudaoTrans(DefaultTrans):
 
         equal_number = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
         if equal_number >= 16:  # 8 equal each side
-            print(colors.green | "======== %s ========" % string)
+            normal_title_printer("======== %s ========" % string)
         elif equal_number <= 1:
-            print(colors.green | string)
+            normal_title_printer(string)
         else:
             for i in range(int(equal_number / 2)):
-                print(colors.green | "=", end="")
-            print(colors.green | " %s " % string, end="")
+                normal_title_printer("=", end="")
+            normal_title_printer(" %s " % string, end="")
             for i in range(equal_number - int(equal_number / 2) - 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
+                normal_title_printer("=", end="")
+            normal_title_printer("=")
 
     def print_basetrans(self, data_base):
         """
@@ -369,7 +366,7 @@ class YoudaoTrans(DefaultTrans):
         data = data_base.get("ec")
         # -----word
         word = data.get("word")[0].get("return-phrase").get("l").get("i")
-        print(word, end="  ")
+        normal_info_printer(word, end="  ")
 
         # -----word_type
         exam_type = data.get("exam_type")
@@ -380,20 +377,20 @@ class YoudaoTrans(DefaultTrans):
         data = data.get("word")[0]
         ukphone = data.get("ukphone")
         if ukphone:
-            print("英[%s]" % ukphone, end=" ")
+            normal_info_printer("英[%s]" % ukphone, end=" ")
         usphone = data.get("usphone")
         if usphone:
-            print("美[%s]" % usphone)
+            normal_info_printer("美[%s]" % usphone)
 
         # -----basic trans Not modified because it is not being used
         if len(word) - 1 + 2 > TERMINAL_SIZE_COLUMN:
             for i in range(TERMINAL_SIZE_COLUMN - 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "=")
+                normal_title_printer("=", end="")
+            normal_title_printer("=")
         else:
             for i in range(len(word) - 1):
-                print(colors.green | "=", end="")
-            print(colors.green | "==")
+                normal_title_printer("=", end="")
+            normal_title_printer("==")
         data = data.get("trs")
         for each_data in data:
-            print(each_data.get("tr")[0].get("l").get("i")[0])
+            normal_info_printer(each_data.get("tr")[0].get("l").get("i")[0])

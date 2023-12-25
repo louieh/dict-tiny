@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 
 import requests
 from plumbum import colors
@@ -44,11 +45,11 @@ def downloader(method, url, **kwargs) -> requests.Response:
     try:
         resp = requests.request(method, url, timeout=TIMEOUT, **kwargs)
         if resp.status_code == 200: return resp
-        normal_color_printer(f"Download error, status code: {resp.status_code}", colors.yellow)
+        normal_warn_printer(f"Download error, status code: {resp.status_code}")
     except requests.exceptions.ConnectionError as e:
-        normal_color_printer("[Error!] Time out. Please try again.", colors.red)
+        normal_error_printer("[Error!] Time out. Please try again.")
     except Exception as e:
-        normal_color_printer("[Error!] Something went wrong. Please try again.", colors.red)
+        normal_error_printer("[Error!] Something went wrong. Please try again.")
 
 
 def normal_color_printer(text, color=None, **kwargs):
@@ -56,3 +57,10 @@ def normal_color_printer(text, color=None, **kwargs):
         print(text, **kwargs)
     else:
         print(color | text, **kwargs)
+
+
+normal_separator_printer = partial(normal_color_printer, color=colors.bold & colors.yellow)
+normal_info_printer = partial(normal_color_printer, color=None)
+normal_title_printer = partial(normal_color_printer, color=colors.green)
+normal_warn_printer = partial(normal_color_printer, color=colors.yellow)
+normal_error_printer = partial(normal_color_printer, color=colors.red)

@@ -1,10 +1,11 @@
 from html import unescape
 
 import requests
-from plumbum import colors, cli
+from plumbum import cli
 
 from dict_tiny.config import TIMEOUT, DEEPL_TRANS_API_BASE_URL, DEEPL_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
+from dict_tiny.util import normal_error_printer, normal_separator_printer, normal_info_printer
 
 
 class DeepLTrans(DefaultTrans):
@@ -33,23 +34,23 @@ class DeepLTrans(DefaultTrans):
         try:
             resp = requests.post(DEEPL_TRANS_API_BASE_URL.format("translate"), json=data, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError as e:
-            print(colors.red | "[Error!] Time out.")
+            normal_error_printer("[Error!] Time out.")
             return
         resp_json = resp.json()
         if resp_json["code"] != 200:
-            # print("DeepL error: ", resp_json["msg"])
+            # normal_info_printer("DeepL error: ", resp_json["msg"])
             if resp_json["msg"] == "Quota for this billing period has been exceeded, message: Quota Exceeded":
-                print("DeepL error: ",
+                normal_info_printer("DeepL error: ",
                       "The quota for this month has been exhausted, please try to add -g to use Google Translate.")
             else:
-                print("DeepL error, code: ", resp_json["code"])
+                normal_info_printer("DeepL error, code: ", resp_json["code"])
             return
         else:
-            print(colors.bold & colors.yellow | DEEPL_SEPARATOR)
+            normal_separator_printer(DEEPL_SEPARATOR)
             res = {
                 "detected language": resp_json["data"]["detected_source_lang"],
                 "input": self.text,
                 "output": unescape(resp_json["data"]["text"])
             }
             for k, v in res.items():
-                print("{}: {}".format(k, v))
+                normal_info_printer("{}: {}".format(k, v))

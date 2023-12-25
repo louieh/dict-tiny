@@ -1,10 +1,10 @@
 from html import unescape
 
-from plumbum import colors, cli
+from plumbum import cli
 
 from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_SEPARATOR
 from dict_tiny.translators.translator import DefaultTrans
-from dict_tiny.util import downloader
+from dict_tiny.util import downloader, normal_separator_printer, normal_info_printer
 
 
 class GoogleTrans(DefaultTrans):
@@ -62,9 +62,9 @@ class GoogleTrans(DefaultTrans):
         except Exception as e:
             return
         if resp_json["code"] != 200:
-            print("Google translate error, code: ", resp_json["code"])
+            normal_info_printer("Google translate error, code: ", resp_json["code"])
             return
-        print(colors.bold & colors.yellow | GOOGLE_SEPARATOR)
+        normal_separator_printer(GOOGLE_SEPARATOR)
         res = {
             "input": self.text,
             "output": unescape(resp_json["data"]["translatedText"])
@@ -74,7 +74,7 @@ class GoogleTrans(DefaultTrans):
         else:
             res.update({"source language": self.dict_tiny_obj.source_language})
         for k, v in res.items():
-            print("{}: {}".format(k, v))
+            normal_info_printer("{}: {}".format(k, v))
 
     def detect_language(self, text):
         """
@@ -90,8 +90,8 @@ class GoogleTrans(DefaultTrans):
         except Exception as e:
             return
         if resp_json["code"] != 200:
-            print("Google detect language error: ", resp_json["code"])
+            normal_info_printer("Google detect language error: ", resp_json["code"])
             return
-        print(colors.bold & colors.yellow | GOOGLE_SEPARATOR)
+        normal_separator_printer(GOOGLE_SEPARATOR)
         for k, v in resp_json["data"].items():
-            print("{}: {}".format(k, v))
+            normal_info_printer("{}: {}".format(k, v))

@@ -1,5 +1,7 @@
-from plumbum import cli, colors
+from plumbum import cli
 import pyperclip
+
+from dict_tiny.util import normal_error_printer, normal_warn_printer
 
 
 class DefaultTrans(object):
@@ -20,13 +22,13 @@ class DefaultTrans(object):
                 clipboard_data = pyperclip.paste().strip().replace('\n', '')
             except Exception as e:
                 self.stop = True
-                print(colors.red | "[Error!] Cannot get clipboard content.")
+                normal_error_printer("[Error!] Cannot get clipboard content.")
                 return
 
             if clipboard_data:
                 self.clipBoardContent = clipboard_data.split(" ")
             else:
-                print(colors.yellow | "There is no content in the clipboard.")
+                normal_warn_printer("There is no content in the clipboard.")
 
         dict_tiny_cls.trans_clipboard = trans_clipboard
 
