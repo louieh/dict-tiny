@@ -2,15 +2,16 @@ from html import unescape
 
 from plumbum import cli
 
-from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_SEPARATOR
+from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_NAME
 from dict_tiny.translators.translator import DefaultTrans
-from dict_tiny.util import downloader, normal_separator_printer, normal_info_printer
+from dict_tiny.util import downloader, normal_info_printer, is_alphabet
 
 
 class GoogleTrans(DefaultTrans):
 
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
+        self.name = GOOGLE_NAME
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -18,13 +19,6 @@ class GoogleTrans(DefaultTrans):
         dict_tiny_cls.use_googletrans = cli.Flag(["-g", "--google"],
                                                  group="Google translate",
                                                  help="Use Google Translate")
-        dict_tiny_cls.target_language = cli.SwitchAttr("--target-language", str,
-                                                       group="Google translate",
-                                                       envname="DICT_TINY_TARGET_LAN",
-                                                       help="what language you want to translate into")
-        dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
-                                                       group="Google translate",
-                                                       help="what language you want to translate")
         dict_tiny_cls.detect_language = cli.SwitchAttr("--detect-language", str,
                                                        group="Google translate",
                                                        help="Detect the language of the given text")
@@ -39,22 +33,22 @@ class GoogleTrans(DefaultTrans):
         #
         # dict_tiny_cls.detect_language = detect_language
 
-    def translate(self):
-        """
-        google translate
-        :param text: text need to be translated
-        :param target_language:
-        :param source_language:
-        :return:
-        """
+    def pre_action(self, text):
+        if_english = True if is_alphabet(text) == 'en' else False
+        if not hasattr(self, "target_language"):
+            self.target_language = "zh" if if_english else "en"
+
+    def do_translate(self, text):
         if self.dict_tiny_obj.detect_language:
-            self.detect_language(self.text)
+            self.detect_language(text)
             return
-        data = {"text": self.text}
+
+        data = {"text": text}
         if self.dict_tiny_obj.target_language:
             data["target"] = self.dict_tiny_obj.target_language
         if self.dict_tiny_obj.source_language:
             data["source"] = self.dict_tiny_obj.source_language
+
         resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
         if not resp: return
         try:
@@ -64,9 +58,7 @@ class GoogleTrans(DefaultTrans):
         if resp_json["code"] != 200:
             normal_info_printer("Google translate error, code: ", resp_json["code"])
             return
-        normal_separator_printer(GOOGLE_SEPARATOR)
         res = {
-            "input": self.text,
             "output": unescape(resp_json["data"]["translatedText"])
         }
         if not self.dict_tiny_obj.source_language:
@@ -92,6 +84,5 @@ class GoogleTrans(DefaultTrans):
         if resp_json["code"] != 200:
             normal_info_printer("Google detect language error: ", resp_json["code"])
             return
-        normal_separator_printer(GOOGLE_SEPARATOR)
         for k, v in resp_json["data"].items():
             normal_info_printer("{}: {}".format(k, v))

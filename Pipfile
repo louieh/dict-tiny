@@ -8,6 +8,7 @@ requests = "*"
 lxml = "*"
 plumbum = "*"
 pyperclip = "*"
+prompt-toolkit = "*"
 
 [dev-packages]
 

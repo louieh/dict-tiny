@@ -1,19 +1,23 @@
 import json
 
-from plumbum import cli
 from lxml import html
+from plumbum import cli
 
-from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_BASE_URL, \
-    YOUDAO_SEPARATOR, YOUDAO_API_BASE_URL
+from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_BASE_URL, \
+    YOUDAO_APP_API_BASE_URL, YOUDAO_NAME
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import downloader, is_alphabet, normal_title_printer, normal_info_printer, normal_warn_printer, \
-    normal_error_printer, normal_separator_printer
+    normal_error_printer
 
 
 class YoudaoTrans(DefaultTrans):
 
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
+        self.name = YOUDAO_NAME
+        # TODO support multiple languages
+        # TODO init target language and source language
+        self.le = "en"  # default en currently
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -25,109 +29,39 @@ class YoudaoTrans(DefaultTrans):
                                              group="Youdao dict",
                                              help="Get more details")
 
-    def translate(self):
-        """
-        entry of youdao web translate
-        :param word: a word need to by translated
-        :return: self.needDetailWord in main.py
-        """
-        normal_separator_printer(YOUDAO_SEPARATOR)
-        en_or_cn = is_alphabet(self.text)
+    def pre_action(self, text):
+        en_or_cn = is_alphabet(text)
         if en_or_cn != "en" and en_or_cn != "cn":
             normal_error_printer("[Error!] The input content is neither an English word nor a Chinese word.")
-            return
-        self.trans_en(self.text) if en_or_cn == "en" else self.trans_cn(self.text)
-        if self.dict_tiny_obj.more_detail:
-            self.show_more(self.text, en_or_cn)
+            raise
+        self.target_language = en_or_cn
 
-    def youdao_download(self, word):
-        """
-        download from web
-        :param word:
-        :return:
-        """
-        resp = downloader("GET", YOUDAO_BASE_URL.format(word), headers=YOUDAO_WEB_FAKE_HEADER)
-        if not resp: return
-        return html.etree.HTML(resp.text)
-
-    def youdao_api_download(self, word):
-        """
-        download data from API
-        :param word:
-        :return:
-        """
-
-        # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
-        resp = downloader("GET", YOUDAO_API_BASE_URL.format(word), headers=YOUDAO_API_FAKE_HEADER)
-        if not resp: return
-        try:
-            return json.loads(resp.text)
-        except json.JSONDecodeError as e:
-            pass
-        except Exception as e:
-            pass
-
-    def trans_en(self, word):
-        """
-        web: English_Chinese
-        :param word:
-        :return:
-        """
-
-        count = 2  # there are two chinere characters
-        data = self.youdao_download(word)
+    def do_translate(self, text):
+        data = self.youdao_download(text)
         if data is None: return
-        phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
-        content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
-        normal_title_printer(word, end=' ')
-        for each_phone in phone:
-            if each_phone:
-                normal_title_printer(each_phone.strip(), end="")
-                count += len(each_phone.strip())
-        normal_info_printer("\n", end="")
 
-        self.print_equal_for_simple_trans(word, count, content)
-
-    def trans_cn(self, word):
-        """
-        web: Chinese_English
-        :param word:
-        :return:
-        """
-
-        count = len(word)
-        data = self.youdao_download(word)
-        if data is None: return
-        phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
-        content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
-        for i in range(len(content)):
-            if "\n" in content[i]:
-                content[i] = "\n"
-            if ";" in content[i]:
-                content[i] = content[i].replace(" ", "")
-                content[i - 1] = content[i + 1] = ""
-        content = "".join(content[:-1])
-
-        normal_title_printer(word, end='  ')
-        for each_phone in phone:
-            if each_phone:
-                normal_title_printer(each_phone.strip(), end="")
-                count += len(each_phone.strip())
-        normal_info_printer("\n", end="")
-
-        self.print_equal_for_simple_trans(word, count, content)
-
-    def print_equal_for_simple_trans(self, word, count, content):
-        # print =
-        if len(word) + count + 2 > TERMINAL_SIZE_COLUMN:
-            for i in range(TERMINAL_SIZE_COLUMN - 1):
-                normal_title_printer("=", end="")
-            normal_title_printer("=")
+        # construct phone and content
+        if self.target_language == "en":
+            content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
+            phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         else:
-            for i in range(len(word) + count + 1):
-                normal_title_printer("=", end="")
-            normal_title_printer("=")
+            content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul//span//text()')
+            phone = data.xpath('.//div[@id="phrsListTab"]/h2/span[@class="phonetic"]//text()')
+            for i in range(len(content)):
+                if "\n" in content[i]:
+                    content[i] = "\n"
+                if ";" in content[i]:
+                    content[i] = content[i].replace(" ", "")
+                    content[i - 1] = content[i + 1] = ""
+            content = "".join(content[:-1])
 
+        # print phone
+        for each_phone in phone:
+            if not each_phone: continue
+            normal_title_printer(each_phone.strip(), end="")
+        normal_info_printer("\n", end="")
+
+        # print content
         if not content:
             normal_warn_printer("Did not find an explanation for this word.")
             return
@@ -136,17 +70,48 @@ class YoudaoTrans(DefaultTrans):
         for each in content:
             normal_info_printer(each)
 
-    def show_more(self, word, type, row=3, printall=True):
+    def extra_action(self, text):
+        if not self.dict_tiny_obj.more_detail: return
+        self.show_more(text, self.target_language)
+
+    def youdao_download(self, text):
+        """
+        download from web
+        :param text:
+        :return:
+        """
+        resp = downloader("GET", YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER)
+        if not resp: return
+        return html.etree.HTML(resp.text)
+
+    def youdao_api_download(self, text):
+        """
+        download data from API
+        :param text:
+        :return:
+        """
+
+        # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
+        resp = downloader("GET", YOUDAO_APP_API_BASE_URL.format(text), headers=YOUDAO_API_FAKE_HEADER)
+        if not resp: return
+        try:
+            return json.loads(resp.text)
+        except json.JSONDecodeError as e:
+            pass
+        except Exception as e:
+            pass
+
+    def show_more(self, text, type, row=3, printall=True):
         """
         youdao API English_Chinese_detail
-        :param word: word
+        :param text: text
         :param type: cn or en
         :param row: the number of row need to be printed, default 3
         :param printall: if print all content, default True
         :return:
         """
 
-        data_base = self.youdao_api_download(word)
+        data_base = self.youdao_api_download(text)
         if not data_base:
             normal_warn_printer(
                 "The detail translation of this word cannot be found at this time. Please try again later.")
@@ -174,9 +139,7 @@ class YoudaoTrans(DefaultTrans):
         for each_pos in detailtrans_dict.keys():
             if each_pos == None:
                 if TERMINAL_SIZE_COLUMN < 20:
-                    for i in range(TERMINAL_SIZE_COLUMN - 1):
-                        normal_title_printer("=", end="")
-                    normal_title_printer("=")
+                    normal_title_printer("=" * (TERMINAL_SIZE_COLUMN - 1))
                 else:
                     normal_title_printer("====================")
             else:
@@ -342,18 +305,15 @@ class YoudaoTrans(DefaultTrans):
         :return:
         """
 
-        equal_number = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
-        if equal_number >= 16:  # 8 equal each side
+        equal_length = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
+        if equal_length >= 16:  # 8 equal each side
             normal_title_printer("======== %s ========" % string)
-        elif equal_number <= 1:
+        elif equal_length <= 1:
             normal_title_printer(string)
         else:
-            for i in range(int(equal_number / 2)):
-                normal_title_printer("=", end="")
+            normal_title_printer("=" * int(equal_length / 2), end="")
             normal_title_printer(" %s " % string, end="")
-            for i in range(equal_number - int(equal_number / 2) - 1):
-                normal_title_printer("=", end="")
-            normal_title_printer("=")
+            normal_title_printer("=" * (equal_length - int(equal_length / 2) - 1))
 
     def print_basetrans(self, data_base):
         """
@@ -383,14 +343,8 @@ class YoudaoTrans(DefaultTrans):
             normal_info_printer("美[%s]" % usphone)
 
         # -----basic trans Not modified because it is not being used
-        if len(word) - 1 + 2 > TERMINAL_SIZE_COLUMN:
-            for i in range(TERMINAL_SIZE_COLUMN - 1):
-                normal_title_printer("=", end="")
-            normal_title_printer("=")
-        else:
-            for i in range(len(word) - 1):
-                normal_title_printer("=", end="")
-            normal_title_printer("==")
+        equal_length = TERMINAL_SIZE_COLUMN - 1 if len(word) + 1 > TERMINAL_SIZE_COLUMN else len(word) - 1
+        normal_title_printer("=" * equal_length)
         data = data.get("trs")
         for each_data in data:
             normal_info_printer(each_data.get("tr")[0].get("l").get("i")[0])

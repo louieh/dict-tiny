@@ -4,10 +4,9 @@
 from plumbum import cli
 from plumbum import colors
 
-from dict_tiny.util import is_alphabet
 from dict_tiny import version
-
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
+from dict_tiny.util import normal_warn_printer
 
 APP_DESC = """
 tiny command-line translator
@@ -32,18 +31,25 @@ class Dict_tiny(cli.Application):
     def main(self, *words):
         if self.stop: return
         text = words or self.clipBoardContent  # word has high priority
-        if not text:
+        if not text and not self.interactive:
             self.help()
             return
-        text = " ".join(text)
 
-        if_english = True if is_alphabet(text) == 'en' else False
-        if not self.target_language and self.use_googletrans:
-            self.target_language = "zh" if if_english else "en"
-
-        trans_objs = [translator.trans_obj_getter(text, self) for translator in _ALL_TRANSLATORS]
-        if not any(trans_objs):
+        text = " ".join(text) if text else ""
+        trans_objs = [trans_obj for translator in _ALL_TRANSLATORS if
+                      (trans_obj := translator.trans_obj_getter(text, self)) is not None]
+        if not trans_objs:
             trans_objs.append(DEFAULT_TRANSLATOR(text, self))
+
+        # enter interactive mode
+        if self.interactive:
+            if len(trans_objs) > 1:
+                normal_warn_printer("You can only enter the interactive mode of one translator")
+                return
+            trans_objs[0].interactive()
+            return
+
+        # not interactive mode
         for trans_obj in trans_objs:
             if trans_obj is None: continue
             trans_obj.translate()

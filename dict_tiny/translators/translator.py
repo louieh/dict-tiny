@@ -1,7 +1,12 @@
-from plumbum import cli
 import pyperclip
+from plumbum import cli
+from prompt_toolkit import PromptSession
+from prompt_toolkit.styles import Style
 
-from dict_tiny.util import normal_error_printer, normal_warn_printer
+from dict_tiny.completer import YoudaoCompleter
+from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN
+from dict_tiny.util import normal_error_printer, normal_warn_printer, normal_separator_printer, normal_info_printer, \
+    normal_title_printer
 
 
 class DefaultTrans(object):
@@ -11,6 +16,14 @@ class DefaultTrans(object):
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
+
+        dict_tiny_cls.interactive = cli.Flag(["-i", "--interactive"],
+                                             help="Interactive mode")
+        dict_tiny_cls.target_language = cli.SwitchAttr("--target-language", str,
+                                                       envname="DICT_TINY_TARGET_LAN",
+                                                       help="what language you want to translate into")
+        dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
+                                                       help="what language you want to translate")
 
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
@@ -38,5 +51,79 @@ class DefaultTrans(object):
         if not getattr(dict_tiny_obj, flag, False): return
         return cls(text, dict_tiny_obj)
 
-    def translate(self):
+    def pre_action(self, text):
+        pass
+
+    def print_separator(self):
+        normal_separator_printer(SEPARATOR.format(self.name))
+
+    def print_input(self, text):
+        normal_title_printer(text)
+        length = len(text) + 2
+        if length > TERMINAL_SIZE_COLUMN:
+            length = TERMINAL_SIZE_COLUMN - 1
+        normal_title_printer("=" * length)
+
+    def do_translate(self, text):
         raise NotImplementedError
+
+    def extra_action(self, text):
+        pass
+
+    def translate(self):
+        # 1. pre action (set default source or target language)
+        # 2. translate (fetch data)
+        # 3. print separator
+        # 4. print user input
+        # 5. print translation
+        # 6. extra action (get more detail translation)
+        try:
+            self.pre_action(self.text)
+            self.print_separator()
+            self.print_input(self.text)
+            self.do_translate(self.text)
+            self.extra_action(self.text)
+        except Exception as e:
+            # print(f"error: {e}")
+            pass
+
+    def translate_interactive(self, text):
+        try:
+            self.pre_action(text)
+            self.print_input(text)
+            self.do_translate(text)
+        except Exception as e:
+            # print(f"error: {e}")
+            pass
+
+    def interactive(self):
+        if not hasattr(self, "translate_interactive"):
+            normal_warn_printer(f"{self.name} have no interactive mode currently")
+            return
+
+        style = Style.from_dict({
+            'completion-menu.completion': 'bg:#008888 #ffffff',
+            'completion-menu.completion.current': 'bg:#00aaaa #000000',
+            'scrollbar.background': 'bg:#88aaaa',
+            'scrollbar.button': 'bg:#222222',
+        })
+
+        normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
+        normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
+
+        session = PromptSession(completer=YoudaoCompleter(self.le),
+                                style=style,
+                                complete_while_typing=False,
+                                complete_in_thread=True)
+
+        while True:
+            try:
+                text = session.prompt(f"{self.name} > ")
+            except KeyboardInterrupt:
+                normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
+                continue  # Control-C pressed. Try again.
+            except EOFError:
+                break  # Control-D pressed.
+            else:
+                self.translate_interactive(text)
+        print('GoodBye!')

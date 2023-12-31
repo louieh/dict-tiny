@@ -8,11 +8,13 @@ from dict_tiny.config import TIMEOUT
 
 
 def is_alphabet(word):
+    # TODO refactor
     """
     return the word is English or Chinese
     :param word:
     :return:
     """
+    if not word: return 'other'
     is_alphabet = defaultdict(int)
     word = word.replace(' ', '')
     for each_letter in word:

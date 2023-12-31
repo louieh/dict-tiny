@@ -1,7 +1,9 @@
 import os
 
+SEPARATOR = ">>> {} <<<"
+
 # YOUDAO
-YOUDAO_SEPARATOR = ">>> Youdao Dict <<<"
+YOUDAO_NAME = "Youdao Dict"
 YOUDAO_WEB_FAKE_HEADER = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
@@ -17,16 +19,27 @@ YOUDAO_API_FAKE_HEADER = {
     "Accept-Encoding": "gzip",
     "Connection": "keep-alive",
 }
-TIMEOUT = 5
-YOUDAO_BASE_URL = "http://youdao.com/w/{}"
-YOUDAO_API_BASE_URL = "http://dict.youdao.com/jsonapi?q={}"
+
+YOUDAO_SUGGEST_API_FAKE_HEADER = {
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Host": "dict.youdao.com",
+    "User-Agent": "YoudaoDict/139 CFNetwork/901.1 Darwin/17.6.0 (x86_64)",
+}
+TIMEOUT = 3
+SUGGESTION_NUM = 8
+YOUDAO_WEB_BASE_URL = "http://youdao.com/w/{}"
+YOUDAO_WEB_API_BASE_URL = "https://dict.youdao.com/jsonapi_s?doctype=json&jsonversion=4"
+YOUDAO_APP_API_BASE_URL = "http://dict.youdao.com/jsonapi?q={}"
+YOUDAO_SUGGESTION_API_BASE_URL = "https://dict.youdao.com/suggest?num={}&ver=3.0&doctype=json&cache=false&le={}&q={}"
 
 # GOOGLE TRANS
-GOOGLE_SEPARATOR = ">>> Google Translate <<<"
+GOOGLE_NAME = "Google Translate"
 GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
 
 # DEEPL TRANS
-DEEPL_SEPARATOR = ">>> DeepL Translate <<<"
+DEEPL_NAME = "DeepL Translate"
 DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # SYSTEM
