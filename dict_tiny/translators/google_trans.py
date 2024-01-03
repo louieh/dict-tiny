@@ -2,7 +2,7 @@ from html import unescape
 
 from plumbum import cli
 
-from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_NAME
+from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_NAME, ISO639LCodes
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import downloader, normal_info_printer, is_alphabet
 
@@ -34,9 +34,11 @@ class GoogleTrans(DefaultTrans):
         # dict_tiny_cls.detect_language = detect_language
 
     def pre_action(self, text):
-        if_english = True if is_alphabet(text) == 'en' else False
-        if not hasattr(self, "target_language"):
-            self.target_language = "zh" if if_english else "en"
+        # exchange Chinese and English
+        source_guess = ISO639LCodes.English.value if is_alphabet(
+            text) == ISO639LCodes.English.value else ISO639LCodes.Chinese.value
+        if not self.target_language or self.target_language == source_guess:
+            self.target_language = ISO639LCodes.Chinese.value if source_guess == ISO639LCodes.English.value else ISO639LCodes.English.value
 
     def do_translate(self, text):
         if self.dict_tiny_obj.detect_language:
@@ -44,10 +46,10 @@ class GoogleTrans(DefaultTrans):
             return
 
         data = {"text": text}
-        if self.dict_tiny_obj.target_language:
-            data["target"] = self.dict_tiny_obj.target_language
-        if self.dict_tiny_obj.source_language:
-            data["source"] = self.dict_tiny_obj.source_language
+        if self.target_language:
+            data["target"] = self.target_language
+        if self.source_language:
+            data["source"] = self.source_language
 
         resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
         if not resp: return
@@ -61,10 +63,10 @@ class GoogleTrans(DefaultTrans):
         res = {
             "output": unescape(resp_json["data"]["translatedText"])
         }
-        if not self.dict_tiny_obj.source_language:
+        if not self.source_language:
             res.update({"detected language": resp_json["data"]["detectedSourceLanguage"]})
         else:
-            res.update({"source language": self.dict_tiny_obj.source_language})
+            res.update({"source language": self.source_language})
         for k, v in res.items():
             normal_info_printer("{}: {}".format(k, v))
 

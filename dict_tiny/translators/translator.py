@@ -4,26 +4,28 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.styles import Style
 
 from dict_tiny.completer import YoudaoCompleter
-from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN
+from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE
 from dict_tiny.util import normal_error_printer, normal_warn_printer, normal_separator_printer, normal_info_printer, \
-    normal_title_printer
+    normal_title_printer, parse_le
 
 
 class DefaultTrans(object):
     def __init__(self, text, dict_tiny_obj):
         self.text = text
         self.dict_tiny_obj = dict_tiny_obj
+        self.source_language = dict_tiny_obj.source_language
+        self.target_language = dict_tiny_obj.target_language or DEFAULT_TARGET_LANGUAGE
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
 
         dict_tiny_cls.interactive = cli.Flag(["-i", "--interactive"],
                                              help="Interactive mode")
+        dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
+                                                       help="what language you want to translate")
         dict_tiny_cls.target_language = cli.SwitchAttr("--target-language", str,
                                                        envname="DICT_TINY_TARGET_LAN",
                                                        help="what language you want to translate into")
-        dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
-                                                       help="what language you want to translate")
 
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
@@ -111,7 +113,8 @@ class DefaultTrans(object):
         normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
         normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
 
-        session = PromptSession(completer=YoudaoCompleter(self.le),
+        suggest_le = parse_le(self.source_language, self.target_language)
+        session = PromptSession(completer=YoudaoCompleter(suggest_le),
                                 style=style,
                                 complete_while_typing=False,
                                 complete_in_thread=True)

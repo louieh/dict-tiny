@@ -1,6 +1,16 @@
 import os
+from enum import Enum
 
-SEPARATOR = ">>> {} <<<"
+
+class ISO639LCodes(Enum):
+    Chinese = "zh"
+    English = "en"
+    French = "fr"
+    Japanese = "ja"
+    Korean = "ko"
+
+
+DEFAULT_TARGET_LANGUAGE = ISO639LCodes.Chinese.value
 
 # YOUDAO
 YOUDAO_NAME = "Youdao Dict"
@@ -33,6 +43,7 @@ YOUDAO_WEB_BASE_URL = "http://youdao.com/w/{}"
 YOUDAO_WEB_API_BASE_URL = "https://dict.youdao.com/jsonapi_s?doctype=json&jsonversion=4"
 YOUDAO_APP_API_BASE_URL = "http://dict.youdao.com/jsonapi?q={}"
 YOUDAO_SUGGESTION_API_BASE_URL = "https://dict.youdao.com/suggest?num={}&ver=3.0&doctype=json&cache=false&le={}&q={}"
+DEFAULT_LE = ISO639LCodes.English.value
 
 # GOOGLE TRANS
 GOOGLE_NAME = "Google Translate"
@@ -47,3 +58,4 @@ try:
     TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
 except:
     TERMINAL_SIZE_COLUMN = 20
+SEPARATOR = ">>> {} <<<"

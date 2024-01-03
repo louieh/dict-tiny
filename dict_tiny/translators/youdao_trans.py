@@ -4,10 +4,10 @@ from lxml import html
 from plumbum import cli
 
 from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_BASE_URL, \
-    YOUDAO_APP_API_BASE_URL, YOUDAO_NAME
+    YOUDAO_APP_API_BASE_URL, YOUDAO_NAME, ISO639LCodes
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import downloader, is_alphabet, normal_title_printer, normal_info_printer, normal_warn_printer, \
-    normal_error_printer
+    normal_error_printer, parse_le
 
 
 class YoudaoTrans(DefaultTrans):
@@ -16,8 +16,7 @@ class YoudaoTrans(DefaultTrans):
         super().__init__(text, dict_tiny_obj)
         self.name = YOUDAO_NAME
         # TODO support multiple languages
-        # TODO init target language and source language
-        self.le = "en"  # default en currently
+        self.trans_le = parse_le(self.source_language, self.target_language, trans=True)
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -30,18 +29,17 @@ class YoudaoTrans(DefaultTrans):
                                              help="Get more details")
 
     def pre_action(self, text):
-        en_or_cn = is_alphabet(text)
-        if en_or_cn != "en" and en_or_cn != "cn":
+        self.source_language = is_alphabet(text)
+        if self.source_language not in (ISO639LCodes.Chinese.value, ISO639LCodes.English.value):
             normal_error_printer("[Error!] The input content is neither an English word nor a Chinese word.")
             raise
-        self.target_language = en_or_cn
 
     def do_translate(self, text):
         data = self.youdao_download(text)
         if data is None: return
 
         # construct phone and content
-        if self.target_language == "en":
+        if self.source_language == ISO639LCodes.English.value:
             content = data.xpath('.//div[@id="phrsListTab"]/div[@class="trans-container"]/ul/li//text()')
             phone = data.xpath('.//div[@id="phrsListTab"]/h2//span[@class="pronounce"]//text()')
         else:
@@ -72,7 +70,7 @@ class YoudaoTrans(DefaultTrans):
 
     def extra_action(self, text):
         if not self.dict_tiny_obj.more_detail: return
-        self.show_more(text, self.target_language)
+        self.show_more(text, self.source_language)
 
     def youdao_download(self, text):
         """
@@ -117,9 +115,9 @@ class YoudaoTrans(DefaultTrans):
                 "The detail translation of this word cannot be found at this time. Please try again later.")
             return
         # print_basetrans(data_base)
-        if type == 'cn':
+        if type == ISO639LCodes.Chinese.value:
             self.print_detailtrans(data_base, type, row, printall)  # two parameters：row=3, printall=False
-        elif type == 'en':
+        elif type == ISO639LCodes.English.value:
             self.print_detailtrans_collins(data_base)
 
     def print_detailtrans(self, data_base, type, row=3, printall=True):
@@ -243,7 +241,7 @@ class YoudaoTrans(DefaultTrans):
         :return:
         """
 
-        data21cn = data_base.get("ec21") if type == 'en' else data_base.get("ce_new")
+        data21cn = data_base.get("ec21") if type == ISO639LCodes.English.value else data_base.get("ce_new")
         if not data21cn:
             return None
         # -----source
