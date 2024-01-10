@@ -72,7 +72,8 @@ class YoudaoTrans(DefaultTrans):
         if not self.dict_tiny_obj.more_detail: return
         self.show_more(text, self.source_language)
 
-    def youdao_download(self, text):
+    @staticmethod
+    def youdao_download(text):
         """
         download from web
         :param text:
@@ -82,7 +83,8 @@ class YoudaoTrans(DefaultTrans):
         if not resp: return
         return html.etree.HTML(resp.text)
 
-    def youdao_api_download(self, text):
+    @staticmethod
+    def youdao_api_download(text):
         """
         download data from API
         :param text:
