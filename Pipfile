@@ -12,6 +12,7 @@ prompt-toolkit = "*"
 google-generativeai = "*"
 ipython = "*"
 rich = "*"
+pillow = "*"
 
 [dev-packages]
 
