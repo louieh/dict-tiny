@@ -89,25 +89,20 @@ class DefaultTrans(object):
             # print(f"error: {e}")
             pass
 
-    def translate_interactive(self, text):
-        try:
-            self.pre_action(text)
-            self.print_input(text)
-            self.do_translate(text)
-        except Exception as e:
-            # print(f"error: {e}")
-            pass
-
-    def interactive(self):
-        if not hasattr(self, "translate_interactive"):
-            normal_warn_printer(f"{self.name} have no interactive mode currently")
-            return
-
+    def get_prompt_session(self):
         style = Style.from_dict({
+            # completion
             'completion-menu.completion': 'bg:#008888 #ffffff',
             'completion-menu.completion.current': 'bg:#00aaaa #000000',
             'scrollbar.background': 'bg:#88aaaa',
             'scrollbar.button': 'bg:#222222',
+
+            # User input (default text).
+            # '': '#ff0066',
+
+            # Prompt.
+            'prompt_name': '#00aa00',
+            'prompt_sign': '#60db94',
         })
 
         normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
@@ -118,15 +113,32 @@ class DefaultTrans(object):
                                 style=style,
                                 complete_while_typing=False,
                                 complete_in_thread=True)
+        return session
 
+    def interactive_loop(self, session):
+        message = [
+            ('class:prompt_name', self.name),
+            ('class:prompt_sign', ' > '),
+        ]
         while True:
             try:
-                text = session.prompt(f"{self.name} > ")
+                text = session.prompt(message)
+                if not text: continue
             except KeyboardInterrupt:
                 normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
                 continue  # Control-C pressed. Try again.
             except EOFError:
                 break  # Control-D pressed.
             else:
-                self.translate_interactive(text)
+                try:
+                    self.pre_action(text)
+                    self.print_input(text)
+                    self.do_translate(text)
+                except Exception as e:
+                    # print(f"error: {e}")
+                    pass
         print('GoodBye!')
+
+    def interactive(self):
+        session = self.get_prompt_session()
+        self.interactive_loop(session)

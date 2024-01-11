@@ -5,8 +5,9 @@ from plumbum import cli
 from plumbum import colors
 
 from dict_tiny import version
+from dict_tiny.errors import LLMAPIKeyNotFoundError
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
-from dict_tiny.util import normal_warn_printer
+from dict_tiny.util import normal_warn_printer, normal_error_printer
 
 APP_DESC = """
 tiny command-line translator
@@ -22,7 +23,8 @@ class Dict_tiny(cli.Application):
     COLOR_GROUPS = {
         "Switches": colors.yellow,
         "Google translate": colors.green,
-        "Youdao dict": colors.green
+        "Youdao dict": colors.green,
+        "Gemini": colors.green
     }
 
     stop = False  # whether return directly in main
@@ -36,10 +38,14 @@ class Dict_tiny(cli.Application):
             return
 
         text = " ".join(text) if text else ""
-        trans_objs = [trans_obj for translator in _ALL_TRANSLATORS if
-                      (trans_obj := translator.trans_obj_getter(text, self)) is not None]
-        if not trans_objs:
-            trans_objs.append(DEFAULT_TRANSLATOR(text, self))
+        try:
+            trans_objs = [trans_obj for translator in _ALL_TRANSLATORS if
+                          (trans_obj := translator.trans_obj_getter(text, self)) is not None]
+            if not trans_objs:
+                trans_objs.append(DEFAULT_TRANSLATOR(text, self))
+        except LLMAPIKeyNotFoundError as e:
+            normal_error_printer(e.message)
+            return
 
         # enter interactive mode
         if self.interactive:
