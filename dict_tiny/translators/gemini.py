@@ -40,7 +40,7 @@ class Gemini(DefaultTrans):
                                                  group="Gemini",
                                                  default=DEFAULT_GEMINI_MODEL,
                                                  help="Select gemini model")
-        dict_tiny_cls.img_path = cli.SwitchAttr("--img_path",
+        dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
                                                 str,
                                                 group="Gemini",
                                                 help="Indicate local image path if the model is gemini pro vision")

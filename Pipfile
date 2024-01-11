@@ -10,7 +10,6 @@ plumbum = "*"
 pyperclip = "*"
 prompt-toolkit = "*"
 google-generativeai = "*"
-ipython = "*"
 rich = "*"
 pillow = "*"
 
