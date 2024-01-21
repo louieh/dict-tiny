@@ -13,8 +13,8 @@ from dict_tiny.util import normal_warn_printer, normal_info_printer
 class Gemini(DefaultTrans):
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.name = GEMINI_NAME
-        self.model = dict_tiny_obj.llm_model
+        self.model = dict_tiny_obj.gemini_model
+        self.name = f"{GEMINI_NAME}-{self.model}"
         self.api_key = dict_tiny_obj.gemini_api_key
         if not self.api_key:
             raise LLMAPIKeyNotFoundError("Gemini api key not found")
@@ -35,20 +35,20 @@ class Gemini(DefaultTrans):
         dict_tiny_cls.use_gemini = cli.Flag(["--gemini"],
                                             group="Gemini",
                                             help="Use Gemini API")
-        dict_tiny_cls.llm_model = cli.SwitchAttr("--model",
-                                                 str,
-                                                 group="Gemini",
-                                                 default=DEFAULT_GEMINI_MODEL,
-                                                 help="Select gemini model")
+        dict_tiny_cls.gemini_model = cli.SwitchAttr("--gemini-model",
+                                                    str,
+                                                    group="Gemini",
+                                                    default=DEFAULT_GEMINI_MODEL,
+                                                    help="Select gemini model")
         dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
                                                 str,
                                                 group="Gemini",
                                                 help="Indicate local image path if the model is gemini pro vision")
         dict_tiny_cls.gemini_api_key = cli.SwitchAttr("--gemini-key",
-                                                   str,
-                                                   group="Gemini",
-                                                   envname=GEMINI_API_KEY_ENV_NAME,
-                                                   help="Indicate gemini api key")
+                                                      str,
+                                                      group="Gemini",
+                                                      envname=GEMINI_API_KEY_ENV_NAME,
+                                                      help="Indicate gemini api key")
         dict_tiny_cls.max_output_tokens = cli.SwitchAttr("--max-output-tokens",
                                                          int,
                                                          group="Gemini",
@@ -78,15 +78,23 @@ class Gemini(DefaultTrans):
             except Exception as e:
                 normal_warn_printer(f"Unable to identify the image at: {img_path}")
                 return
-            response = self.chat.generate_content(
-                [text, img],
-                generation_config=self.generation_config,
-                stream=True)
+            try:
+                response = self.chat.generate_content(
+                    [text, img],
+                    generation_config=self.generation_config,
+                    stream=True)
+            except Exception as e:
+                normal_warn_printer("something went wrong")
+                return
         else:
-            response = self.chat.send_message(
-                text,
-                generation_config=self.generation_config,
-                stream=True)
+            try:
+                response = self.chat.send_message(
+                    text,
+                    generation_config=self.generation_config,
+                    stream=True)
+            except Exception as e:
+                normal_warn_printer("something went wrong")
+                return
 
         for chunk in response:
             self.console.print(Markdown(chunk.text))

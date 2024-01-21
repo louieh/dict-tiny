@@ -64,6 +64,44 @@ class GEMINI_MODEL(Enum):
     gemini_pro_vision = "gemini-pro-vision"
 
 
+# OPENAI
+OPENAI_NAME = "OpenAI"
+DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo"
+OPENAI_API_KEY_ENV_NAME = "OPENAI_API_KEY"
+
+OPENAI_MODEL = {
+    "gpt-4-1106-preview": {
+        "context_window": 128000
+    },
+    "gpt-4-vision-preview": {
+        "context_window": 128000
+    },
+    "gpt-4": {
+        "context_window": 8192
+    },
+    "gpt-4-32k": {
+        "context_window": 32768
+    },
+    "gpt-4-0613": {
+        "context_window": 8192
+    },
+    "gpt-4-32k-0613": {
+        "context_window": 32768
+    },
+    "gpt-3.5-turbo-1106": {
+        "context_window": 16385
+    },
+    "gpt-3.5-turbo": {
+        "context_window": 4096
+    },
+    "gpt-3.5-turbo-16k": {
+        "context_window": 16385
+    },
+    "gpt-3.5-turbo-instruct": {
+        "context_window": 4096
+    }
+}
+
 # SYSTEM
 try:
     TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
