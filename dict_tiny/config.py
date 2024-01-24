@@ -1,6 +1,13 @@
 import os
 from enum import Enum
 
+# SYSTEM
+try:
+    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
+except:
+    TERMINAL_SIZE_COLUMN = 20
+SEPARATOR = ">>> {} <<<"
+
 TIMEOUT = 5
 RETRY = 3
 BACKOFF_FACTOR = 1
@@ -58,7 +65,6 @@ DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # GEMINI
 GEMINI_NAME = "Gemini"
-DEFAULT_GEMINI_MODEL = "gemini-pro"
 GEMINI_API_KEY_ENV_NAME = "GEMINI_API_KEY"
 
 
@@ -67,47 +73,68 @@ class GEMINI_MODEL(Enum):
     gemini_pro_vision = "gemini-pro-vision"
 
 
-# OPENAI
-OPENAI_NAME = "OpenAI"
-DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo"
-OPENAI_API_KEY_ENV_NAME = "OPENAI_API_KEY"
+DEFAULT_GEMINI_MODEL = GEMINI_MODEL.gemini_pro.value
 
-OPENAI_MODEL = {
-    "gpt-4-1106-preview": {
-        "context_window": 128000
+GEMINI_MODEL_DETAIL = {
+    GEMINI_MODEL.gemini_pro.value: {
+        "input_token_limit": 30720,
+        "output_token_limit": 2048
     },
-    "gpt-4-vision-preview": {
-        "context_window": 128000
-    },
-    "gpt-4": {
-        "context_window": 8192
-    },
-    "gpt-4-32k": {
-        "context_window": 32768
-    },
-    "gpt-4-0613": {
-        "context_window": 8192
-    },
-    "gpt-4-32k-0613": {
-        "context_window": 32768
-    },
-    "gpt-3.5-turbo-1106": {
-        "context_window": 16385
-    },
-    "gpt-3.5-turbo": {
-        "context_window": 4096
-    },
-    "gpt-3.5-turbo-16k": {
-        "context_window": 16385
-    },
-    "gpt-3.5-turbo-instruct": {
-        "context_window": 4096
+    GEMINI_MODEL.gemini_pro_vision.value: {
+        "input_token_limit": 12288,
+        "output_token_limit": 4096
     }
 }
 
-# SYSTEM
-try:
-    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
-except:
-    TERMINAL_SIZE_COLUMN = 20
-SEPARATOR = ">>> {} <<<"
+# OPENAI
+OPENAI_NAME = "OpenAI"
+OPENAI_API_KEY_ENV_NAME = "OPENAI_API_KEY"
+
+
+class OPENAI_MODEL(Enum):
+    gpt_4_1106_preview = "gpt-4-1106-preview"
+    gpt_4_vision_preview = "gpt-4-vision-preview"
+    gpt_4 = "gpt-4"
+    gpt_4_32k = "gpt-4-32k"
+    gpt_4_0613 = "gpt-4-0613"
+    gpt_4_32k_0613 = "gpt-4-32k-0613"
+    gpt_35_turbo_1106 = "gpt-3.5-turbo-1106"
+    gpt_35_turbo = "gpt-3.5-turbo"
+    gpt_35_turbo_16k = "gpt-3.5-turbo-16k"
+    gpt_35_turbo_instruct = "gpt-3.5-turbo-instruct"
+
+
+DEFAULT_OPENAI_MODEL = OPENAI_MODEL.gpt_35_turbo.value
+
+OPENAI_MODEL_DETAIL = {
+    OPENAI_MODEL.gpt_4_1106_preview.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.gpt_4_vision_preview.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.gpt_4.value: {
+        "context_window": 8192
+    },
+    OPENAI_MODEL.gpt_4_32k.value: {
+        "context_window": 32768
+    },
+    OPENAI_MODEL.gpt_4_0613.value: {
+        "context_window": 8192
+    },
+    OPENAI_MODEL.gpt_4_32k_0613.value: {
+        "context_window": 32768
+    },
+    OPENAI_MODEL.gpt_35_turbo_1106.value: {
+        "context_window": 16385
+    },
+    OPENAI_MODEL.gpt_35_turbo.value: {
+        "context_window": 4096
+    },
+    OPENAI_MODEL.gpt_35_turbo_16k.value: {
+        "context_window": 16385
+    },
+    OPENAI_MODEL.gpt_35_turbo_instruct.value: {
+        "context_window": 4096
+    }
+}

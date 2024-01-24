@@ -1,29 +1,34 @@
 import openai
-from plumbum import cli
-from rich.console import Console
-from rich.markdown import Markdown
 from openai import OpenAI as openai_cls
+from plumbum import cli
+from rich.markdown import Markdown
 
-from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, SEPARATOR, OPENAI_MODEL
-from dict_tiny.errors import LLMAPIKeyNotFoundError
-from dict_tiny.translators.translator import DefaultTrans
+from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, OPENAI_MODEL_DETAIL
+from dict_tiny.translators.llm import DefaultLLM
 from dict_tiny.util import normal_warn_printer
 
 
-class OpenAI(DefaultTrans):
+class OpenAI(DefaultLLM):
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.model = dict_tiny_obj.openai_model
-        self.name = f"{OPENAI_NAME}-{self.model}"
-        self.api_key = dict_tiny_obj.openai_api_key
-        if not self.api_key:
-            raise LLMAPIKeyNotFoundError("OpenAI api key not found")
-        if self.model not in OPENAI_MODEL:
-            normal_warn_printer(f"The model you entered may be wrong: {self.model}")
-        self.console = Console()
+
+        # param valid check
+        self.model = self.validate_param("openai_model",
+                                         lambda x: x is not None and x in OPENAI_MODEL_DETAIL,
+                                         error_msg="model not found")
+        self.api_key = self.validate_param("openai_api_key",
+                                           lambda x: x is not None,
+                                           error_msg="api key not found")
+        self.temperature = self.validate_param("temperature",
+                                               lambda x: x is None or (0 <= x <= 2),
+                                               error_msg="temperature can range from [0.0,2.0], inclusive")
+        self.api_params = {
+            "max_tokens": self.max_output_tokens,
+            "temperature": self.temperature
+        }
+
         self.client = openai_cls(api_key=self.api_key)
-        self.keep_context = dict_tiny_obj.keep_context
-        self.conversation = []
+        self.name = f"{OPENAI_NAME}-{self.model}"
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -31,10 +36,6 @@ class OpenAI(DefaultTrans):
         dict_tiny_cls.use_openai = cli.Flag(["--openai"],
                                             group="OpenAI",
                                             help="Use OpenAI API")
-        dict_tiny_cls.keep_context = cli.Flag(["--keep-context"],
-                                              group="OpenAI",
-                                              default=True,
-                                              help="multi-turn conversations")
         dict_tiny_cls.openai_model = cli.SwitchAttr("--openai-model",
                                                     str,
                                                     group="OpenAI",
@@ -45,22 +46,6 @@ class OpenAI(DefaultTrans):
                                                       group="OpenAI",
                                                       envname=OPENAI_API_KEY_ENV_NAME,
                                                       help="Indicate openai api key")
-        # dict_tiny_cls.max_output_tokens = cli.SwitchAttr("--max-output-tokens",
-        #                                                  int,
-        #                                                  group="Gemini",
-        #                                                  help="The maximum number of tokens to include in a candidate.")
-        # dict_tiny_cls.temperature = cli.SwitchAttr("--temperature",
-        #                                            float,
-        #                                            group="Gemini",
-        #                                            help="Controls the randomness of the output")
-        # dict_tiny_cls.top_p = cli.SwitchAttr("--top-p",
-        #                                      float,
-        #                                      group="Gemini",
-        #                                      help="The maximum cumulative probability of tokens to consider when sampling.")
-        # dict_tiny_cls.top_k = cli.SwitchAttr("--top-k",
-        #                                      int,
-        #                                      group="Gemini",
-        #                                      help="The maximum number of tokens to consider when sampling.")
 
     def pre_action(self, text):
         pass
@@ -87,8 +72,7 @@ class OpenAI(DefaultTrans):
         resp_text = resp.choices[0].message.content
         self.console.print(Markdown(resp_text))
         self.conversation.append({"role": "assistant", "content": resp_text})
-        if not self.keep_context:
-            self.conversation = []
+        self.conversation = self.conversation[-self.dialogue_turns:]
 
     def interactive_loop(self, session):
         super().interactive_loop(session)

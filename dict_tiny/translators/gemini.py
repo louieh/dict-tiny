@@ -1,33 +1,37 @@
 import google.generativeai as genai
 from PIL import Image
 from plumbum import cli
-from rich.console import Console
 from rich.markdown import Markdown
 
-from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL
-from dict_tiny.errors import LLMAPIKeyNotFoundError
-from dict_tiny.translators.translator import DefaultTrans
+from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL, \
+    GEMINI_MODEL_DETAIL
+from dict_tiny.translators.llm import DefaultLLM
 from dict_tiny.util import normal_warn_printer, normal_info_printer
 
 
-class Gemini(DefaultTrans):
+class Gemini(DefaultLLM):
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.model = dict_tiny_obj.gemini_model
-        self.name = f"{GEMINI_NAME}-{self.model}"
-        self.api_key = dict_tiny_obj.gemini_api_key
-        if not self.api_key:
-            raise LLMAPIKeyNotFoundError("Gemini api key not found")
-        genai.configure(api_key=self.api_key)
-        model = genai.GenerativeModel(self.model)
-        self.chat = model.start_chat(history=[]) if self.model == GEMINI_MODEL.gemini_pro.value else model
+
+        #  param valid check
+        self.model = self.validate_param("gemini_model",
+                                         lambda x: x is not None and x in GEMINI_MODEL_DETAIL,
+                                         error_msg="model not found")
+        self.api_key = self.validate_param("gemini_api_key",
+                                           lambda x: x is not None,
+                                           error_msg="api key not found")
+        self.temperature = self.validate_param("temperature",
+                                               lambda x: x is None or (0 <= x <= 1),
+                                               error_msg="temperature can range from [0.0,1.0], inclusive")
+
         self.generation_config = genai.types.GenerationConfig(
-            max_output_tokens=dict_tiny_obj.max_output_tokens,
-            temperature=dict_tiny_obj.temperature,
-            top_p=dict_tiny_obj.top_p,
-            top_k=dict_tiny_obj.top_k
+            max_output_tokens=self.max_output_tokens,
+            temperature=self.temperature,
+
         )
-        self.console = Console()
+        genai.configure(api_key=self.api_key)
+        self.chat = genai.GenerativeModel(self.model)
+        self.name = f"{GEMINI_NAME}-{self.model}"
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -40,64 +44,53 @@ class Gemini(DefaultTrans):
                                                     group="Gemini",
                                                     default=DEFAULT_GEMINI_MODEL,
                                                     help="Select gemini model")
-        dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
-                                                str,
-                                                group="Gemini",
-                                                help="Indicate local image path if the model is gemini pro vision")
         dict_tiny_cls.gemini_api_key = cli.SwitchAttr("--gemini-key",
                                                       str,
                                                       group="Gemini",
                                                       envname=GEMINI_API_KEY_ENV_NAME,
                                                       help="Indicate gemini api key")
-        dict_tiny_cls.max_output_tokens = cli.SwitchAttr("--max-output-tokens",
-                                                         int,
-                                                         group="Gemini",
-                                                         help="The maximum number of tokens to include in a candidate.")
-        dict_tiny_cls.temperature = cli.SwitchAttr("--temperature",
-                                                   float,
-                                                   group="Gemini",
-                                                   help="Controls the randomness of the output")
-        dict_tiny_cls.top_p = cli.SwitchAttr("--top-p",
-                                             float,
-                                             group="Gemini",
-                                             help="The maximum cumulative probability of tokens to consider when sampling.")
-        dict_tiny_cls.top_k = cli.SwitchAttr("--top-k",
-                                             int,
-                                             group="Gemini",
-                                             help="The maximum number of tokens to consider when sampling.")
+        dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
+                                                cli.ExistingFile,
+                                                group="Gemini",
+                                                help="Indicate local image path if the model is gemini pro vision")
 
     def print_input(self, text):
         pass
 
     def do_translate(self, text):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:
-            img_path, *text = text.split(" ")
-            text = " ".join(text)
+            img_path, text = text.split(" ", maxsplit=1)
             try:
                 img = Image.open(img_path)
             except Exception as e:
                 normal_warn_printer(f"Unable to identify the image at: {img_path}")
                 return
-            try:
-                response = self.chat.generate_content(
-                    [text, img],
-                    generation_config=self.generation_config,
-                    stream=True)
-            except Exception as e:
-                normal_warn_printer("something went wrong")
-                return
+            parts = [text, img]
         else:
-            try:
-                response = self.chat.send_message(
-                    text,
-                    generation_config=self.generation_config,
-                    stream=True)
-            except Exception as e:
-                normal_warn_printer("something went wrong")
-                return
+            parts = [text]
+        try:
+            self.conversation.append({
+                'role': 'user',
+                'parts': parts
+            })
+            response = self.chat.generate_content(
+                self.conversation,
+                generation_config=self.generation_config,
+                stream=True)
+        except Exception as e:
+            normal_warn_printer(f"Gemini response wrong: {str(e)}")
+            return
 
+        full_response = ""
         for chunk in response:
-            self.console.print(Markdown(chunk.text))
+            chunk_text = chunk.text
+            self.console.print(Markdown(chunk_text))
+            full_response += chunk_text
+        self.conversation.append({
+            'role': 'model',
+            'parts': [full_response]
+        })
+        self.conversation = self.conversation[-self.dialogue_turns:]
 
     def interactive_loop(self, session):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:
