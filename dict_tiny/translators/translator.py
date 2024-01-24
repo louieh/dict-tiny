@@ -98,7 +98,7 @@ class DefaultTrans(object):
             'scrollbar.button': 'bg:#222222',
 
             # User input (default text).
-            # '': '#ff0066',
+            '': '#ffbe54',
 
             # Prompt.
             'prompt_name': '#00aa00',
@@ -136,7 +136,7 @@ class DefaultTrans(object):
                     self.do_translate(text)
                 except Exception as e:
                     # print(f"error: {e}")
-                    pass
+                    continue
         print('GoodBye!')
 
     def interactive(self):

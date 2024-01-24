@@ -51,7 +51,7 @@ class GoogleTrans(DefaultTrans):
         if self.source_language:
             data["source"] = self.source_language
 
-        resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
+        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
         if not resp: return
         try:
             resp_json = resp.json()
@@ -77,7 +77,7 @@ class GoogleTrans(DefaultTrans):
         :return:
         """
 
-        resp = downloader("POST", GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={"text": text})
+        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={"text": text})
         if not resp: return
         try:
             resp_json = resp.json()

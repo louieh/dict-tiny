@@ -79,7 +79,7 @@ class YoudaoTrans(DefaultTrans):
         :param text:
         :return:
         """
-        resp = downloader("GET", YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER)
+        resp = downloader.download("GET", YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER)
         if not resp: return
         return html.etree.HTML(resp.text)
 
@@ -92,7 +92,7 @@ class YoudaoTrans(DefaultTrans):
         """
 
         # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
-        resp = downloader("GET", YOUDAO_APP_API_BASE_URL.format(text), headers=YOUDAO_API_FAKE_HEADER)
+        resp = downloader.download("GET", YOUDAO_APP_API_BASE_URL.format(text), headers=YOUDAO_API_FAKE_HEADER)
         if not resp: return
         try:
             return json.loads(resp.text)

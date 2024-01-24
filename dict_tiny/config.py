@@ -1,6 +1,10 @@
 import os
 from enum import Enum
 
+TIMEOUT = 5
+RETRY = 3
+BACKOFF_FACTOR = 1
+
 
 class ISO639LCodes(Enum):
     Chinese = "zh"
@@ -37,7 +41,6 @@ YOUDAO_SUGGEST_API_FAKE_HEADER = {
     "Host": "dict.youdao.com",
     "User-Agent": "YoudaoDict/139 CFNetwork/901.1 Darwin/17.6.0 (x86_64)",
 }
-TIMEOUT = 3
 SUGGESTION_NUM = 8
 YOUDAO_WEB_BASE_URL = "http://youdao.com/w/{}"
 YOUDAO_WEB_API_BASE_URL = "https://dict.youdao.com/jsonapi_s?doctype=json&jsonversion=4"

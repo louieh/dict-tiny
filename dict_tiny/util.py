@@ -3,8 +3,42 @@ from functools import partial
 
 import requests
 from plumbum import colors
+from requests import Session
+from requests.adapters import HTTPAdapter, Retry
 
-from dict_tiny.config import TIMEOUT, DEFAULT_LE, ISO639LCodes
+from dict_tiny.config import TIMEOUT, DEFAULT_LE, ISO639LCodes, RETRY, BACKOFF_FACTOR
+
+
+class Downloader:
+
+    def __init__(self):
+        self.retries = Retry(total=RETRY, backoff_factor=BACKOFF_FACTOR)
+        self.session = Session()  # reuse tcp connection
+        self.session.mount("http://", HTTPAdapter(max_retries=self.retries))
+        self.session.mount("https://", HTTPAdapter(max_retries=self.retries))
+
+    def download(self, method, url, **kwargs) -> requests.Response:
+        """
+        normal download method
+        :param method: request method
+        :param url: url to download
+        :param kwargs: additional arguments: headers, data, json
+        :return: Response object
+        """
+        try:
+            resp = self.session.request(method, url, timeout=TIMEOUT, **kwargs)
+            if resp.status_code == 200: return resp
+            normal_warn_printer(f"Download error, status code: {resp.status_code}")
+        except requests.exceptions.ConnectionError as e:
+            normal_error_printer("[Error!] Connection Error. Please try again.")
+        except requests.exceptions.Timeout as e:
+            normal_error_printer("[Error!] Time out. Please try again.")
+        except Exception as e:
+            # print(f"download error: {str(e)}")
+            normal_error_printer("[Error!] Something went wrong. Please try again.")
+
+
+downloader = Downloader()
 
 
 def is_alphabet(word):
@@ -58,24 +92,6 @@ def parse_le(source: str, target: str, trans=False) -> str:
     if ISO639LCodes.Chinese.value in st_set and le:
         return le.pop()
     return DEFAULT_LE
-
-
-def downloader(method, url, **kwargs) -> requests.Response:
-    """
-    normal download method
-    :param method: request method
-    :param url: url to download
-    :param kwargs: additional arguments: headers, data, json
-    :return: Response object
-    """
-    try:
-        resp = requests.request(method, url, timeout=TIMEOUT, **kwargs)
-        if resp.status_code == 200: return resp
-        normal_warn_printer(f"Download error, status code: {resp.status_code}")
-    except requests.exceptions.ConnectionError as e:
-        normal_error_printer("[Error!] Time out. Please try again.")
-    except Exception as e:
-        normal_error_printer("[Error!] Something went wrong. Please try again.")
 
 
 def normal_color_printer(text, color=None, **kwargs):
