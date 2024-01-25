@@ -2,7 +2,7 @@ from html import unescape
 
 from plumbum import cli
 
-from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_NAME, ISO639LCodes
+from dict_tiny.config import GOOGLE_TRANS_API_BASE_URL, GOOGLE_NAME, ISO639LCodes, GOOGLE_TRANS_API_HEADER
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import downloader, normal_info_printer, is_alphabet
 
@@ -51,7 +51,8 @@ class GoogleTrans(DefaultTrans):
         if self.source_language:
             data["source"] = self.source_language
 
-        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data)
+        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("translate"), json=data,
+                                   headers=GOOGLE_TRANS_API_HEADER)
         if not resp: return
         try:
             resp_json = resp.json()
@@ -77,7 +78,8 @@ class GoogleTrans(DefaultTrans):
         :return:
         """
 
-        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={"text": text})
+        resp = downloader.download("POST", GOOGLE_TRANS_API_BASE_URL.format("detect_language"), json={"text": text},
+                                   headers=GOOGLE_TRANS_API_HEADER)
         if not resp: return
         try:
             resp_json = resp.json()

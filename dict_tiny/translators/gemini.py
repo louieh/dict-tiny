@@ -1,3 +1,5 @@
+from typing import List
+
 import google.generativeai as genai
 from PIL import Image
 from plumbum import cli
@@ -54,8 +56,61 @@ class Gemini(DefaultLLM):
                                                 group="Gemini",
                                                 help="Indicate local image path if the model is gemini pro vision")
 
+    def _list_models(self) -> set:
+        """
+        Model(name='models/gemini-pro',
+              base_model_id='',
+              version='001',
+              display_name='Gemini Pro',
+              description='The best model for scaling across a wide range of tasks',
+              input_token_limit=30720,
+              output_token_limit=2048,
+              supported_generation_methods=['generateContent', 'countTokens'],
+              temperature=0.9,
+              top_p=1.0,
+              top_k=1)
+        ...
+        """
+        model_set = set()
+        for m in genai.list_models():
+            if 'generateContent' in m.supported_generation_methods:
+                model_set.add(m.name)
+        return model_set
+
     def print_input(self, text):
         pass
+
+    def get_token_usage(self) -> int:
+        return self.chat.count_tokens(self.dialogs.get_flat()).total_tokens
+
+    def get_token_usage_window(self) -> int:
+        return GEMINI_MODEL_DETAIL[self.model]["input_token_limit"]
+
+    def generate_user_message(self, text):
+        return {
+            "role": "user",
+            "parts": [text]
+        }
+
+    def generate_model_message(self, text):
+        return {
+            "role": "model",
+            "parts": [text]
+        }
+
+    def chat_completion(self, messages: List, stream=False):
+        try:
+            response = self.chat.generate_content(
+                messages,
+                generation_config=self.generation_config,
+                stream=stream)
+            return response
+        except Exception as e:
+            normal_warn_printer(f"Gemini response wrong: {str(e)}")
+            return
+
+    def parse_response(self, response):
+        return response.text
 
     def do_translate(self, text):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:
@@ -68,28 +123,27 @@ class Gemini(DefaultLLM):
             parts = [text, img]
         else:
             parts = [text]
-        try:
-            self.dialogs.add({
-                'role': 'user',
-                'parts': parts
-            })
-            response = self.chat.generate_content(
-                self.dialogs.get_flat(),
-                generation_config=self.generation_config,
-                stream=True)
-        except Exception as e:
-            normal_warn_printer(f"Gemini response wrong: {str(e)}")
-            return
+
+        curr_question = {
+            "role": "user",
+            "parts": parts
+        }
+        prev_dialogs = self.dialogs.get_flat()
+        prev_dialogs.append(curr_question)
+
+        response = self.chat_completion(prev_dialogs, stream=True)
+        if not response: return
 
         full_response = ""
         for chunk in response:
             chunk_text = chunk.text
             self.console.print(Markdown(chunk_text))
             full_response += chunk_text
-        self.dialogs.add({
-            'role': 'model',
-            'parts': [full_response]
-        })
+        self.dialogs.add([curr_question,
+                          {
+                              "role": "model",
+                              "parts": [full_response]
+                          }])
 
     def interactive_loop(self, session):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:

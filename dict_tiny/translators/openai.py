@@ -1,3 +1,5 @@
+from typing import List
+
 import openai
 from openai import OpenAI as openai_cls
 from plumbum import cli
@@ -29,6 +31,7 @@ class OpenAI(DefaultLLM):
 
         self.client = openai_cls(api_key=self.api_key)
         self.name = f"{OPENAI_NAME}-{self.model}"
+        self.token_usage = 0
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -53,13 +56,32 @@ class OpenAI(DefaultLLM):
     def print_input(self, text):
         pass
 
-    def do_translate(self, text):
-        self.dialogs.add({"role": "user", "content": text})
+    def get_token_usage(self) -> int:
+        return self.token_usage
+
+    def get_token_usage_window(self) -> int:
+        return OPENAI_MODEL_DETAIL[self.model]["context_window"]
+
+    def generate_user_message(self, text):
+        return {
+            "role": "user",
+            "content": [text]
+        }
+
+    def generate_model_message(self, text):
+        return {
+            "role": "assistant",
+            "content": [text]
+        }
+
+    def chat_completion(self, messages: List, stream=False):
         try:
-            resp = self.client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
-                messages=self.dialogs.get_flat(),
+                messages=messages,
+                stream=stream
             )
+            return response
         except openai.APIConnectionError as e:
             normal_warn_printer("The server could not be reached")
             return
@@ -69,9 +91,29 @@ class OpenAI(DefaultLLM):
         except openai.APIStatusError as e:
             normal_warn_printer("Another non-200-range status code was received")
             return
-        resp_text = resp.choices[0].message.content
-        self.console.print(Markdown(resp_text))
-        self.dialogs.add({"role": "assistant", "content": resp_text})
+
+    def parse_response(self, response):
+        return response.choices[0].message.content
+
+    def do_translate(self, text):
+        curr_question = {
+            "role": "user",
+            "content": text
+        }
+        prev_dialogs = self.dialogs.get_flat()
+        prev_dialogs.append(curr_question)
+
+        response = self.chat_completion(prev_dialogs)
+        if not response: return
+
+        response_text = self.parse_response(response)
+        self.token_usage = response.usage.total_tokens
+        self.console.print(Markdown(response_text))
+        self.dialogs.add([curr_question,
+                          {
+                              "role": "assistant",
+                              "content": response_text
+                          }])
 
     def interactive_loop(self, session):
         super().interactive_loop(session)

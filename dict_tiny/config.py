@@ -58,6 +58,9 @@ DEFAULT_LE = ISO639LCodes.English.value
 # GOOGLE TRANS
 GOOGLE_NAME = "Google Translate"
 GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
+GOOGLE_TRANS_API_HEADER = {
+    "X-Dict-Tiny-Secret-Token": "e14d348d268dca4731a99b7055e07921"
+}
 
 # DEEPL TRANS
 DEEPL_NAME = "DeepL Translate"
@@ -138,3 +141,7 @@ OPENAI_MODEL_DETAIL = {
         "context_window": 4096
     }
 }
+
+# LLM
+TOKEN_USAGE_FACTOR = 0.9
+SUMMARY_PROMPT = "Please summarize the current session history content in order to reduce the length of historical tokens, retain key information, and remove redundant information."

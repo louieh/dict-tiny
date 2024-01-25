@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List, Dict
 
 from plumbum import cli
 from rich.console import Console
@@ -15,7 +15,7 @@ class DefaultLLM(DefaultTrans):
                                                      lambda x: x is None or x > 0,
                                                      error_msg="max_output_tokens must be positive")
         self.console = Console()
-        self.dialogs = Dialog(dict_tiny_obj.dialog_turns)
+        self.dialogs = Dialog(dict_tiny_obj.dialog_turns, self)
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -33,6 +33,24 @@ class DefaultLLM(DefaultTrans):
                                                     group="LLM",
                                                     default=10,
                                                     help="Number of conversations turns")
+
+    def get_token_usage(self) -> int:
+        raise NotImplementedError
+
+    def get_token_usage_window(self) -> int:
+        raise NotImplementedError
+
+    def generate_user_message(self, text: str) -> Dict:
+        raise NotImplementedError
+
+    def generate_model_message(self, text: str) -> Dict:
+        raise NotImplementedError
+
+    def chat_completion(self, messages: List, stream=False):
+        raise NotImplementedError
+
+    def parse_response(self, response) -> str:
+        raise NotImplementedError
 
     def validate_param(self, param_name: str, valid_func: Callable = None, error_msg: str = None):
         param_value = getattr(self.dict_tiny_obj, param_name, None)
