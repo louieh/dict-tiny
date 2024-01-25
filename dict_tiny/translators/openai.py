@@ -54,11 +54,11 @@ class OpenAI(DefaultLLM):
         pass
 
     def do_translate(self, text):
-        self.conversation.append({"role": "user", "content": text})
+        self.dialogs.add({"role": "user", "content": text})
         try:
             resp = self.client.chat.completions.create(
                 model=self.model,
-                messages=self.conversation,
+                messages=self.dialogs.get_flat(),
             )
         except openai.APIConnectionError as e:
             normal_warn_printer("The server could not be reached")
@@ -71,8 +71,7 @@ class OpenAI(DefaultLLM):
             return
         resp_text = resp.choices[0].message.content
         self.console.print(Markdown(resp_text))
-        self.conversation.append({"role": "assistant", "content": resp_text})
-        self.conversation = self.conversation[-self.dialogue_turns:]
+        self.dialogs.add({"role": "assistant", "content": resp_text})
 
     def interactive_loop(self, session):
         super().interactive_loop(session)

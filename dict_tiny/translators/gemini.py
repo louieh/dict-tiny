@@ -69,12 +69,12 @@ class Gemini(DefaultLLM):
         else:
             parts = [text]
         try:
-            self.conversation.append({
+            self.dialogs.add({
                 'role': 'user',
                 'parts': parts
             })
             response = self.chat.generate_content(
-                self.conversation,
+                self.dialogs.get_flat(),
                 generation_config=self.generation_config,
                 stream=True)
         except Exception as e:
@@ -86,11 +86,10 @@ class Gemini(DefaultLLM):
             chunk_text = chunk.text
             self.console.print(Markdown(chunk_text))
             full_response += chunk_text
-        self.conversation.append({
+        self.dialogs.add({
             'role': 'model',
             'parts': [full_response]
         })
-        self.conversation = self.conversation[-self.dialogue_turns:]
 
     def interactive_loop(self, session):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:

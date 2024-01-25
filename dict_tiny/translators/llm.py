@@ -1,8 +1,9 @@
 from typing import Callable
 
 from plumbum import cli
-from rich import Console
+from rich.console import Console
 
+from dict_tiny.dialog import Dialog
 from dict_tiny.errors import LLMParamError
 from dict_tiny.translators.translator import DefaultTrans
 
@@ -14,8 +15,7 @@ class DefaultLLM(DefaultTrans):
                                                      lambda x: x is None or x > 0,
                                                      error_msg="max_output_tokens must be positive")
         self.console = Console()
-        self.dialogue_turns = dict_tiny_obj.dialogue_turns
-        self.conversation = []
+        self.dialogs = Dialog(dict_tiny_obj.dialog_turns)
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -28,11 +28,11 @@ class DefaultLLM(DefaultTrans):
                                                    float,
                                                    group="LLM",
                                                    help="Controls the randomness of the output")
-        dict_tiny_cls.dialogue_turns = cli.SwitchAttr(["--dialogue-turns"],
-                                                      cli.Range(1, 20),
-                                                      group="LLM",
-                                                      default=10,
-                                                      help="Number of conversations turns")
+        dict_tiny_cls.dialog_turns = cli.SwitchAttr(["--dialog-turns"],
+                                                    cli.Range(1, 20),
+                                                    group="LLM",
+                                                    default=10,
+                                                    help="Number of conversations turns")
 
     def validate_param(self, param_name: str, valid_func: Callable = None, error_msg: str = None):
         param_value = getattr(self.dict_tiny_obj, param_name, None)

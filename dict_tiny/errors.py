@@ -6,3 +6,7 @@ class CustomException(Exception):
 
 class LLMParamError(CustomException):
     """param error"""
+
+
+class InitDialogError(CustomException):
+    """init dialog error"""
