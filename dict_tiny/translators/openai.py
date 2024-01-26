@@ -114,6 +114,3 @@ class OpenAI(DefaultLLM):
                               "role": "assistant",
                               "content": response_text
                           }])
-
-    def interactive_loop(self, session):
-        super().interactive_loop(session)

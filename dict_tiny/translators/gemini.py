@@ -1,7 +1,7 @@
+from pathlib import Path
 from typing import List
 
 import google.generativeai as genai
-from PIL import Image
 from plumbum import cli
 from rich.markdown import Markdown
 
@@ -34,6 +34,9 @@ class Gemini(DefaultLLM):
         genai.configure(api_key=self.api_key)
         self.chat = genai.GenerativeModel(self.model)
         self.name = f"{GEMINI_NAME}-{self.model}"
+        self.img_path = self.validate_param("img_path",
+                                            self.read_img,
+                                            error_msg="image read failed")
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -51,10 +54,26 @@ class Gemini(DefaultLLM):
                                                       group="Gemini",
                                                       envname=GEMINI_API_KEY_ENV_NAME,
                                                       help="Indicate gemini api key")
-        dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
-                                                cli.ExistingFile,
-                                                group="Gemini",
-                                                help="Indicate local image path if the model is gemini pro vision")
+
+    def read_img(self, img_path):
+        if not img_path:
+            # do not need to read image if If img_path is not provided
+            return True
+        try:
+            if not getattr(self, "img", None):
+                setattr(self, "img", {
+                    'mime_type': 'image/png',
+                    'data': Path(img_path).read_bytes()
+                })
+                # try:
+                #     img = Image.open(self.img_path)
+                # except Exception as e:
+                #     normal_warn_printer(f"Unable to identify the image at: {self.img_path}")
+                #     return
+        except Exception as e:
+            normal_warn_printer(f"Unable to identify the image at: {img_path}")
+            return False
+        return True
 
     def _list_models(self) -> set:
         """
@@ -112,21 +131,26 @@ class Gemini(DefaultLLM):
     def parse_response(self, response):
         return response.text
 
+    def pro_vision_helper(self, text):
+        curr_question = [{
+            "role": "user",
+            "parts": [text, self.img]
+        }]
+
+        response = self.chat_completion(curr_question, stream=True)
+        if not response: return
+
+        for chunk in response:
+            self.console.print(Markdown(chunk.text))
+
     def do_translate(self, text):
         if self.model == GEMINI_MODEL.gemini_pro_vision.value:
-            img_path, text = text.split(" ", maxsplit=1)
-            try:
-                img = Image.open(img_path)
-            except Exception as e:
-                normal_warn_printer(f"Unable to identify the image at: {img_path}")
-                return
-            parts = [text, img]
-        else:
-            parts = [text]
+            self.pro_vision_helper(text)
+            return
 
         curr_question = {
             "role": "user",
-            "parts": parts
+            "parts": [text]
         }
         prev_dialogs = self.dialogs.get_flat()
         prev_dialogs.append(curr_question)
@@ -144,9 +168,3 @@ class Gemini(DefaultLLM):
                               "role": "model",
                               "parts": [full_response]
                           }])
-
-    def interactive_loop(self, session):
-        if self.model == GEMINI_MODEL.gemini_pro_vision.value:
-            normal_info_printer(
-                "If you use gemini pro vision, please enter the image address first, and then enter the text separated by spaces.")
-        super().interactive_loop(session)

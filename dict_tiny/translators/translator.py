@@ -4,7 +4,7 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.styles import Style
 
 from dict_tiny.completer import YoudaoCompleter
-from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE
+from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE, DICT_TINY_TARGET_LAN_ENV_NAME
 from dict_tiny.util import normal_error_printer, normal_warn_printer, normal_separator_printer, normal_info_printer, \
     normal_title_printer, parse_le
 
@@ -24,7 +24,7 @@ class DefaultTrans(object):
         dict_tiny_cls.source_language = cli.SwitchAttr("--source-language", str,
                                                        help="what language you want to translate")
         dict_tiny_cls.target_language = cli.SwitchAttr("--target-language", str,
-                                                       envname="DICT_TINY_TARGET_LAN",
+                                                       envname=DICT_TINY_TARGET_LAN_ENV_NAME,
                                                        help="what language you want to translate into")
 
         @cli.switch(["-c", "--clipboard"])

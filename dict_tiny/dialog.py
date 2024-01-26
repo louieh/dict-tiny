@@ -16,14 +16,6 @@ class Dialog(object):
         self.llm_obj = llm_obj
 
     def trim_worker(self):
-        try:
-            token_usage = self.llm_obj.get_token_usage()
-            token_usage_window = self.llm_obj.get_token_usage_window()
-        except Exception as e:
-            return
-        # print(f"token usage: {token_usage}, token usage window: {token_usage_window}")
-        if token_usage < token_usage_window:
-            return
         curr_question = self.llm_obj.generate_user_message(SUMMARY_PROMPT)
         prev_dialogs = self.get_flat()
         prev_dialogs.append(curr_question)
@@ -43,5 +35,12 @@ class Dialog(object):
         # default each dialog: [{'role': 'user', 'content'}, {'role': 'model', 'content'}]
         # need keep different roles appearing alternately
         self.dialog.append(messages)
-        trim_thread = threading.Thread(target=self.trim_worker)
-        trim_thread.start()
+        try:
+            token_usage = self.llm_obj.get_token_usage()
+            token_usage_window = self.llm_obj.get_token_usage_window()
+        except Exception as e:
+            return
+        # print(f"token usage: {token_usage}, token usage window: {token_usage_window}")
+        if token_usage >= token_usage_window:
+            trim_thread = threading.Thread(target=self.trim_worker)
+            trim_thread.start()
