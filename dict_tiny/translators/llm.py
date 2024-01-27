@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict
+from typing import Callable
 
 from plumbum import cli
 from rich.console import Console
@@ -44,13 +44,13 @@ class DefaultLLM(DefaultTrans):
     def get_token_usage_window(self) -> int:
         raise NotImplementedError
 
-    def generate_user_message(self, text: str) -> Dict:
+    def generate_user_message(self, text: str) -> dict:
         raise NotImplementedError
 
-    def generate_model_message(self, text: str) -> Dict:
+    def generate_model_message(self, text: str) -> dict:
         raise NotImplementedError
 
-    def chat_completion(self, messages: List, stream=False):
+    def chat_completion(self, messages: list, stream=False):
         raise NotImplementedError
 
     def parse_response(self, response) -> str:

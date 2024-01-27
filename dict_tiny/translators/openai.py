@@ -1,5 +1,3 @@
-from typing import List
-
 import openai
 from openai import OpenAI as openai_cls
 from plumbum import cli
@@ -74,7 +72,7 @@ class OpenAI(DefaultLLM):
             "content": [text]
         }
 
-    def chat_completion(self, messages: List, stream=False):
+    def chat_completion(self, messages: list, stream=False):
         try:
             response = self.client.chat.completions.create(
                 model=self.model,

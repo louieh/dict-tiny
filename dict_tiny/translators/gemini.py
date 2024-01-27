@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 
 import google.generativeai as genai
 from plumbum import cli
@@ -8,7 +7,7 @@ from rich.markdown import Markdown
 from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL, \
     GEMINI_MODEL_DETAIL
 from dict_tiny.translators.llm import DefaultLLM
-from dict_tiny.util import normal_warn_printer, normal_info_printer
+from dict_tiny.util import normal_warn_printer
 
 
 class Gemini(DefaultLLM):
@@ -117,7 +116,7 @@ class Gemini(DefaultLLM):
             "parts": [text]
         }
 
-    def chat_completion(self, messages: List, stream=False):
+    def chat_completion(self, messages: list, stream=False):
         try:
             response = self.chat.generate_content(
                 messages,

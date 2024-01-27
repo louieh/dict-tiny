@@ -1,7 +1,6 @@
 import threading
 from collections import deque
 from itertools import chain
-from typing import List
 
 from dict_tiny.config import SUMMARY_PROMPT
 from dict_tiny.errors import InitDialogError
@@ -31,7 +30,7 @@ class Dialog(object):
     def get_flat(self):
         return list(chain(*self.dialog))
 
-    def add(self, messages: List):
+    def add(self, messages: list):
         # default each dialog: [{'role': 'user', 'content'}, {'role': 'model', 'content'}]
         # need keep different roles appearing alternately
         self.dialog.append(messages)
