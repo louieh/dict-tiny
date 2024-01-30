@@ -11,6 +11,7 @@ SEPARATOR = ">>> {} <<<"
 TIMEOUT = 5
 RETRY = 3
 BACKOFF_FACTOR = 1
+MAX_TEXT_LENGTH = 3000
 
 
 class ISO639LCodes(Enum):
@@ -69,7 +70,8 @@ DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # GEMINI
 GEMINI_NAME = "Gemini"
-GEMINI_API_KEY_ENV_NAME = "GEMINI_API_KEY"
+GEMINI_MODEL_ENV_NAME = "DICT_TINY_GEMINI_MODEL"
+GEMINI_API_KEY_ENV_NAME = "DICT_TINY_GEMINI_API_KEY"
 
 
 class GEMINI_MODEL(Enum):
@@ -92,12 +94,16 @@ GEMINI_MODEL_DETAIL = {
 
 # OPENAI
 OPENAI_NAME = "OpenAI"
-OPENAI_API_KEY_ENV_NAME = "OPENAI_API_KEY"
+OPENAI_TIMEOUT = 20
+OPENAI_MODEL_ENV_NAME = "DICT_TINY_OPENAI_MODEL"
+OPENAI_API_KEY_ENV_NAME = "DICT_TINY_OPENAI_API_KEY"
 
 
 class OPENAI_MODEL(Enum):
+    gpt_4_0125_preview = "gpt-4-0125-preview"
+    gpt_4_turbo_preview = "gpt-4-turbo-preview"
     gpt_4_1106_preview = "gpt-4-1106-preview"
-    gpt_4_vision_preview = "gpt-4-vision-preview"
+    # gpt_4_vision_preview = "gpt-4-vision-preview"
     gpt_4 = "gpt-4"
     gpt_4_32k = "gpt-4-32k"
     gpt_4_0613 = "gpt-4-0613"
@@ -111,12 +117,18 @@ class OPENAI_MODEL(Enum):
 DEFAULT_OPENAI_MODEL = OPENAI_MODEL.gpt_35_turbo.value
 
 OPENAI_MODEL_DETAIL = {
+    OPENAI_MODEL.gpt_4_0125_preview.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.gpt_4_turbo_preview.value: {
+        "context_window": 128000
+    },
     OPENAI_MODEL.gpt_4_1106_preview.value: {
         "context_window": 128000
     },
-    OPENAI_MODEL.gpt_4_vision_preview.value: {
-        "context_window": 128000
-    },
+    # OPENAI_MODEL.gpt_4_vision_preview.value: {
+    #     "context_window": 128000
+    # },
     OPENAI_MODEL.gpt_4.value: {
         "context_window": 8192
     },

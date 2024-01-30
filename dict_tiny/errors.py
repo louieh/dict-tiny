@@ -5,7 +5,11 @@ class CustomException(Exception):
 
 
 class LLMParamError(CustomException):
-    """param error"""
+    """llm param error"""
+
+
+class TextInputError(CustomException):
+    """text input error"""
 
 
 class InitDialogError(CustomException):

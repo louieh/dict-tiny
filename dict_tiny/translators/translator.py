@@ -5,6 +5,7 @@ from prompt_toolkit.styles import Style
 
 from dict_tiny.completer import YoudaoCompleter
 from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE, DICT_TINY_TARGET_LAN_ENV_NAME
+from dict_tiny.errors import CustomException
 from dict_tiny.util import normal_error_printer, normal_warn_printer, normal_separator_printer, normal_info_printer, \
     normal_title_printer, parse_le
 
@@ -80,11 +81,13 @@ class DefaultTrans(object):
         # 5. print translation
         # 6. extra action (get more detail translation)
         try:
-            self.pre_action(self.text)
             self.print_separator()
+            self.pre_action(self.text)
             self.print_input(self.text)
             self.do_translate(self.text)
             self.extra_action(self.text)
+        except CustomException as e:
+            normal_error_printer(e.message)
         except Exception as e:
             # print(f"error: {e}")
             pass
@@ -134,6 +137,8 @@ class DefaultTrans(object):
                     self.pre_action(text)
                     self.print_input(text)
                     self.do_translate(text)
+                except CustomException as e:
+                    normal_error_printer(e.message)
                 except Exception as e:
                     # print(f"error: {e}")
                     continue

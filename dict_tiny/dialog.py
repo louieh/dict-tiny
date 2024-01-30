@@ -19,6 +19,7 @@ class Dialog(object):
         prev_dialogs = self.get_flat()
         prev_dialogs.append(curr_question)
         response = self.llm_obj.chat_completion(prev_dialogs, stream=False)
+        if not response: return
         response_text = self.llm_obj.parse_response(response)
         # thread safe ?
         self.dialog.clear()

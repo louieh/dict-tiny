@@ -31,7 +31,7 @@ class YoudaoTrans(DefaultTrans):
     def pre_action(self, text):
         self.source_language = is_alphabet(text)
         if self.source_language not in (ISO639LCodes.Chinese.value, ISO639LCodes.English.value):
-            normal_error_printer("[Error!] The input content is neither an English word nor a Chinese word.")
+            normal_error_printer("The input content is neither an English word nor a Chinese word.")
             raise
 
     def do_translate(self, text):
@@ -54,10 +54,11 @@ class YoudaoTrans(DefaultTrans):
             content = "".join(content[:-1])
 
         # print phone
-        for each_phone in phone:
-            if not each_phone: continue
-            normal_title_printer(each_phone.strip(), end="")
-        normal_info_printer("\n", end="")
+        if phone:
+            for each_phone in phone:
+                if not each_phone: continue
+                normal_title_printer(each_phone.strip(), end="")
+            normal_info_printer("\n", end="")
 
         # print content
         if not content:

@@ -3,7 +3,8 @@ from openai import OpenAI as openai_cls
 from plumbum import cli
 from rich.markdown import Markdown
 
-from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, OPENAI_MODEL_DETAIL
+from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, OPENAI_MODEL_DETAIL, \
+    OPENAI_MODEL_ENV_NAME, OPENAI_TIMEOUT
 from dict_tiny.translators.llm import DefaultLLM
 from dict_tiny.util import normal_warn_printer
 
@@ -27,7 +28,7 @@ class OpenAI(DefaultLLM):
             "temperature": self.temperature
         }
 
-        self.client = openai_cls(api_key=self.api_key)
+        self.client = openai_cls(api_key=self.api_key, timeout=OPENAI_TIMEOUT)
         self.name = f"{OPENAI_NAME}-{self.model}"
         self.token_usage = 0
 
@@ -40,6 +41,7 @@ class OpenAI(DefaultLLM):
         dict_tiny_cls.openai_model = cli.SwitchAttr("--openai-model",
                                                     str,
                                                     group="OpenAI",
+                                                    envname=OPENAI_MODEL_ENV_NAME,
                                                     default=DEFAULT_OPENAI_MODEL,
                                                     help="Select openai model")
         dict_tiny_cls.openai_api_key = cli.SwitchAttr("--openai-key",
@@ -81,14 +83,12 @@ class OpenAI(DefaultLLM):
             )
             return response
         except openai.APIConnectionError as e:
-            normal_warn_printer("The server could not be reached")
-            return
+            normal_warn_printer(f"The server could not be reached: {e.__cause__}")
         except openai.RateLimitError as e:
             normal_warn_printer("A 429 status code was received; we should back off a bit.")
-            return
         except openai.APIStatusError as e:
-            normal_warn_printer("Another non-200-range status code was received")
-            return
+            normal_warn_printer(
+                f"Another non-200-range status code was received, code: {e.status_code}, response: {e.message}")
 
     def parse_response(self, response):
         return response.choices[0].message.content

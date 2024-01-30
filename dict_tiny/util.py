@@ -30,12 +30,12 @@ class Downloader:
             if resp.status_code == 200: return resp
             normal_warn_printer(f"Download error, status code: {resp.status_code}")
         except requests.exceptions.ConnectionError as e:
-            normal_error_printer("[Error!] Connection Error. Please try again.")
+            normal_error_printer("Connection Error. Please check your network.")
         except requests.exceptions.Timeout as e:
-            normal_error_printer("[Error!] Time out. Please try again.")
+            normal_error_printer("Time out. Please try again.")
         except Exception as e:
             # print(f"download error: {str(e)}")
-            normal_error_printer("[Error!] Something went wrong. Please try again.")
+            normal_error_printer("Something went wrong. Please try again.")
 
 
 downloader = Downloader()

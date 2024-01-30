@@ -33,7 +33,7 @@ class Dict_tiny(cli.Application):
     def main(self, *words):
         if self.stop: return
         text = words or self.clipBoardContent  # word has high priority
-        if not text and not self.interactive and not hasattr(self, "img_path"):
+        if not text and not self.interactive and not getattr(self, "img_path", None):
             self.help()
             return
 

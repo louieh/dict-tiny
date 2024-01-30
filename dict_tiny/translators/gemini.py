@@ -5,9 +5,9 @@ from plumbum import cli
 from rich.markdown import Markdown
 
 from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL, \
-    GEMINI_MODEL_DETAIL
+    GEMINI_MODEL_DETAIL, GEMINI_MODEL_ENV_NAME
 from dict_tiny.translators.llm import DefaultLLM
-from dict_tiny.util import normal_warn_printer
+from dict_tiny.util import normal_warn_printer, normal_error_printer
 
 
 class Gemini(DefaultLLM):
@@ -35,7 +35,7 @@ class Gemini(DefaultLLM):
         self.name = f"{GEMINI_NAME}-{self.model}"
         self.img_path = self.validate_param("img_path",
                                             self.read_img,
-                                            error_msg="image read failed")
+                                            error_msg="parameter was not specified or image read failed")
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -46,6 +46,7 @@ class Gemini(DefaultLLM):
         dict_tiny_cls.gemini_model = cli.SwitchAttr("--gemini-model",
                                                     str,
                                                     group="Gemini",
+                                                    envname=GEMINI_MODEL_ENV_NAME,
                                                     default=DEFAULT_GEMINI_MODEL,
                                                     help="Select gemini model")
         dict_tiny_cls.gemini_api_key = cli.SwitchAttr("--gemini-key",
@@ -56,6 +57,8 @@ class Gemini(DefaultLLM):
 
     def read_img(self, img_path):
         if not img_path:
+            if self.model == GEMINI_MODEL.gemini_pro_vision.value:
+                return False
             # do not need to read image if If img_path is not provided
             return True
         try:
