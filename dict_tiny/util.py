@@ -28,9 +28,9 @@ class Downloader:
         try:
             resp = self.session.request(method, url, timeout=TIMEOUT, **kwargs)
             if resp.status_code == 200: return resp
-            normal_warn_printer(f"Download error, status code: {resp.status_code}")
+            normal_warn_printer(f"Download error, status code: {resp.status_code} resp: {resp.text}")
         except requests.exceptions.ConnectionError as e:
-            normal_error_printer("Connection Error. Please check your network.")
+            normal_error_printer(f"Connection Error. Please check your network. error: {e}")
         except requests.exceptions.Timeout as e:
             normal_error_printer("Time out. Please try again.")
         except Exception as e:

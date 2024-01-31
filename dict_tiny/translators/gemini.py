@@ -5,7 +5,7 @@ from plumbum import cli
 from rich.markdown import Markdown
 
 from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL, \
-    GEMINI_MODEL_DETAIL, GEMINI_MODEL_ENV_NAME
+    GEMINI_MODEL_DETAIL, GEMINI_MODEL_ENV_NAME, TOKEN_USAGE_FACTOR
 from dict_tiny.translators.llm import DefaultLLM
 from dict_tiny.util import normal_warn_printer, normal_error_printer
 
@@ -109,7 +109,7 @@ class Gemini(DefaultLLM):
         return self.chat.count_tokens(self.dialogs.get_flat()).total_tokens
 
     def get_token_usage_window(self) -> int:
-        return GEMINI_MODEL_DETAIL[self.model]["input_token_limit"]
+        return GEMINI_MODEL_DETAIL[self.model]["input_token_limit"] * TOKEN_USAGE_FACTOR
 
     def generate_user_message(self, text):
         return {

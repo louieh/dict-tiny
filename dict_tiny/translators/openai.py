@@ -4,7 +4,7 @@ from plumbum import cli
 from rich.markdown import Markdown
 
 from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, OPENAI_MODEL_DETAIL, \
-    OPENAI_MODEL_ENV_NAME, OPENAI_TIMEOUT
+    OPENAI_MODEL_ENV_NAME, OPENAI_TIMEOUT, TOKEN_USAGE_FACTOR
 from dict_tiny.translators.llm import DefaultLLM
 from dict_tiny.util import normal_warn_printer
 
@@ -92,7 +92,7 @@ class OpenAI(DefaultLLM):
         return self.token_usage
 
     def get_token_usage_window(self) -> int:
-        return OPENAI_MODEL_DETAIL[self.model]["context_window"]
+        return OPENAI_MODEL_DETAIL[self.model]["context_window"] * TOKEN_USAGE_FACTOR
 
     def generate_user_message(self, text):
         return {
