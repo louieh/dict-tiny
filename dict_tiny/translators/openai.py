@@ -23,32 +23,64 @@ class OpenAI(DefaultLLM):
         self.temperature = self.validate_param("temperature",
                                                lambda x: x is None or (0 <= x <= 2),
                                                error_msg="temperature can range from [0.0,2.0], inclusive")
+
+        self.azure_endpoint = dict_tiny_obj.azure_endpoint
+        self.base_url = dict_tiny_obj.azure_base_url
+        self.api_version = dict_tiny_obj.api_version
         self.api_params = {
             "max_tokens": self.max_output_tokens,
             "temperature": self.temperature
         }
-
-        self.client = openai_cls(api_key=self.api_key, timeout=OPENAI_TIMEOUT)
         self.name = f"{OPENAI_NAME}-{self.model}"
         self.token_usage = 0
+
+        if self.azure_endpoint or self.base_url:
+            from openai import AzureOpenAI
+            azure_client_params = {
+                "timeout": OPENAI_TIMEOUT,
+                "api_version": self.api_version,
+                "api_key": self.api_key
+            }
+            if self.azure_endpoint:
+                azure_client_params.update({"azure_endpoint": self.azure_endpoint})
+            elif self.base_url:
+                azure_client_params.update({"base_url": self.base_url})
+            self.client = AzureOpenAI(**azure_client_params)
+        else:
+            self.client = openai_cls(
+                api_key=self.api_key,
+                timeout=OPENAI_TIMEOUT
+            )
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_openai = cli.Flag(["--openai"],
-                                            group="OpenAI",
+                                            group=OPENAI_NAME,
                                             help="Use OpenAI API")
         dict_tiny_cls.openai_model = cli.SwitchAttr("--openai-model",
                                                     str,
-                                                    group="OpenAI",
+                                                    group=OPENAI_NAME,
                                                     envname=OPENAI_MODEL_ENV_NAME,
                                                     default=DEFAULT_OPENAI_MODEL,
                                                     help="Select openai model")
         dict_tiny_cls.openai_api_key = cli.SwitchAttr("--openai-key",
                                                       str,
-                                                      group="OpenAI",
+                                                      group=OPENAI_NAME,
                                                       envname=OPENAI_API_KEY_ENV_NAME,
                                                       help="Indicate openai api key")
+        dict_tiny_cls.azure_endpoint = cli.SwitchAttr("--azure-endpoint",
+                                                      str,
+                                                      group=OPENAI_NAME,
+                                                      help="azure endpoint")
+        dict_tiny_cls.azure_base_url = cli.SwitchAttr("--azure-base-url",
+                                                      str,
+                                                      group=OPENAI_NAME,
+                                                      help="azure openai base url")
+        dict_tiny_cls.api_version = cli.SwitchAttr("--api-version",
+                                                   str,
+                                                   group=OPENAI_NAME,
+                                                   help="azure openai api version")
 
     def pre_action(self, text):
         pass
@@ -79,7 +111,8 @@ class OpenAI(DefaultLLM):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                stream=stream
+                stream=stream,
+                **self.api_params
             )
             return response
         except openai.APIConnectionError as e:

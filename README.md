@@ -34,7 +34,7 @@ Add `-y` / `--youdao` to use Youdao Dict:
 
 ```python
 $ dict-tiny -y book
->>> Youdao Dict <<<
+>>> YoudaoDict <<<
 book
 ======
 英[bʊk]美[bʊk]
@@ -45,7 +45,7 @@ v. 预订，预约；（警方）将……记录在案；（裁判）记名警�
 
 ```python
 $ dict-tiny -y 书
->>> Youdao Dict <<<
+>>> YoudaoDict <<<
 书
 ===
 [shū]
@@ -57,7 +57,7 @@ Use `-m`/`--more` to get more detail translation for word:
 
 ```python
 $ dict-tiny -y 曾经 -m
->>> Youdao Dict <<<
+>>> YoudaoDict <<<
 曾经
 ====
 [céng jīng]
@@ -75,7 +75,7 @@ more detail:
 
 ```python
 $ dict-tiny -y dictionary -m
->>> Youdao Dict <<<
+>>> YoudaoDict <<<
 dictionary
 ============
 英[ˈdɪkʃən(ə)ri]美[ˈdɪkʃəneri]
@@ -103,7 +103,7 @@ Add `-g` / `--google` to use Google Translate:
 
 ```python
 $ dict-tiny -g book
->>> Google Translate <<<
+>>> GoogleTranslate <<<
 book
 ======
 output: 书
@@ -114,7 +114,7 @@ Add `--target-language` to specify the language to translate results into：
 
 ```python
 $ dict-tiny -g operation system --target-language ja
->>> Google Translate <<<
+>>> GoogleTranslate <<<
 operation system
 ==================
 output: オペレーションシステム
@@ -129,7 +129,7 @@ So, of course, you can add `--detect-language` to detect the language type:
 
 ```python
 $ dict-tiny -g --detect-language español
->>> Google Translate <<<
+>>> GoogleTranslate <<<
 español
 =========
 confidence: 0.49805447459220886
@@ -146,7 +146,7 @@ name: Spanish
 
   ```python
   $ dict-tiny -g book --target-language zh --source-language en
-  >>> Google Translate <<<
+  >>> GoogleTranslate <<<
   book
   ======
   output: 书
@@ -157,7 +157,7 @@ name: Spanish
   
   ```python
   $ dict-tiny -g book --target-language German --source-language English
-  >>> Google Translate <<<
+  >>> GoogleTranslate <<<
   book
   ======
   output: Buch
@@ -231,12 +231,29 @@ In interactive mode you can:
 
   ```python
   $ dict-tiny 机器学习
-  >>> Youdao Dict <<<
+  >>> YoudaoDict <<<
   机器学习
   ======
   machine learning
   ```
+  
+  You can use the environment variable `$DICT_TINY_DEFAULT_TRANS` to set the default translator. There are four options described above: `YoudaoDict`, `GoogleTranslate`, `Gemini`, `OpenAI`.  Case insensitive.
 * For Youdao Dict and Google translate, if the target language is not specified, Chinese and English will be used as the target language for each other.
+* In non-interactive mode, multiple translators can be specified at the same time, for example, YoudaoDict and GoogleTranslate can be used at the same time.
+
+  ```python
+  $ dict-tiny formulation -y -g
+  >>> YoudaoDict <<<
+  formulation
+  =============
+  英[ˌfɔːmjuˈleɪʃ(ə)n]美[ˌfɔːrmjuˈleɪʃ(ə)n]
+  n. （政策、计划等的）制定，构想；（想法的）阐述方式，表达方法；（药品或化妆品的）配方，配方产品
+  >>> GoogleTranslate <<<
+  formulation
+  =============
+  output: 公式
+  detected language: en
+  ```
 
 #### Use clipboard content
 
@@ -244,7 +261,7 @@ Use `-c`/`--clipboard` to use the contents of the clipboard:
 
 ```python
 $ dict-tiny -c -y
->>> Youdao Dict <<<
+>>> YoudaoDict <<<
 encounter
 ===========
 英[ɪnˈkaʊntə(r)]美[ɪnˈkaʊntər]

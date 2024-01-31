@@ -22,10 +22,10 @@ class YoudaoTrans(DefaultTrans):
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_youdaotrans = cli.Flag(["-y", "--youdao"],
-                                                 group="Youdao dict",
+                                                 group=YOUDAO_NAME,
                                                  help="Use Youdao Dictionary, currently only supports English or Chinese words")
         dict_tiny_cls.more_detail = cli.Flag(["-m", "--more"],
-                                             group="Youdao dict",
+                                             group=YOUDAO_NAME,
                                              help="Get more details")
 
     def pre_action(self, text):

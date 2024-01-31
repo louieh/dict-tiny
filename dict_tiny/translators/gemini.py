@@ -41,22 +41,22 @@ class Gemini(DefaultLLM):
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_gemini = cli.Flag(["--gemini"],
-                                            group="Gemini",
+                                            group=GEMINI_NAME,
                                             help="Use Gemini API")
         dict_tiny_cls.gemini_model = cli.SwitchAttr("--gemini-model",
                                                     str,
-                                                    group="Gemini",
+                                                    group=GEMINI_NAME,
                                                     envname=GEMINI_MODEL_ENV_NAME,
                                                     default=DEFAULT_GEMINI_MODEL,
                                                     help="Select gemini model")
         dict_tiny_cls.gemini_api_key = cli.SwitchAttr("--gemini-key",
                                                       str,
-                                                      group="Gemini",
+                                                      group=GEMINI_NAME,
                                                       envname=GEMINI_API_KEY_ENV_NAME,
                                                       help="Indicate gemini api key")
         dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
                                                 cli.ExistingFile,
-                                                group="Gemini",
+                                                group=GEMINI_NAME,
                                                 help="the path of image")
 
     def read_img(self, img_path):

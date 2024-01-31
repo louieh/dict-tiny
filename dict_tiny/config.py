@@ -24,9 +24,10 @@ class ISO639LCodes(Enum):
 
 DEFAULT_TARGET_LANGUAGE = ISO639LCodes.Chinese.value
 DICT_TINY_TARGET_LAN_ENV_NAME = "DICT_TINY_TARGET_LAN"
+DICT_TINY_DEFAULT_TRANS_ENV_NAME = "DICT_TINY_DEFAULT_TRANS"
 
 # YOUDAO
-YOUDAO_NAME = "Youdao Dict"
+YOUDAO_NAME = "YoudaoDict"
 YOUDAO_WEB_FAKE_HEADER = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
@@ -58,14 +59,14 @@ YOUDAO_SUGGESTION_API_BASE_URL = "https://dict.youdao.com/suggest?num={}&ver=3.0
 DEFAULT_LE = ISO639LCodes.English.value
 
 # GOOGLE TRANS
-GOOGLE_NAME = "Google Translate"
+GOOGLE_NAME = "GoogleTranslate"
 GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
 GOOGLE_TRANS_API_HEADER = {
     "X-Dict-Tiny-Secret-Token": "e14d348d268dca4731a99b7055e07921"
 }
 
 # DEEPL TRANS
-DEEPL_NAME = "DeepL Translate"
+DEEPL_NAME = "DeepLTranslate"
 DEEPL_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/deep/{}"
 
 # GEMINI

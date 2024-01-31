@@ -19,10 +19,10 @@ class GoogleTrans(DefaultTrans):
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_googletrans = cli.Flag(["-g", "--google"],
-                                                 group="Google translate",
+                                                 group=GOOGLE_NAME,
                                                  help="Use Google Translate")
         dict_tiny_cls.detect_language = cli.Flag("--detect-language",
-                                                 group="Google translate",
+                                                 group=GOOGLE_NAME,
                                                  help="Detect the language of the given text")
         # TODO
         # @cli.switch("--detect-language", str)

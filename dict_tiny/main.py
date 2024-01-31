@@ -41,10 +41,13 @@ class Dict_tiny(cli.Application):
 
         text = " ".join(text) if text else ""
         try:
-            trans_objs = [trans_obj for translator in _ALL_TRANSLATORS if
+            trans_objs = [trans_obj for translator in _ALL_TRANSLATORS.values() if
                           (trans_obj := translator.trans_obj_getter(text, self)) is not None]
             if not trans_objs:
-                trans_objs.append(DEFAULT_TRANSLATOR(text, self))
+                default_translator = DEFAULT_TRANSLATOR
+                if self.default_translator and self.default_translator.lower() in _ALL_TRANSLATORS:
+                    default_translator = _ALL_TRANSLATORS[self.default_translator.lower()]
+                trans_objs.append(default_translator(text, self))
         except CustomException as e:
             normal_error_printer(e.message)
             return
@@ -64,7 +67,7 @@ class Dict_tiny(cli.Application):
 
 
 def run():
-    for translator in _ALL_TRANSLATORS:
+    for translator in _ALL_TRANSLATORS.values():
         translator.attr_setter(Dict_tiny)
     Dict_tiny()
 
