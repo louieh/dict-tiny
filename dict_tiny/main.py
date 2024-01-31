@@ -24,7 +24,9 @@ class Dict_tiny(cli.Application):
         "Switches": colors.yellow,
         "Google translate": colors.green,
         "Youdao dict": colors.green,
-        "Gemini": colors.green
+        "Gemini": colors.green,
+        "OpenAI": colors.green,
+        "LLM": colors.green,
     }
 
     stop = False  # whether return directly in main

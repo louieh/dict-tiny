@@ -54,10 +54,11 @@ class YoudaoTrans(DefaultTrans):
             content = "".join(content[:-1])
 
         # print phone
-        if phone:
-            for each_phone in phone:
-                if not each_phone: continue
-                normal_title_printer(each_phone.strip(), end="")
+        phone_list = [each_phone.replace("\n", "").replace("\t", "").replace(" ", "") for each_phone in phone]
+        for each_phone in phone_list:
+            if not each_phone: continue
+            normal_title_printer(each_phone, end="")
+        if any(phone_list):
             normal_info_printer("\n", end="")
 
         # print content

@@ -33,10 +33,6 @@ class DefaultLLM(DefaultTrans):
                                                     group="LLM",
                                                     default=10,
                                                     help="Number of conversations turns")
-        dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
-                                                cli.ExistingFile,
-                                                group="LLM",
-                                                help="the path of image")
 
     def get_token_usage(self) -> int:
         raise NotImplementedError
