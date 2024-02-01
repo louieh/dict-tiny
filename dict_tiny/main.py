@@ -5,13 +5,12 @@ from plumbum import cli
 from plumbum import colors
 
 from dict_tiny import version
-from dict_tiny.errors import LLMAPIKeyNotFoundError
+from dict_tiny.config import YOUDAO_NAME, GOOGLE_NAME, GEMINI_NAME, OPENAI_NAME
+from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_warn_printer, normal_error_printer
 
-APP_DESC = """
-tiny command-line translator
-"""
+APP_DESC = version.DESCRIPTION
 APP_NAME = version.name
 APP_VERSION = version.__version__
 
@@ -22,9 +21,11 @@ class Dict_tiny(cli.Application):
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {
         "Switches": colors.yellow,
-        "Google translate": colors.green,
-        "Youdao dict": colors.green,
-        "Gemini": colors.green
+        YOUDAO_NAME: colors.green,
+        GOOGLE_NAME: colors.green,
+        GEMINI_NAME: colors.green,
+        OPENAI_NAME: colors.green,
+        "LLM": colors.green,
     }
 
     stop = False  # whether return directly in main
@@ -33,17 +34,20 @@ class Dict_tiny(cli.Application):
     def main(self, *words):
         if self.stop: return
         text = words or self.clipBoardContent  # word has high priority
-        if not text and not self.interactive:
+        if not text and not self.interactive and not getattr(self, "img_path", None):
             self.help()
             return
 
         text = " ".join(text) if text else ""
         try:
-            trans_objs = [trans_obj for translator in _ALL_TRANSLATORS if
+            trans_objs = [trans_obj for translator in _ALL_TRANSLATORS.values() if
                           (trans_obj := translator.trans_obj_getter(text, self)) is not None]
             if not trans_objs:
-                trans_objs.append(DEFAULT_TRANSLATOR(text, self))
-        except LLMAPIKeyNotFoundError as e:
+                default_translator = DEFAULT_TRANSLATOR
+                if self.default_translator and self.default_translator.lower() in _ALL_TRANSLATORS:
+                    default_translator = _ALL_TRANSLATORS[self.default_translator.lower()]
+                trans_objs.append(default_translator(text, self))
+        except CustomException as e:
             normal_error_printer(e.message)
             return
 
@@ -62,7 +66,7 @@ class Dict_tiny(cli.Application):
 
 
 def run():
-    for translator in _ALL_TRANSLATORS:
+    for translator in _ALL_TRANSLATORS.values():
         translator.attr_setter(Dict_tiny)
     Dict_tiny()
 

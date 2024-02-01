@@ -11,7 +11,7 @@ class YoudaoCompleter(Completer):
     def get_completions(self, document, complete_event):
         word_before_cursor = document.get_word_before_cursor()
         suggest_url = YOUDAO_SUGGESTION_API_BASE_URL.format(SUGGESTION_NUM, self.le, word_before_cursor)
-        resp = downloader("GET", suggest_url, headers=YOUDAO_SUGGEST_API_FAKE_HEADER)
+        resp = downloader.download("GET", suggest_url, headers=YOUDAO_SUGGEST_API_FAKE_HEADER)
         if not resp: return []
         try:
             resp_json = resp.json()

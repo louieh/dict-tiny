@@ -15,13 +15,17 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/louieh/dict-tiny",
-    keywords='python youdao dictionary command-line plumbum translator translate google-translation-api deepl deepl-translation-api',
+    keywords='python youdao dictionary command-line plumbum translator translate google-translation-api gemini openai',
     packages=setuptools.find_packages(),
     install_requires=[
         'requests',
         'lxml',
         'plumbum',
-        'pyperclip'
+        'pyperclip',
+        'prompt-toolkit',
+        'google-generativeai',
+        'rich',
+        'openai'
     ],
     entry_points={
         'console_scripts': [

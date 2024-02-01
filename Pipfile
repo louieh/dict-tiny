@@ -11,7 +11,7 @@ pyperclip = "*"
 prompt-toolkit = "*"
 google-generativeai = "*"
 rich = "*"
-pillow = "*"
+openai = "*"
 
 [dev-packages]
 
