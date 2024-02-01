@@ -5,13 +5,12 @@ from plumbum import cli
 from plumbum import colors
 
 from dict_tiny import version
+from dict_tiny.config import YOUDAO_NAME, GOOGLE_NAME, GEMINI_NAME, OPENAI_NAME
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_warn_printer, normal_error_printer
 
-APP_DESC = """
-tiny command-line translator
-"""
+APP_DESC = version.DESCRIPTION
 APP_NAME = version.name
 APP_VERSION = version.__version__
 
@@ -22,10 +21,10 @@ class Dict_tiny(cli.Application):
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {
         "Switches": colors.yellow,
-        "Google translate": colors.green,
-        "Youdao dict": colors.green,
-        "Gemini": colors.green,
-        "OpenAI": colors.green,
+        YOUDAO_NAME: colors.green,
+        GOOGLE_NAME: colors.green,
+        GEMINI_NAME: colors.green,
+        OPENAI_NAME: colors.green,
         "LLM": colors.green,
     }
 
