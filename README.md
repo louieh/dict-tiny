@@ -53,7 +53,7 @@ n.book;letter;script
 vt.write
 ```
 
-Use `-m`/`--more` to get more detail translation for word:
+Use `-m`/`--more` to get more detail translation for the word:
 
 ```python
 $ dict-tiny -y 曾经 -m
@@ -173,7 +173,7 @@ For some reason I am no longer allowed to use deepl pro, so deepl is no longer s
 
 ### Gemini
 
-Add `--gemini` to use Gemini:
+Add `--gemini` to use Gemini.
 
 Use `--gemini-model` to specify the model used by Gemini. You can also set the environment variable `$DICT_TINY_GEMINI_MODEL`. The default model is `gemini-pro`.
 
@@ -189,7 +189,7 @@ Use `--gemini-key` to specify the Gemini api key, or set the environment variabl
 
 ### OpenAI
 
-Add `--openai` to use OpenAI:
+Add `--openai` to use OpenAI.
 
 Use `--openai-model` to specify the model used by OpenAI. You can also set the environment variable `$DICT_TINY_OPENAI_MODEL`. The default model is `gpt-3.5-turbo`.
 
@@ -218,8 +218,8 @@ Each of the above functions can be entered into its interactive mode by adding t
 
 In interactive mode you can:
 
-* Use the above features in a continuous interactive manner.
-* Press `Tab` for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
+* Use above features in a continuous interactive manner.
+* Press `Tab` key for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
 * For Gemini and OpenAI, the dialog context is maintained in interactive mode, use `--dialog-turns` to specify the number of dialog turns to maintain, the default is 10.
 * All settings cannot be changed after entering interactive mode, such as target-language, model, img-path, temperature, etc., unless you exit to change the settings and re-enter.
 
