@@ -72,15 +72,15 @@ class OpenAI(DefaultLLM):
         dict_tiny_cls.azure_endpoint = cli.SwitchAttr("--azure-endpoint",
                                                       str,
                                                       group=OPENAI_NAME,
-                                                      help="azure endpoint")
+                                                      help="Azure endpoint")
         dict_tiny_cls.azure_base_url = cli.SwitchAttr("--azure-base-url",
                                                       str,
                                                       group=OPENAI_NAME,
-                                                      help="azure openai base url")
+                                                      help="Azure openai base url")
         dict_tiny_cls.api_version = cli.SwitchAttr("--api-version",
                                                    str,
                                                    group=OPENAI_NAME,
-                                                   help="azure openai api version")
+                                                   help="Azure openai api version")
 
     def pre_action(self, text):
         pass

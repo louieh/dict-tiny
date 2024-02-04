@@ -25,15 +25,15 @@ class DefaultTrans(object):
                                              help="Interactive mode")
         dict_tiny_cls.source_language = cli.SwitchAttr("--source-language",
                                                        str,
-                                                       help="what language you want to translate")
+                                                       help="What language you want to translate")
         dict_tiny_cls.target_language = cli.SwitchAttr("--target-language",
                                                        str,
                                                        envname=DICT_TINY_TARGET_LAN_ENV_NAME,
-                                                       help="what language you want to translate into")
+                                                       help="What language you want to translate into")
         dict_tiny_cls.default_translator = cli.SwitchAttr("--default-translator",
                                                           str,
                                                           envname=DICT_TINY_DEFAULT_TRANS_ENV_NAME,
-                                                          help="set default translator")
+                                                          help="Set default translator")
 
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):

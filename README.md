@@ -2,17 +2,27 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/louieh/dict-tiny/upload-dict-tiny-package.yml)](https://github.com/louieh/dict-tiny/actions?query=workflow%3A%22Upload+Dict-tiny+Python+Package%22) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/dict-tiny)](https://pepy.tech/project/dict-tiny)
 
-A command-line tool that integrates Youdao Dict, Google Translate, ~~DeepL Translator~~, Gemini and OpenAI.
+A command-line tool that integrates Youdao Dict, Google Translate, ~~DeepL Translator~~, Gemini and OpenAI. 
 
 Just for fun :)
 
 
 
-## Installation
+## Features
 
-You can install `dict-tiny` via pip. (>=Python 3.9)
+* Translate Chinese and English words using youdao.com.
+* Google Translate API.
+* Gemini.
+* OpenAI.
+* Use the above features in interactive mode.
 
-```python
+<p align="center"><img src="./assets/interactive_mode.png" alt="interactive_mode" width="80%" height="80%" /></p>
+
+## Installing
+
+Install with `pip`. (Python >= 3.9)
+
+```bash
 $ pip install dict-tiny
 ```
 
@@ -20,20 +30,77 @@ $ pip install dict-tiny
 
 ## Upgrading
 
-```python
+```bash
 $ pip install --upgrade dict-tiny
 ```
 
 
 
-## Usage
+## Options
+
+```bash
+$ dict-tiny
+
+Usage:
+    dict-tiny [SWITCHES] words...
+
+Gemini:
+    --gemini                        Use Gemini API
+    --gemini-key VALUE:str          Indicate gemini api key
+    --gemini-model VALUE:str        Select gemini model; the default is gemini-
+                                    pro
+    --img-path VALUE:ExistingFile   The path of image
+
+GoogleTranslate:
+    --detect-language               Detect the language of the given text
+    -g, --google                    Use Google Translate
+
+LLM:
+    --dialog-turns VALUE:[1..20]    Number of conversations turns; the default
+                                    is 10
+    --max-output-tokens VALUE:int   The maximum number of tokens to include in a
+                                    candidate.
+    --temperature VALUE:float       Controls the randomness of the output
+
+Meta-switches:
+    -h, --help                      Prints this help message and quits
+    --help-all                      Prints help messages of all sub-commands and
+                                    quits
+    -v, --version                   Prints the program's version and quits
+
+OpenAI:
+    --api-version VALUE:str         Azure openai api version
+    --azure-base-url VALUE:str      Azure openai base url
+    --azure-endpoint VALUE:str      Azure endpoint
+    --openai                        Use OpenAI API
+    --openai-key VALUE:str          Indicate openai api key
+    --openai-model VALUE:str        Select openai model; the default is
+                                    gpt-3.5-turbo
+
+Switches:
+    -c, --clipboard                 Use the contents of the clipboard.
+    --default-translator VALUE:str  Set default translator
+    -i, --interactive               Interactive mode
+    --source-language VALUE:str     What language you want to translate
+    --target-language VALUE:str     What language you want to translate into
+
+YoudaoDict:
+    -m, --more                      Get more details
+    -y, --youdao                    Use Youdao Dictionary, currently only
+                                    supports English or Chinese words
+```
+
+
+
+## Details and examples
 
 ### Youdao Dict
 
 Add `-y` / `--youdao` to use Youdao Dict:
 
-```python
+```bash
 $ dict-tiny -y book
+
 >>> YoudaoDict <<<
 book
 ======
@@ -43,8 +110,9 @@ v. 预订，预约；（警方）将……记录在案；（裁判）记名警�
 【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）
 ```
 
-```python
+```bash
 $ dict-tiny -y 书
+
 >>> YoudaoDict <<<
 书
 ===
@@ -55,8 +123,9 @@ vt.write
 
 Use `-m`/`--more` to get more detail translation for the word:
 
-```python
+```bash
 $ dict-tiny -y 曾经 -m
+
 >>> YoudaoDict <<<
 曾经
 ====
@@ -73,8 +142,9 @@ more detail:
   她曾经参加过石油大会战。
 ```
 
-```python
+```bash
 $ dict-tiny -y dictionary -m
+
 >>> YoudaoDict <<<
 dictionary
 ============
@@ -101,8 +171,9 @@ A dictionary is a book in which the words and phrases of a language are listed a
 
 Add `-g` / `--google` to use Google Translate:
 
-```python
+```bash
 $ dict-tiny -g book
+
 >>> GoogleTranslate <<<
 book
 ======
@@ -112,8 +183,9 @@ detected language: en
 
 Add `--target-language` to specify the language to translate results into：
 
-```python
+```bash
 $ dict-tiny -g operation system --target-language ja
+
 >>> GoogleTranslate <<<
 operation system
 ==================
@@ -127,8 +199,9 @@ And if you give a wrong source language, the translation result may not be what 
 
 So, of course, you can add `--detect-language` to detect the language type:
 
-```python
+```bash
 $ dict-tiny -g --detect-language español
+
 >>> GoogleTranslate <<<
 español
 =========
@@ -144,19 +217,21 @@ name: Spanish
 
 * The source and target languages for Google Translate are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes. 
 
-  ```python
+  ```bash
   $ dict-tiny -g book --target-language zh --source-language en
+  
   >>> GoogleTranslate <<<
   book
   ======
   output: 书
   source language: en
   ```
-  
+
   You can also enter the ISO language name:
-  
-  ```python
+
+  ```bash
   $ dict-tiny -g book --target-language German --source-language English
+  
   >>> GoogleTranslate <<<
   book
   ======
@@ -166,10 +241,6 @@ name: Spanish
 
 * Set the environment variable `$DICT_TINY_TARGET_LAN` so that you do not have to manually specify the target language each time. if you specify the target language parameter on the command line with `--target-language`, the setting in the environment variable will be overwritten.
 * The default `target-language` for Goole Translate are `English` .
-
-### ~~DeepL Translate~~
-
-For some reason I am no longer allowed to use deepl pro, so deepl is no longer supported.
 
 ### Gemini
 
@@ -195,8 +266,9 @@ Use `--openai-model` to specify the model used by OpenAI. You can also set the e
 
 Use `--openai-key` to specify the OpenAI api key, or set the environment variable `$DICT_TINY_OPENAI_API_KEY`.
 
-```python
+```bash
 $ dict-tiny --openai who are you?
+
 >>> OpenAI-gpt-3.5-turbo <<<
 I am an AI language model created by OpenAI. I can assist you with various tasks, answer questions, and
 engage in conversations on a wide range of topics. How may I assist you today?
@@ -212,14 +284,12 @@ engage in conversations on a wide range of topics. How may I assist you today?
 
 ### Interactive mode
 
-Each of the above functions can be entered into its interactive mode by adding the `-i` . `Control + d` to exit interactive mode.
-
-<img src="./assets/interactive_mode.png" alt="interactive_mode" width="70%" height="70%" />
+Each of the above functions can be entered into its interactive mode by adding the `-i` . <kbd>Ctrl</kbd> + <kbd>d</kbd> to exit interactive mode.
 
 In interactive mode you can:
 
 * Use above features in a continuous interactive manner.
-* Press `Tab` key for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
+* Press <kbd>Tab</kbd> for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
 * For Gemini and OpenAI, the dialog context is maintained in interactive mode, use `--dialog-turns` to specify the number of dialog turns to maintain, the default is 10.
 * All settings cannot be changed after entering interactive mode, such as target-language, model, img-path, temperature, etc., unless you exit to change the settings and re-enter.
 
@@ -229,8 +299,9 @@ In interactive mode you can:
 
 * Youdao Dict is the default translator, which means Youdao Dict will be used when no translator is specified.
 
-  ```python
+  ```bash
   $ dict-tiny 机器学习
+  
   >>> YoudaoDict <<<
   机器学习
   ======
@@ -241,8 +312,9 @@ In interactive mode you can:
 * For Youdao Dict and Google translate, if the target language is not specified, Chinese and English will be used as the target language for each other.
 * In non-interactive mode, multiple translators can be specified at the same time, for example, YoudaoDict and GoogleTranslate can be used at the same time.
 
-  ```python
+  ```bash
   $ dict-tiny formulation -y -g
+  
   >>> YoudaoDict <<<
   formulation
   =============
@@ -259,8 +331,9 @@ In interactive mode you can:
 
 Use `-c`/`--clipboard` to use the contents of the clipboard:
 
-```python
+```bash
 $ dict-tiny -c -y
+
 >>> YoudaoDict <<<
 encounter
 ===========
@@ -273,7 +346,18 @@ n. 偶遇，邂逅；经历，体验；冲突；比赛，交锋
 
 * `-c`/`--clipboard` has low priority. If you add `-c` and a word at the same time, the switch `-c` will be ignored.
 
+### Environment variables
 
+| name                       | default       | description                                                  |
+| -------------------------- | ------------- | ------------------------------------------------------------ |
+| `DICT_TINY_TARGET_LAN`     | en            | Specify the target language to be used in Google translate.  |
+| `DICT_TINY_DEFAULT_TRANS`  | youdaodict    | Specify the default translator.<br>`youdaodict` `googletranslate` `gemini` `openai` |
+| `DICT_TINY_GEMINI_MODEL`   | gemini-pro    | Specify the model to be used in the Gemini.                  |
+| `DICT_TINY_GEMINI_API_KEY` |               | Specify Gemini API key.                                      |
+| `DICT_TINY_OPENAI_MODEL`   | gpt-3.5-turbo | Specify the model to be used in the OpenAI.                  |
+| `DICT_TINY_OPENAI_API_KEY` |               | Specify OpenAI API key.                                      |
+
+ 
 
 
 ## License

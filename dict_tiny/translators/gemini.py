@@ -57,7 +57,7 @@ class Gemini(DefaultLLM):
         dict_tiny_cls.img_path = cli.SwitchAttr("--img-path",
                                                 cli.ExistingFile,
                                                 group=GEMINI_NAME,
-                                                help="the path of image")
+                                                help="The path of image")
 
     def read_img(self, img_path):
         if not img_path:
