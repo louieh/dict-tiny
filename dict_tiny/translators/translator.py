@@ -111,8 +111,8 @@ class DefaultTrans(object):
             '': '#ffbe54',
 
             # Prompt.
-            'prompt_name': '#00aa00',
-            'prompt_sign': '#60db94',
+            'prompt_name': '#E2FDA8',
+            'prompt_sign': '#E2FDA8',
         })
 
         normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
