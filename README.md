@@ -240,7 +240,7 @@ name: Spanish
   ```
 
 * Set the environment variable `$DICT_TINY_TARGET_LAN` so that you do not have to manually specify the target language each time. if you specify the target language parameter on the command line with `--target-language`, the setting in the environment variable will be overwritten.
-* The default `target-language` for Goole Translate are `English` .
+* The default `target-language` is `Chinese` .
 
 ### Gemini
 

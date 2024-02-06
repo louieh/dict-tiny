@@ -22,6 +22,14 @@ class ISO639LCodes(Enum):
     Korean = "ko"
 
 
+ISO639NameToCode = {
+    "chinese": "zh",
+    "english": "en",
+    "french": "fr",
+    "japanese": "ja",
+    "korean": "ko",
+}
+
 DEFAULT_TARGET_LANGUAGE = ISO639LCodes.Chinese.value
 DICT_TINY_TARGET_LAN_ENV_NAME = "DICT_TINY_TARGET_LAN"
 DICT_TINY_DEFAULT_TRANS_ENV_NAME = "DICT_TINY_DEFAULT_TRANS"
@@ -57,6 +65,7 @@ YOUDAO_WEB_API_BASE_URL = "https://dict.youdao.com/jsonapi_s?doctype=json&jsonve
 YOUDAO_APP_API_BASE_URL = "http://dict.youdao.com/jsonapi?q={}"
 YOUDAO_SUGGESTION_API_BASE_URL = "https://dict.youdao.com/suggest?num={}&ver=3.0&doctype=json&cache=false&le={}&q={}"
 DEFAULT_LE = ISO639LCodes.English.value
+YOUDAO_TARGET_LANG_SET = {"chinese", "zh", "english", "en", "french", "fr", "japanese", "ja", "korean", "ko"}
 
 # GOOGLE TRANS
 GOOGLE_NAME = "GoogleTranslate"

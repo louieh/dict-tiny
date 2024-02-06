@@ -1,13 +1,20 @@
 import json
+import pprint
+import re
+from hashlib import md5
 
 from lxml import html
 from plumbum import cli
+from rich.console import Console
 
 from dict_tiny.config import TERMINAL_SIZE_COLUMN, YOUDAO_WEB_FAKE_HEADER, YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_BASE_URL, \
-    YOUDAO_APP_API_BASE_URL, YOUDAO_NAME, ISO639LCodes
+    YOUDAO_APP_API_BASE_URL, YOUDAO_NAME, ISO639LCodes, YOUDAO_TARGET_LANG_SET, ISO639NameToCode, \
+    YOUDAO_WEB_API_BASE_URL
+from dict_tiny.errors import YoudaoParamError
+from dict_tiny.translators.YoudaoParser import *
 from dict_tiny.translators.translator import DefaultTrans
-from dict_tiny.util import downloader, is_alphabet, normal_title_printer, normal_info_printer, normal_warn_printer, \
-    normal_error_printer, parse_le
+from dict_tiny.util import downloader, normal_title_printer, normal_info_printer, normal_warn_printer, \
+    parse_le, print_equal
 
 
 class YoudaoTrans(DefaultTrans):
@@ -15,8 +22,16 @@ class YoudaoTrans(DefaultTrans):
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
         self.name = YOUDAO_NAME
-        # TODO support multiple languages
+        if self.target_language and self.target_language not in YOUDAO_TARGET_LANG_SET:
+            raise YoudaoParamError(f"the target language {self.target_language} is not supported")
+        if self.source_language and self.source_language not in YOUDAO_TARGET_LANG_SET:
+            raise YoudaoParamError(f"the source language {self.source_language} is not supported")
+        if self.target_language and self.target_language in ISO639NameToCode:
+            self.target_language = ISO639NameToCode[self.target_language]
+        if self.source_language and self.source_language in ISO639NameToCode:
+            self.source_language = ISO639NameToCode[self.source_language]
         self.trans_le = parse_le(self.source_language, self.target_language, trans=True)
+        self.console = Console()
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -28,13 +43,27 @@ class YoudaoTrans(DefaultTrans):
                                              group=YOUDAO_NAME,
                                              help="Get more details")
 
-    def pre_action(self, text):
-        self.source_language = is_alphabet(text)
-        if self.source_language not in (ISO639LCodes.Chinese.value, ISO639LCodes.English.value):
-            normal_error_printer("The input content is neither an English word nor a Chinese word.")
-            raise
+    # def pre_action(self, text):
+    #     self.source_language = is_alphabet(text)
+    #     if self.source_language not in (ISO639LCodes.Chinese.value, ISO639LCodes.English.value):
+    #         normal_error_printer("The input content is neither an English word nor a Chinese word.")
+    #         raise
 
     def do_translate(self, text):
+        data = self.get_web_api_data(text, self.trans_le)
+        resp = self.youdao_api_download(YOUDAO_WEB_API_BASE_URL.format(text), "POST", data=data)
+        if not resp: return
+
+        le_parser_dict = {
+            ISO639LCodes.English.value: ECParser,
+            ISO639LCodes.French.value: FCParser,
+            ISO639LCodes.Japanese.value: JCParser,
+            ISO639LCodes.Korean.value: KCParser
+        }
+
+        le_parser_dict[self.trans_le](resp, self.console, self.dict_tiny_obj.more_detail).parse()
+
+    def do_translate_legacy(self, text):
         data = self.youdao_download(text)
         if data is None: return
 
@@ -70,9 +99,37 @@ class YoudaoTrans(DefaultTrans):
         for each in content:
             normal_info_printer(each)
 
-    def extra_action(self, text):
-        if not self.dict_tiny_obj.more_detail: return
-        self.show_more(text, self.source_language)
+    # fetch all data include details from api from v1.3.1
+    # def extra_action(self, text):
+    #     if not self.dict_tiny_obj.more_detail: return
+    #     self.show_more(text, self.source_language)
+
+    @staticmethod
+    def get_web_api_data(text, le):
+        """
+        from https://blog.csdn.net/cherish1112365/article/details/131537040
+        :param text:
+        :param le:
+        :return:
+        """
+        w = "Mk6hqtUp33DGGtoS63tTJbMUYjRrG1Lu"
+        v = "webdict"
+        _ = "web"
+
+        r = text + v
+        t = len(r) % 10
+        o = md5(r.encode("utf8")).hexdigest()
+        n = _ + text + str(t) + w + o
+        f = md5(n.encode("utf8")).hexdigest()
+
+        return {
+            "q": text,
+            "le": le,
+            "t": t,
+            "client": _,
+            "sign": f,
+            "keyfrom": v
+        }
 
     @staticmethod
     def youdao_download(text):
@@ -86,7 +143,7 @@ class YoudaoTrans(DefaultTrans):
         return html.etree.HTML(resp.text)
 
     @staticmethod
-    def youdao_api_download(text):
+    def youdao_api_download(url, method="GET", **kwargs):
         """
         download data from API
         :param text:
@@ -94,7 +151,7 @@ class YoudaoTrans(DefaultTrans):
         """
 
         # real_requests_url = "http://dict.youdao.com/jsonapi?q=book&doctype=json&keyfrom=mac.main&id=4547758663ACBEFE0CFE4A1B3A362683&vendor=cidian.youdao.com&appVer=2.1.1&client=macdict&jsonversion=2"
-        resp = downloader.download("GET", YOUDAO_APP_API_BASE_URL.format(text), headers=YOUDAO_API_FAKE_HEADER)
+        resp = downloader.download(method, url, headers=YOUDAO_API_FAKE_HEADER, **kwargs)
         if not resp: return
         try:
             return json.loads(resp.text)
@@ -112,8 +169,7 @@ class YoudaoTrans(DefaultTrans):
         :param printall: if print all content, default True
         :return:
         """
-
-        data_base = self.youdao_api_download(text)
+        data_base = self.youdao_api_download(YOUDAO_APP_API_BASE_URL.format(text))
         if not data_base:
             normal_warn_printer(
                 "The detail translation of this word cannot be found at this time. Please try again later.")
@@ -145,7 +201,7 @@ class YoudaoTrans(DefaultTrans):
                 else:
                     normal_title_printer("====================")
             else:
-                self.print_equal(each_pos)
+                print_equal(each_pos)
 
             detailtrans_dict_dict = detailtrans_dict.get(each_pos)
             real_row = len(detailtrans_dict_dict) if printall else min(len(detailtrans_dict_dict), row)
@@ -216,7 +272,7 @@ class YoudaoTrans(DefaultTrans):
         normal_title_printer("\nmore detail (collins):")
 
         for each_trans in detailtrans_list:
-            self.print_equal(each_trans["pos_pos_tips"])
+            print_equal(each_trans["pos_pos_tips"])
 
             # --- print tran ---
             if "tran" in each_trans:
@@ -235,7 +291,6 @@ class YoudaoTrans(DefaultTrans):
                     normal_info_printer(" 例: %s" % each_sent.get("eng_sent"))
                     normal_info_printer("     %s" % each_sent.get("chn_sent"))
                 normal_info_printer("\n")
-        return
 
     def get_detailtrans_21cn(self, data_base, type):
         """
@@ -286,36 +341,6 @@ class YoudaoTrans(DefaultTrans):
             detailtrans_dict[pos] = temp_dict
 
         return detailtrans_dict
-
-    def get_cn_length(self, string):
-        """
-        return the number of chinese char
-        :param string:
-        :return:
-        """
-
-        count = 0
-        for each in string:
-            if each >= '\u4e00' and each <= '\u9fff':
-                count += 1
-        return count
-
-    def print_equal(self, string):
-        """
-        print equal symbol base on terminal size
-        :param string:
-        :return:
-        """
-
-        equal_length = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
-        if equal_length >= 16:  # 8 equal each side
-            normal_title_printer("======== %s ========" % string)
-        elif equal_length <= 1:
-            normal_title_printer(string)
-        else:
-            normal_title_printer("=" * int(equal_length / 2), end="")
-            normal_title_printer(" %s " % string, end="")
-            normal_title_printer("=" * (equal_length - int(equal_length / 2) - 1))
 
     def print_basetrans(self, data_base):
         """

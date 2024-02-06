@@ -6,7 +6,7 @@ from plumbum import colors
 from requests import Session
 from requests.adapters import HTTPAdapter, Retry
 
-from dict_tiny.config import TIMEOUT, DEFAULT_LE, ISO639LCodes, RETRY, BACKOFF_FACTOR
+from dict_tiny.config import TIMEOUT, DEFAULT_LE, ISO639LCodes, RETRY, BACKOFF_FACTOR, TERMINAL_SIZE_COLUMN
 
 
 class Downloader:
@@ -84,10 +84,10 @@ def parse_le(source: str, target: str, trans=False) -> str:
         ISO639LCodes.Korean.value,
         ISO639LCodes.Japanese.value
     }
+    if not target or not trans:
+        return DEFAULT_LE if source not in le_set else source
     if not source:
         return DEFAULT_LE if target not in le_set else target
-    if not trans:
-        return DEFAULT_LE if source not in le_set else source
     le = st_set.intersection(le_set)
     if ISO639LCodes.Chinese.value in st_set and le:
         return le.pop()
@@ -106,3 +106,35 @@ normal_info_printer = partial(normal_color_printer, color=None)
 normal_title_printer = partial(normal_color_printer, color=colors.green)
 normal_warn_printer = partial(normal_color_printer, color=colors.yellow)
 normal_error_printer = partial(normal_color_printer, color=colors.red)
+
+
+def print_equal(string):
+    """
+    print equal symbol base on terminal size
+    :param string:
+    :return:
+    """
+
+    equal_length = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
+    if equal_length >= 16:  # 8 equal each side
+        normal_title_printer("======== %s ========" % string)
+    elif equal_length <= 1:
+        normal_title_printer(string)
+    else:
+        normal_title_printer("=" * int(equal_length / 2), end="")
+        normal_title_printer(" %s " % string, end="")
+        normal_title_printer("=" * (equal_length - int(equal_length / 2) - 1))
+
+
+def get_cn_length(string):
+    """
+    return the number of chinese char
+    :param string:
+    :return:
+    """
+
+    count = 0
+    for each in string:
+        if each >= '\u4e00' and each <= '\u9fff':
+            count += 1
+    return count

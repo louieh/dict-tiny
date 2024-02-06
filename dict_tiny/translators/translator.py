@@ -15,8 +15,8 @@ class DefaultTrans(object):
     def __init__(self, text, dict_tiny_obj):
         self.text = text
         self.dict_tiny_obj = dict_tiny_obj
-        self.source_language = dict_tiny_obj.source_language
-        self.target_language = dict_tiny_obj.target_language or DEFAULT_TARGET_LANGUAGE
+        self.source_language = dict_tiny_obj.source_language.lower() if dict_tiny_obj.source_language else None
+        self.target_language = dict_tiny_obj.target_language.lower() if dict_tiny_obj.target_language else DEFAULT_TARGET_LANGUAGE
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -95,10 +95,11 @@ class DefaultTrans(object):
             self.extra_action(self.text)
         except CustomException as e:
             normal_error_printer(e.message)
+        except NotImplementedError as e:
+            normal_error_printer("method is not implemented")
         except Exception as e:
-            # print(f"error: {e}")
-            pass
-
+            normal_error_printer(f"translate error: {e}")
+            return
     def get_prompt_session(self):
         style = Style.from_dict({
             # completion

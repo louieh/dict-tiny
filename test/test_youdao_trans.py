@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from dict_tiny.config import YOUDAO_API_FAKE_HEADER, YOUDAO_APP_API_BASE_URL
 from dict_tiny.translators import YoudaoTrans
 from test.util import assert_not_raises
 
@@ -31,7 +32,7 @@ class TestYoudaoTrans(unittest.TestCase):
         assert res is not None
 
     def test_api_download(self):
-        res = YoudaoTrans.youdao_api_download("book")
+        res = YoudaoTrans.youdao_api_download(YOUDAO_APP_API_BASE_URL.format("book"))
         assert res is not None
 
 
