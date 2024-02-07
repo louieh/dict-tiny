@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/dict-tiny.svg)](https://pypi.python.org/pypi/dict-tiny/) [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/louieh/dict-tiny/upload-dict-tiny-package.yml)](https://github.com/louieh/dict-tiny/actions?query=workflow%3A%22Upload+Dict-tiny+Python+Package%22) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Downloads](https://pepy.tech/badge/dict-tiny)](https://pepy.tech/project/dict-tiny)
 
-A command-line tool that integrates Youdao Dict, Google Translate, ~~DeepL Translator~~, Gemini and OpenAI. 
+A command-line tool that integrates Youdao Dict, Google Translate, Gemini and OpenAI. 
 
 Just for fun :)
 
@@ -45,49 +45,44 @@ Usage:
     dict-tiny [SWITCHES] words...
 
 Gemini:
-    --gemini                        Use Gemini API
-    --gemini-key VALUE:str          Indicate gemini api key
-    --gemini-model VALUE:str        Select gemini model; the default is gemini-
-                                    pro
-    --img-path VALUE:ExistingFile   The path of image
+    --gemini                            Use Gemini API
+    --gemini-key VALUE:str              Indicate gemini api key
+    --gemini-model VALUE:str            Select gemini model; the default is gemini-pro
+    --img-path VALUE:ExistingFile       The path of image
 
 GoogleTranslate:
-    --detect-language               Detect the language of the given text
-    -g, --google                    Use Google Translate
+    --detect-language                   Detect the language of the given text
+    -g, --google                        Use Google Translate
 
 LLM:
-    --dialog-turns VALUE:[1..20]    Number of conversations turns; the default
-                                    is 10
-    --max-output-tokens VALUE:int   The maximum number of tokens to include in a
-                                    candidate.
-    --temperature VALUE:float       Controls the randomness of the output
+    --dialog-turns VALUE:[1..20]        Number of conversations turns; the default is 10
+    --max-output-tokens VALUE:int       The maximum number of tokens to include in a candidate.
+    --temperature VALUE:float           Controls the randomness of the output
 
 Meta-switches:
-    -h, --help                      Prints this help message and quits
-    --help-all                      Prints help messages of all sub-commands and
-                                    quits
-    -v, --version                   Prints the program's version and quits
+    -h, --help                          Prints this help message and quits
+    --help-all                          Prints help messages of all sub-commands and quits
+    -v, --version                       Prints the program's version and quits
 
 OpenAI:
-    --api-version VALUE:str         Azure openai api version
-    --azure-base-url VALUE:str      Azure openai base url
-    --azure-endpoint VALUE:str      Azure endpoint
-    --openai                        Use OpenAI API
-    --openai-key VALUE:str          Indicate openai api key
-    --openai-model VALUE:str        Select openai model; the default is
-                                    gpt-3.5-turbo
+    --api-version VALUE:str             Azure openai api version
+    --azure-base-url VALUE:str          Azure openai base url
+    --azure-endpoint VALUE:str          Azure endpoint
+    --openai                            Use OpenAI API
+    --openai-key VALUE:str              Indicate openai api key
+    --openai-model VALUE:str            Select openai model; the default is gpt-3.5-turbo
 
 Switches:
-    -c, --clipboard                 Use the contents of the clipboard.
-    --default-translator VALUE:str  Set default translator
-    -i, --interactive               Interactive mode
-    --source-language VALUE:str     What language you want to translate
-    --target-language VALUE:str     What language you want to translate into
+    -c, --clipboard                     Use the contents of the clipboard.
+    --default-translator VALUE:str      Set default translator
+    -i, --interactive                   Interactive mode
+    --source-language VALUE:str         What language you want to translate
+    --target-language VALUE:str         What language you want to translate into
 
 YoudaoDict:
-    -m, --more                      Get more details
-    -y, --youdao                    Use Youdao Dictionary, currently only
-                                    supports English or Chinese words
+    --legacy                            Use legacy translate method
+    -m, --more                          Get more details
+    -y, --youdao                        Use Youdao Dictionary, currently only supports English or Chinese words
 ```
 
 
