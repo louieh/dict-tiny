@@ -1,53 +1,32 @@
-import json
-import re
-from hashlib import md5
-from lxml import html
-
-from dict_tiny.config import YOUDAO_API_FAKE_HEADER, YOUDAO_WEB_BASE_URL, YOUDAO_WEB_FAKE_HEADER, TERMINAL_SIZE_COLUMN, \
-    ISO639LCodes
-from dict_tiny.util import downloader, normal_title_printer, normal_warn_printer
+from dict_tiny.util import normal_warn_printer
 
 
 class YoudaoParser(object):
-    def __init__(self, data, console, print_detail=False):
+    def __init__(self, main_key, data, console, print_detail=False):
+        self.main_key = main_key
         self.data = data
         self.print_detail = print_detail
         self.console = console
 
-    def parse_main_key(self):
-        meta_dict = self.data.get("meta", {})
-        guess_language = meta_dict.get("guess_language")
-        le = meta_dict.get("le")
-        if guess_language == ISO639LCodes.Chinese.value:
-            self.main_key = f"c{le[0]}"
-        else:
-            self.main_key = f"{le[0]}c"
-        dicts = meta_dict.get("dicts")
-        if self.main_key not in dicts:
-            if "fanyi" in dicts:
-                self.main_key = "fanyi"
-            else:
-                normal_warn_printer("cannot find result currently")
-                return
-
     def parse(self):
-        self.parse_main_key()
-        self.parse_phone()
-        self.parse_simple_content()
+        basic_value = self.data.get(self.main_key)
+        word_data = basic_value.get("word", {})
+        if not word_data and "$ref" in basic_value:
+            new_main_key = basic_value["$ref"].replace("$.", "")
+            if new_main_key not in self.data:
+                normal_warn_printer("cannot find main key currently")
+                return
+            word_data = self.data[new_main_key].get("word")
+        self.parse_phone(word_data)
+        self.parse_simple_content(word_data)
         if self.print_detail:
             self.parse_detail_content()
 
-    def parse_phone(self):
+    def parse_phone(self, word_data):
         pass
 
-    def parse_simple_content(self):
+    def parse_simple_content(self, word_data):
         pass
 
     def parse_detail_content(self):
         pass
-
-    @staticmethod
-    def remove_html_tags(text):
-        clean = re.compile('<.*?>')
-        return re.sub(clean, '', text)
-

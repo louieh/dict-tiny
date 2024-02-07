@@ -50,6 +50,9 @@ class Dict_tiny(cli.Application):
         except CustomException as e:
             normal_error_printer(e.message)
             return
+        except Exception as e:
+            normal_error_printer(f"translator init error: {e}")
+            return
 
         # enter interactive mode
         if self.interactive:

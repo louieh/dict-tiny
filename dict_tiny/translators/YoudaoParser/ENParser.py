@@ -1,11 +1,9 @@
+from dict_tiny.util import normal_title_printer, normal_info_printer, print_equal, remove_html_tags
 from .YoudaoParser import YoudaoParser
-from ...util import normal_title_printer, normal_info_printer, print_equal
 
 
-class ECParser(YoudaoParser):
-    def parse_phone(self):
-        basic_value = self.data.get(self.main_key)
-        word_data = basic_value.get("word", {})
+class ENParser(YoudaoParser):
+    def parse_phone(self, word_data):
         phone = []
         if "usphone" in word_data:
             phone.append(f"[美]{word_data['usphone']}")
@@ -17,9 +15,7 @@ class ECParser(YoudaoParser):
             normal_title_printer(" ".join(phone))
             normal_info_printer("")
 
-    def parse_simple_content(self):
-        basic_value = self.data.get(self.main_key)
-        word_data = basic_value.get("word", {})
+    def parse_simple_content(self, word_data):
         word_trans = word_data.get("trs", [])
         for word_tran in word_trans:
             pos = word_tran.get("pos", "")
@@ -40,6 +36,9 @@ class ECParser(YoudaoParser):
         if wfs_results:
             normal_info_printer(", ".join(wfs_results))
 
+
+class ECParser(ENParser):
+
     def parse_detail_content(self):
         collins = self.data.get("collins", {}).get("collins_entries", [])
         if collins:
@@ -50,19 +49,22 @@ class ECParser(YoudaoParser):
                 normal_title_printer(f"{headword}/{phonetic}")
                 entries = each_collins_entry.get("entries", {}).get("entry")
                 for entry in entries:
-                    print("-==-=-=-=-==-")
                     tran_entry = entry.get("tran_entry")[0]
                     pos_entry = tran_entry.get("pos_entry")
-                    tran = tran_entry.get("tran")
+                    if not pos_entry: continue  # maybe seeAlso
                     print_equal(f"{pos_entry['pos']} {pos_entry['pos_tips']}")
-                    normal_info_printer(self.remove_html_tags(tran))
-                    normal_info_printer("")
+                    tran = tran_entry.get("tran")
+                    normal_info_printer(remove_html_tags(tran))
                     exam_sents = tran_entry.get("exam_sents", {}).get("sent", [])
                     for each_sent in exam_sents:
                         normal_info_printer(" 例: %s" % each_sent.get("eng_sent"))
                         normal_info_printer("     %s" % each_sent.get("chn_sent"))
                     normal_info_printer("")
 
+
+class CEParser(ENParser):
+
+    def parse_detail_content(self):
         wuguanghua = self.data.get("wuguanghua")
         if wuguanghua:
             self.console.print("\n:book: [bold magenta]wuguanghua[/bold magenta]:")

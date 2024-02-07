@@ -1,7 +1,6 @@
 from typing import Callable
 
 from plumbum import cli
-from rich.console import Console
 
 from dict_tiny.dialog import Dialog
 from dict_tiny.errors import LLMParamError
@@ -14,7 +13,6 @@ class DefaultLLM(DefaultTrans):
         self.max_output_tokens = self.validate_param("max_output_tokens",
                                                      lambda x: x is None or x > 0,
                                                      error_msg="max_output_tokens must be positive")
-        self.console = Console()
         self.dialogs = Dialog(dict_tiny_obj.dialog_turns, self)
 
     @classmethod

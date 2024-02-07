@@ -10,7 +10,7 @@ Just for fun :)
 
 ## Features
 
-* Translate Chinese and English words using youdao.com.
+* youdao.com.
 * Google Translate API.
 * Gemini.
 * OpenAI.
@@ -98,16 +98,20 @@ YoudaoDict:
 
 Add `-y` / `--youdao` to use Youdao Dict:
 
+You can use youdao for Chinese-English, Chinese-Japanese, Chinese-French, and Chinese-Korean translation. The default is Chinese-English translation.
+
 ```bash
 $ dict-tiny -y book
 
 >>> YoudaoDict <<<
 book
 ======
-英[bʊk]美[bʊk]
+[美]bʊk [英]bʊk
+
 n. 书，书籍；本子，簿册；（长篇作品的）篇，卷，部；装订成册之物；赌局，打赌；账册，账簿
 v. 预订，预约；（警方）将……记录在案；（裁判）记名警告
-【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）
+ 【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）
+复数: books, 第三人称单数: books, 现在分词: booking, 过去式: booked, 过去分词: booked
 ```
 
 ```bash
@@ -116,12 +120,23 @@ $ dict-tiny -y 书
 >>> YoudaoDict <<<
 书
 ===
-[shū]
-n.book;letter;script
-vt.write
+shū
+
+book
+书，书籍；本子，簿册；（长篇作品的）篇，卷，部；装订成册之物；赌局，打赌；账册，账簿；预订，预约；（警方）将……记录在案；（裁判）记名警告；【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）；
+
+write
+写作，编写；写道；写信；书写，写字；谱写（音乐作品）；编写（计算机程序）；将（计算机中的）数据写入（磁盘或其他储存媒体）；填写（表格、支票等），拟定；（笔）能写字；拼写；<加，南非>参加（笔试）；书写，手写（与铅印相对）；以写作为生；承保（保险单）；
+
+letter
+信，信函；字母；<美>（缝制在运动服上的）校运动队首字母标志；<英，非正式>（代表学位或职位等资格的）首字母缩略词（letters）；文学；法律文书，正式文书（letters）；字面确切含义；（印刷）一种铅字字体；<古> 学识，渊博的学问；用字母标注；把字母印刷（或缝制等）于；<美>赢得学校运动队的字母标志；【名】 （Letter）（美、英、巴西）莱特（人名）；
+
+script
+剧本，讲稿；笔迹，手写体；连写体，草体；字体；（一种语言的）字母系统，字母表；<英>（考生的）笔试答卷； 脚本（程序）（计算机的一系列指令）；<非正式>（医生的）处方；期待，计划；写剧本，写讲稿；事先准备，计划；
+
 ```
 
-Use `-m`/`--more` to get more detail translation for the word:
+Use `-m` / `--more` to get more detail translation for the word:
 
 ```bash
 $ dict-tiny -y 曾经 -m
@@ -129,17 +144,24 @@ $ dict-tiny -y 曾经 -m
 >>> YoudaoDict <<<
 曾经
 ====
-[céng jīng]
-adv.once;ever
+céng jīng
 
-more detail:
-======== 副词 ========
-1:
-  （表示有过某些行为或情况） once:
-  He once lived in Shanghai.
-  他曾经在上海住过。
-  She has taken part in a major battle for oil.
-  她曾经参加过石油大会战。
+once
+一次， 一回；曾经，一度；任何一次，从来；乘以一；一.....就， 一旦；一次；
+
+ever
+曾经，从来，在任何时候；一直，始终；越来越，愈发；究竟，到底；非常，确实；【名】 （Ever）（英）埃弗，（俄）叶韦尔，（西、法）埃韦尔（人名）；
+
+
+📖 wuguanghua:
+(表示有过某些行为或情况) once
+
+ 例: He once lived in Shanghai.
+     他曾经在上海住过。
+ 例: She has taken part in a major battle for oil.
+     她曾经参加过石油大会战。
+ 例: I have seen him before.
+     我曾经见到过他。
 ```
 
 ```bash
@@ -148,24 +170,54 @@ $ dict-tiny -y dictionary -m
 >>> YoudaoDict <<<
 dictionary
 ============
-英[ˈdɪkʃən(ə)ri]美[ˈdɪkʃəneri]
+[美]ˈdɪkʃəneri [英]ˈdɪkʃən(ə)ri
+
 n. 字典，词典；专业词典，术语大全；电子词典；双语词典
+复数: dictionaries
 
-more detail (collins):
+📖 collins:
+dictionary/ˈdɪkʃənərɪ
 ======== N-COUNT 可数名词 ========
- · 词典
-
-A dictionary is a book in which the words and phrases of a language are listed alphabetically, together with their meanings or their translations in another language.
-
-
+A dictionary is a book in which the words and phrases of a language are listed alphabetically, together with their meanings or their translations in another language. 词典
  例: ...a Spanish-English dictionary.
      …一本西班牙语—英语词典。
 ```
 
-**Note:**
+Specify `--target-language` to translate to other languages.
 
-* Some words have a lot of translation that may occupy the entire screen.
-* Only supports English or Chinese words currently.
+```bash
+$ dict-tiny -y 进击的巨人 --target-language ja
+
+>>> YoudaoDict <<<
+进击的巨人
+=======
+jinjidejuren
+
+進撃の巨人（しんげきのきょじん）（日本漫画家谏山创创作的少年漫画作品，于2009年在讲谈社旗下的漫画杂志《别册少年》上开始连载。）
+```
+
+```bash
+$ dict-tiny -y Bonjour --target-language fr
+
+>>> YoudaoDict <<<
+Bonjour
+=========
+bɔ̃ʒu:r
+
+[m.]
+早安，日安，白天好，你好
+```
+
+```bash
+$ dict-tiny -y go는 구글이 만든 오픈 소스 프로그래밍 언어이다 --target-language ko
+
+>>> YoudaoDict <<<
+go는 구글이 만든 오픈 소스 프로그래밍 언어이다
+=============================
+go是谷歌开发的开源程序设计语言
+```
+
+
 
 ### Google Translate
 
@@ -289,7 +341,7 @@ Each of the above functions can be entered into its interactive mode by adding t
 In interactive mode you can:
 
 * Use above features in a continuous interactive manner.
-* Press <kbd>Tab</kbd> for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
+* Press <kbd>Tab</kbd> for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese. For Japanese, Korean and French auto-completion you need to specify the `--sourge-language` parameter.)
 * For Gemini and OpenAI, the dialog context is maintained in interactive mode, use `--dialog-turns` to specify the number of dialog turns to maintain, the default is 10.
 * All settings cannot be changed after entering interactive mode, such as target-language, model, img-path, temperature, etc., unless you exit to change the settings and re-enter.
 

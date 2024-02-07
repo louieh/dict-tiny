@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 from functools import partial
 
@@ -72,6 +73,10 @@ def is_alphabet(word):
 
 def parse_le(source: str, target: str, trans=False) -> str:
     """
+    Determine the le value in youdao based on the input target language or source language. Default le is en.
+    If trans is False which means the auto-completion section, the value of le depends on the source language, same as
+    target language is None.
+    If the source language is None, the value of le can only depend on the target language.
     @param source: source language
     @param target: target language
     @param trans: translate or suggestion
@@ -115,7 +120,7 @@ def print_equal(string):
     :return:
     """
 
-    equal_length = TERMINAL_SIZE_COLUMN - len(string) - self.get_cn_length(string) - 2
+    equal_length = TERMINAL_SIZE_COLUMN - len(string) - get_cn_length(string) - 2
     if equal_length >= 16:  # 8 equal each side
         normal_title_printer("======== %s ========" % string)
     elif equal_length <= 1:
@@ -135,6 +140,11 @@ def get_cn_length(string):
 
     count = 0
     for each in string:
-        if each >= '\u4e00' and each <= '\u9fff':
+        if '\u4e00' <= each <= '\u9fff':
             count += 1
     return count
+
+
+def remove_html_tags(text):
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)

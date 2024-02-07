@@ -2,6 +2,7 @@ import pyperclip
 from plumbum import cli
 from prompt_toolkit import PromptSession
 from prompt_toolkit.styles import Style
+from rich.console import Console
 
 from dict_tiny.completer import YoudaoCompleter
 from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE, DICT_TINY_TARGET_LAN_ENV_NAME, \
@@ -17,6 +18,7 @@ class DefaultTrans(object):
         self.dict_tiny_obj = dict_tiny_obj
         self.source_language = dict_tiny_obj.source_language.lower() if dict_tiny_obj.source_language else None
         self.target_language = dict_tiny_obj.target_language.lower() if dict_tiny_obj.target_language else DEFAULT_TARGET_LANGUAGE
+        self.console = Console()
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -100,6 +102,7 @@ class DefaultTrans(object):
         except Exception as e:
             normal_error_printer(f"translate error: {e}")
             return
+
     def get_prompt_session(self):
         style = Style.from_dict({
             # completion
