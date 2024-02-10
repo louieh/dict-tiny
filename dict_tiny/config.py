@@ -115,13 +115,13 @@ class OPENAI_MODEL(Enum):
     gpt_4_1106_preview = "gpt-4-1106-preview"
     # gpt_4_vision_preview = "gpt-4-vision-preview"
     gpt_4 = "gpt-4"
-    gpt_4_32k = "gpt-4-32k"
     gpt_4_0613 = "gpt-4-0613"
+    gpt_4_32k = "gpt-4-32k"
     gpt_4_32k_0613 = "gpt-4-32k-0613"
-    gpt_35_turbo_1106 = "gpt-3.5-turbo-1106"
+    gpt_35_turbo_0125 = "gpt-3.5-turbo-0125"
     gpt_35_turbo = "gpt-3.5-turbo"
-    gpt_35_turbo_16k = "gpt-3.5-turbo-16k"
-    gpt_35_turbo_instruct = "gpt-3.5-turbo-instruct"
+    gpt_35_turbo_1106 = "gpt-3.5-turbo-1106"
+    # gpt_35_turbo_instruct = "gpt-3.5-turbo-instruct"
 
 
 DEFAULT_OPENAI_MODEL = OPENAI_MODEL.gpt_35_turbo.value
@@ -142,27 +142,27 @@ OPENAI_MODEL_DETAIL = {
     OPENAI_MODEL.gpt_4.value: {
         "context_window": 8192
     },
-    OPENAI_MODEL.gpt_4_32k.value: {
-        "context_window": 32768
-    },
     OPENAI_MODEL.gpt_4_0613.value: {
         "context_window": 8192
+    },
+    OPENAI_MODEL.gpt_4_32k.value: {
+        "context_window": 32768
     },
     OPENAI_MODEL.gpt_4_32k_0613.value: {
         "context_window": 32768
     },
-    OPENAI_MODEL.gpt_35_turbo_1106.value: {
+    OPENAI_MODEL.gpt_35_turbo_0125.value: {
         "context_window": 16385
     },
     OPENAI_MODEL.gpt_35_turbo.value: {
         "context_window": 4096
     },
-    OPENAI_MODEL.gpt_35_turbo_16k.value: {
+    OPENAI_MODEL.gpt_35_turbo_1106.value: {
         "context_window": 16385
     },
-    OPENAI_MODEL.gpt_35_turbo_instruct.value: {
-        "context_window": 4096
-    }
+    # OPENAI_MODEL.gpt_35_turbo_instruct.value: {
+    #     "context_window": 4096
+    # }
 }
 
 # LLM
