@@ -40,6 +40,7 @@ class DefaultTrans(object):
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
             """
+            @:param self: Dict_tiny object
             Use the contents of the clipboard.
             """
 
@@ -55,6 +56,7 @@ class DefaultTrans(object):
             else:
                 normal_warn_printer("There is no content in the clipboard.")
 
+        # set instance method to dict tiny class
         dict_tiny_cls.trans_clipboard = trans_clipboard
 
     @classmethod

@@ -14,6 +14,7 @@ class DefaultLLM(DefaultTrans):
                                                      lambda x: x is None or x > 0,
                                                      error_msg="max_output_tokens must be positive")
         self.dialogs = Dialog(dict_tiny_obj.dialog_turns, self)
+        self.list_models = dict_tiny_obj.list_models
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
@@ -31,6 +32,14 @@ class DefaultLLM(DefaultTrans):
                                                     group="LLM",
                                                     default=10,
                                                     help="Number of conversations turns")
+        dict_tiny_cls.list_models = cli.Flag(["--list-models"],
+                                             excludes=["-i", "--interactive"],
+                                             group="LLM",
+                                             help="List all supported models")
+
+    @staticmethod
+    def list_supported_models():
+        """List all supported models"""
 
     def get_token_usage(self) -> int:
         raise NotImplementedError

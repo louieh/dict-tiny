@@ -34,7 +34,7 @@ class Dict_tiny(cli.Application):
     def main(self, *words):
         if self.stop: return
         text = words or self.clipBoardContent  # word has high priority
-        if not text and not self.interactive and not getattr(self, "img_path", None):
+        if not text and not self.interactive and not getattr(self, "img_path", None) and not self.list_models:
             self.help()
             return
 
@@ -52,6 +52,12 @@ class Dict_tiny(cli.Application):
             return
         except Exception as e:
             normal_error_printer(f"translator init error: {e}")
+            return
+
+        if self.list_models:
+            for trans_obj in trans_objs:
+                if trans_obj is None: continue
+                trans_obj.list_supported_models()
             return
 
         # enter interactive mode

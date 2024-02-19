@@ -4,9 +4,9 @@ from plumbum import cli
 from rich.markdown import Markdown
 
 from dict_tiny.config import OPENAI_NAME, DEFAULT_OPENAI_MODEL, OPENAI_API_KEY_ENV_NAME, OPENAI_MODEL_DETAIL, \
-    OPENAI_MODEL_ENV_NAME, OPENAI_TIMEOUT, TOKEN_USAGE_FACTOR
+    OPENAI_MODEL_ENV_NAME, OPENAI_TIMEOUT, TOKEN_USAGE_FACTOR, OPENAI_MODEL
 from dict_tiny.translators.llm import DefaultLLM
-from dict_tiny.util import normal_warn_printer
+from dict_tiny.util import normal_warn_printer, normal_info_printer
 
 
 class OpenAI(DefaultLLM):
@@ -81,6 +81,11 @@ class OpenAI(DefaultLLM):
                                                    str,
                                                    group=OPENAI_NAME,
                                                    help="Azure openai api version")
+
+    @staticmethod
+    def list_supported_models():
+        for model in OPENAI_MODEL:
+            normal_info_printer(model.value)
 
     def pre_action(self, text):
         pass

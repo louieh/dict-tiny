@@ -7,7 +7,7 @@ from rich.markdown import Markdown
 from dict_tiny.config import GEMINI_NAME, DEFAULT_GEMINI_MODEL, GEMINI_API_KEY_ENV_NAME, GEMINI_MODEL, \
     GEMINI_MODEL_DETAIL, GEMINI_MODEL_ENV_NAME, TOKEN_USAGE_FACTOR
 from dict_tiny.translators.llm import DefaultLLM
-from dict_tiny.util import normal_warn_printer, normal_error_printer
+from dict_tiny.util import normal_warn_printer, normal_error_printer, normal_info_printer
 
 
 class Gemini(DefaultLLM):
@@ -19,7 +19,7 @@ class Gemini(DefaultLLM):
                                          lambda x: x is not None and x in GEMINI_MODEL_DETAIL,
                                          error_msg="model not found")
         self.api_key = self.validate_param("gemini_api_key",
-                                           lambda x: x is not None,
+                                           lambda x: x is not None or self.list_models,
                                            error_msg="api key not found")
         self.temperature = self.validate_param("temperature",
                                                lambda x: x is None or (0 <= x <= 1),
@@ -58,6 +58,11 @@ class Gemini(DefaultLLM):
                                                 cli.ExistingFile,
                                                 group=GEMINI_NAME,
                                                 help="The path of image")
+
+    @staticmethod
+    def list_supported_models():
+        for model in GEMINI_MODEL:
+            normal_info_printer(model.value)
 
     def read_img(self, img_path):
         if not img_path:
