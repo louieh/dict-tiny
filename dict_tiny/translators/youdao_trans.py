@@ -30,7 +30,7 @@ class YoudaoTrans(DefaultTrans):
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
-        super().attr_setter(dict_tiny_cls)
+        super().attr_setter(dict_tiny_cls)    # TODO 这里多个子类会重复执行父类的 attr_setter 方法
         dict_tiny_cls.use_youdaotrans = cli.Flag(["-y", "--youdao"],
                                                  group=YOUDAO_NAME,
                                                  help="Use Youdao Dictionary, currently only supports English or Chinese words")
@@ -64,7 +64,7 @@ class YoudaoTrans(DefaultTrans):
             if "fanyi" in dicts:
                 main_key = "fanyi"
             else:
-                normal_warn_printer("No results found at this time currently")
+                normal_warn_printer("No results found.")
                 return
         parser_cls = globals()[f"{main_key.upper()}Parser"]
         parser_cls(main_key, resp, self.console, self.dict_tiny_obj.more_detail).parse()

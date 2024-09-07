@@ -172,7 +172,7 @@ class Gemini(DefaultLLM):
         full_response = ""
         for chunk in response:
             chunk_text = chunk.text
-            self.console.print(Markdown(chunk_text))
+            self.console.print(Markdown(chunk_text))  # TODO 拿到全部结果后再渲染 markdown
             full_response += chunk_text
         self.dialogs.add([curr_question,
                           {

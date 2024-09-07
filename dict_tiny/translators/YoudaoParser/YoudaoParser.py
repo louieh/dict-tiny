@@ -14,7 +14,7 @@ class YoudaoParser(object):
         if not word_data and "$ref" in basic_value:
             new_main_key = basic_value["$ref"].replace("$.", "")
             if new_main_key not in self.data:
-                normal_warn_printer("cannot find main key currently")
+                normal_warn_printer("cannot find main key")
                 return
             word_data = self.data[new_main_key].get("word")
         self.parse_phone(word_data)
