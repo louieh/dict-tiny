@@ -30,7 +30,7 @@ class YoudaoTrans(DefaultTrans):
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
-        super().attr_setter(dict_tiny_cls)    # TODO 这里多个子类会重复执行父类的 attr_setter 方法
+        super().attr_setter(dict_tiny_cls)
         dict_tiny_cls.use_youdaotrans = cli.Flag(["-y", "--youdao"],
                                                  group=YOUDAO_NAME,
                                                  help="Use Youdao Dictionary, currently only supports English or Chinese words")
