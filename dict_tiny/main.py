@@ -34,8 +34,7 @@ class Dict_tiny(cli.Application):
     def main(self, *words):
         if self.stop: return
         text = words or self.clipBoardContent  # word has high priority
-        if not text and not self.interactive and not getattr(self, "img_path",
-                                                             None) and not self.list_models:  # TODO 这里子类逻辑混入主逻辑了，后面如果再增加提前退出逻辑还得修改这里
+        if not text and not self.interactive and not getattr(self, "img_path", None) and not self.list_models:
             self.help()
             return
 
