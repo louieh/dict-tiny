@@ -85,21 +85,31 @@ GEMINI_API_KEY_ENV_NAME = "DICT_TINY_GEMINI_API_KEY"
 
 
 class GEMINI_MODEL(Enum):
+    gemini_15_pro_flash = "gemini-1.5-flash"
+    gemini_15_pro = "gemini-1.5-pro"
     gemini_pro = "gemini-pro"
-    gemini_pro_vision = "gemini-pro-vision"
+    # gemini_pro_vision = "gemini-pro-vision"
 
 
-DEFAULT_GEMINI_MODEL = GEMINI_MODEL.gemini_pro.value
+DEFAULT_GEMINI_MODEL = GEMINI_MODEL.gemini_15_pro_flash.value
 
 GEMINI_MODEL_DETAIL = {
+    GEMINI_MODEL.gemini_15_pro_flash.value: {
+        "input_token_limit": 1048576,
+        "output_token_limit": 8192
+    },
+    GEMINI_MODEL.gemini_15_pro.value: {
+        "input_token_limit": 2097152,
+        "output_token_limit": 8192
+    },
     GEMINI_MODEL.gemini_pro.value: {
         "input_token_limit": 30720,
         "output_token_limit": 2048
     },
-    GEMINI_MODEL.gemini_pro_vision.value: {
-        "input_token_limit": 12288,
-        "output_token_limit": 4096
-    }
+    # GEMINI_MODEL.gemini_pro_vision.value: {
+    #     "input_token_limit": 12288,
+    #     "output_token_limit": 4096
+    # }
 }
 
 # OPENAI
@@ -110,27 +120,45 @@ OPENAI_API_KEY_ENV_NAME = "DICT_TINY_OPENAI_API_KEY"
 
 
 class OPENAI_MODEL(Enum):
-    gpt_4_0125_preview = "gpt-4-0125-preview"
+    gpt_4o = "gpt-4o"
+    chatgpt_4o_latest = "chatgpt-4o-latest"
+
+    gpt_4o_mini = "gpt-4o-mini"
+
+    gpt_4_turbo = "gpt-4-turbo"
     gpt_4_turbo_preview = "gpt-4-turbo-preview"
+    gpt_4_0125_preview = "gpt-4-0125-preview"
     gpt_4_1106_preview = "gpt-4-1106-preview"
     # gpt_4_vision_preview = "gpt-4-vision-preview"
     gpt_4 = "gpt-4"
     gpt_4_0613 = "gpt-4-0613"
-    gpt_4_32k = "gpt-4-32k"
-    gpt_4_32k_0613 = "gpt-4-32k-0613"
+
     gpt_35_turbo_0125 = "gpt-3.5-turbo-0125"
     gpt_35_turbo = "gpt-3.5-turbo"
     gpt_35_turbo_1106 = "gpt-3.5-turbo-1106"
     # gpt_35_turbo_instruct = "gpt-3.5-turbo-instruct"
 
 
-DEFAULT_OPENAI_MODEL = OPENAI_MODEL.gpt_35_turbo.value
+DEFAULT_OPENAI_MODEL = OPENAI_MODEL.gpt_4o.value
 
 OPENAI_MODEL_DETAIL = {
-    OPENAI_MODEL.gpt_4_0125_preview.value: {
+    OPENAI_MODEL.gpt_4o.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.chatgpt_4o_latest.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.gpt_4o_mini.value: {
+        "context_window": 128000
+    },
+
+    OPENAI_MODEL.gpt_4_turbo.value: {
         "context_window": 128000
     },
     OPENAI_MODEL.gpt_4_turbo_preview.value: {
+        "context_window": 128000
+    },
+    OPENAI_MODEL.gpt_4_0125_preview.value: {
         "context_window": 128000
     },
     OPENAI_MODEL.gpt_4_1106_preview.value: {
@@ -145,17 +173,11 @@ OPENAI_MODEL_DETAIL = {
     OPENAI_MODEL.gpt_4_0613.value: {
         "context_window": 8192
     },
-    OPENAI_MODEL.gpt_4_32k.value: {
-        "context_window": 32768
-    },
-    OPENAI_MODEL.gpt_4_32k_0613.value: {
-        "context_window": 32768
-    },
     OPENAI_MODEL.gpt_35_turbo_0125.value: {
         "context_window": 16385
     },
     OPENAI_MODEL.gpt_35_turbo.value: {
-        "context_window": 4096
+        "context_window": 16385
     },
     OPENAI_MODEL.gpt_35_turbo_1106.value: {
         "context_window": 16385
