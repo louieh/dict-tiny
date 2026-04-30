@@ -7,7 +7,14 @@ from plumbum import colors
 from requests import Session
 from requests.adapters import HTTPAdapter, Retry
 
-from dict_tiny.config import TIMEOUT, DEFAULT_LE, ISO639LCodes, RETRY, BACKOFF_FACTOR, TERMINAL_SIZE_COLUMN
+from dict_tiny.config import (
+    TIMEOUT,
+    DEFAULT_LE,
+    ISO639LCodes,
+    RETRY,
+    BACKOFF_FACTOR,
+    TERMINAL_SIZE_COLUMN,
+)
 
 
 class Downloader:
@@ -28,10 +35,15 @@ class Downloader:
         """
         try:
             resp = self.session.request(method, url, timeout=TIMEOUT, **kwargs)
-            if resp.status_code == 200: return resp
-            normal_warn_printer(f"Download error, status code: {resp.status_code} resp: {resp.text}")
+            if resp.status_code == 200:
+                return resp
+            normal_warn_printer(
+                f"Download error, status code: {resp.status_code} resp: {resp.text}"
+            )
         except requests.exceptions.ConnectionError as e:
-            normal_error_printer(f"Connection Error. Please check your network. error: {e}")
+            normal_error_printer(
+                f"Connection Error. Please check your network. error: {e}"
+            )
         except requests.exceptions.Timeout as e:
             normal_error_printer("Time out. Please try again.")
         except Exception as e:
@@ -49,26 +61,28 @@ def is_alphabet(word):
     :param word:
     :return:
     """
-    if not word: return 'other'
+    if not word:
+        return "other"
     is_alphabet = defaultdict(int)
-    word = word.replace(' ', '')
+    word = word.replace(" ", "")
     for each_letter in word:
-        if each_letter >= '\u4e00' and each_letter <= '\u9fff':
-            is_alphabet['zh'] += 1
+        if each_letter >= "\u4e00" and each_letter <= "\u9fff":
+            is_alphabet["zh"] += 1
         # elif word >= '\u0030' and word <= '\u0039':
         #     return 'num'
-        elif (each_letter >= '\u0041' and each_letter <= '\u005a') or (
-                each_letter >= '\u0061' and each_letter <= '\u007a'):
-            is_alphabet['en'] += 1
+        elif (each_letter >= "\u0041" and each_letter <= "\u005a") or (
+            each_letter >= "\u0061" and each_letter <= "\u007a"
+        ):
+            is_alphabet["en"] += 1
         else:
-            is_alphabet['other'] += 1
+            is_alphabet["other"] += 1
 
-    is_alphabet['en'] /= 4
+    is_alphabet["en"] /= 4
 
     for len_type, num in is_alphabet.items():
         if num >= sum(is_alphabet.values()) * 0.7:
             return len_type
-    return 'other'
+    return "other"
 
 
 def parse_le(source: str, target: str, trans=False) -> str:
@@ -87,7 +101,7 @@ def parse_le(source: str, target: str, trans=False) -> str:
         ISO639LCodes.English.value,
         ISO639LCodes.French.value,
         ISO639LCodes.Korean.value,
-        ISO639LCodes.Japanese.value
+        ISO639LCodes.Japanese.value,
     }
     if not target or not trans:
         return DEFAULT_LE if source not in le_set else source
@@ -106,7 +120,9 @@ def normal_color_printer(text, color=None, **kwargs):
         print(color | text, **kwargs)
 
 
-normal_separator_printer = partial(normal_color_printer, color=colors.bold & colors.yellow)
+normal_separator_printer = partial(
+    normal_color_printer, color=colors.bold & colors.yellow
+)
 normal_info_printer = partial(normal_color_printer, color=None)
 normal_title_printer = partial(normal_color_printer, color=colors.green)
 normal_warn_printer = partial(normal_color_printer, color=colors.yellow)
@@ -140,11 +156,11 @@ def get_cn_length(string):
 
     count = 0
     for each in string:
-        if '\u4e00' <= each <= '\u9fff':
+        if "\u4e00" <= each <= "\u9fff":
             count += 1
     return count
 
 
 def remove_html_tags(text):
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
+    clean = re.compile("<.*?>")
+    return re.sub(clean, "", text)
