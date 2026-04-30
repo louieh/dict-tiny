@@ -1,0 +1,14 @@
+[project]
+name = "dict-tiny"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "aiohttp>=3.13.5",
+    "lxml>=6.1.0",
+    "plumbum>=1.10.0",
+    "prompt-toolkit>=3.0.52",
+    "pyperclip>=1.11.0",
+    "rich>=15.0.0",
+]
