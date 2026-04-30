@@ -10,5 +10,6 @@ dependencies = [
     "plumbum>=1.10.0",
     "prompt-toolkit>=3.0.52",
     "pyperclip>=1.11.0",
+    "requests>=2.32.5",
     "rich>=15.0.0",
 ]
