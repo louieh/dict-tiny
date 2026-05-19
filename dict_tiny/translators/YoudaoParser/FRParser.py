@@ -1,5 +1,5 @@
 from dict_tiny.util import normal_title_printer, normal_info_printer
-from .YoudaoParser import YoudaoParser
+from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
 
 
 class FRParser(YoudaoParser):

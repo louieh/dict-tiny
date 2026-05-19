@@ -1,8 +1,24 @@
-from dict_tiny.util import normal_title_printer, normal_info_printer, print_equal, remove_html_tags
-from .YoudaoParser import YoudaoParser
+from dict_tiny.util import (
+    normal_title_printer,
+    normal_info_printer,
+    print_equal,
+    remove_html_tags,
+)
+from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
 
 
 class ENParser(YoudaoParser):
+    # TODO 网络释义
+    # TODO 专业释义
+    # TODO 英英释义
+    # TODO 双语例句
+    # TODO 原声例句
+    # TODO 权威例句
+    # TODO 词典短语
+    # TODO 同近义词
+    # TODO 同根词
+    # TODO 词源
+
     def parse_phone(self, word_data):
         phone = []
         if "usphone" in word_data:
@@ -10,7 +26,7 @@ class ENParser(YoudaoParser):
         if "ukphone" in word_data:
             phone.append(f"[英]{word_data['ukphone']}")
         if "phone" in word_data:
-            phone.append(word_data['phone'])
+            phone.append(word_data["phone"])
         if phone:
             normal_title_printer(" ".join(phone))
             normal_info_printer("")
@@ -38,7 +54,6 @@ class ENParser(YoudaoParser):
 
 
 class ECParser(ENParser):
-
     def parse_detail_content(self):
         collins = self.data.get("collins", {}).get("collins_entries", [])
         if collins:
@@ -51,7 +66,8 @@ class ECParser(ENParser):
                 for entry in entries:
                     tran_entry = entry.get("tran_entry")[0]
                     pos_entry = tran_entry.get("pos_entry")
-                    if not pos_entry: continue  # maybe seeAlso
+                    if not pos_entry:
+                        continue  # maybe seeAlso
                     print_equal(f"{pos_entry['pos']} {pos_entry['pos_tips']}")
                     tran = tran_entry.get("tran")
                     normal_info_printer(remove_html_tags(tran))
@@ -63,7 +79,6 @@ class ECParser(ENParser):
 
 
 class CEParser(ENParser):
-
     def parse_detail_content(self):
         wuguanghua = self.data.get("wuguanghua")
         if wuguanghua:

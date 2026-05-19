@@ -10,14 +10,10 @@ from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_warn_printer, normal_error_printer
 
-APP_DESC = version.DESCRIPTION
-APP_NAME = version.name
-APP_VERSION = version.__version__
-
 
 class Dict_tiny(cli.Application):
-    PROGNAME = colors.green | APP_NAME
-    VERSION = colors.yellow | APP_VERSION
+    PROGNAME = colors.green | version.name
+    VERSION = colors.yellow | version.__version__
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {
         "Switches": colors.yellow,
