@@ -52,7 +52,7 @@ class YoudaoTrans(DefaultTrans):
         dict_tiny_cls.use_youdaotrans = cli.Flag(
             ["-y", "--youdao"],
             group=YOUDAO_NAME,
-            help="Use Youdao Dictionary, currently only supports English or Chinese words",
+            help="Use Youdao Dictionary to translate",
         )
         dict_tiny_cls.more_detail = cli.Flag(
             ["-m", "--more"], group=YOUDAO_NAME, help="Get more details"
@@ -78,10 +78,14 @@ class YoudaoTrans(DefaultTrans):
         meta_dict = resp.get("meta", {})
         guess_language = meta_dict.get("guessLanguage")
         le = meta_dict.get("le")
-        if guess_language == ISO639LCodes.Chinese.value:
-            main_key = f"c{le[0]}"
+        if self.source_language:
+            is_cn_source = self.source_language == ISO639LCodes.Chinese.value
+        elif self.target_language:
+            is_cn_source = self.target_language != ISO639LCodes.Chinese.value
         else:
-            main_key = f"{le[0]}c"
+            is_cn_source = guess_language == ISO639LCodes.Chinese.value
+
+        main_key = f"c{le[0]}" if is_cn_source else f"{le[0]}c"
         dicts = meta_dict.get("dicts")
         if main_key not in dicts:
             if "fanyi" in dicts:
