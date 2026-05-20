@@ -1,0 +1,1017 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "@same": "true",
+        "key": "书本",
+        "trans": [
+          {
+            "summary": {
+              "line": [
+                "...lb成功教育网 住宿（Room charge）: $5,170slb成功教育网 伙食（Board rate）: $4,270slb成功教育网 <b>书本</b>（<b>Books and Supplies</b>）： $1,220slb成功教育网 各种杂费（Estimated miscellaneous expenses）: $2,470slb成功教育网 总额：$25,354slb成功教育网 注：..."
+              ]
+            },
+            "value": "Books and Supplies",
+            "support": 22,
+            "url": ""
+          },
+          {
+            "summary": {
+              "line": [
+                "...1.专业扎实：专业<b>书本</b>(<b>textbook</b>)一般是讲广泛接受的、陈旧的知识。这个知识肯定要懂，而且对一些数据、公式、或者专业常识能做到非常熟练。"
+              ]
+            },
+            "value": "textbook",
+            "support": 10,
+            "url": ""
+          },
+          {
+            "summary": {
+              "line": ["... C. 相架 <b>D</b>. <b>书本</b> E. 饼罐 ..."]
+            },
+            "value": "D",
+            "support": 10,
+            "url": ""
+          }
+        ]
+      },
+      {
+        "key": "书本式目录",
+        "trans": [
+          {
+            "value": "ledger catalogue"
+          },
+          {
+            "value": "book catalogue volume catalogue"
+          }
+        ]
+      },
+      {
+        "key": "将书本知识与实践结合",
+        "trans": [
+          {
+            "value": "combine book knowledge with practice"
+          }
+        ]
+      },
+      {
+        "key": "燃烧的书本",
+        "trans": [
+          {
+            "value": "Fire Book"
+          }
+        ]
+      },
+      {
+        "key": "书本知识",
+        "trans": [
+          {
+            "value": "Book Knowledge"
+          },
+          {
+            "value": "book learning"
+          },
+          {
+            "value": "booklore"
+          },
+          {
+            "value": "book - learning"
+          }
+        ]
+      },
+      {
+        "key": "合上书本",
+        "trans": [
+          {
+            "value": "closeabook"
+          },
+          {
+            "value": "close a book"
+          }
+        ]
+      },
+      {
+        "key": "书本费",
+        "trans": [
+          {
+            "value": "Textbooks"
+          },
+          {
+            "value": "Books"
+          },
+          {
+            "value": "Books and Supplies"
+          }
+        ]
+      },
+      {
+        "key": "书本型电容器",
+        "trans": [
+          {
+            "cls": {
+              "cl": ["电"]
+            },
+            "value": "book capacitor"
+          }
+        ]
+      },
+      {
+        "key": "最佳书本",
+        "trans": [
+          {
+            "value": "Best Book"
+          }
+        ]
+      },
+      {
+        "key": "书本知识和经验",
+        "trans": [
+          {
+            "value": "Book knowledge and experience"
+          },
+          {
+            "value": "Book knowledge and ex"
+          }
+        ]
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-count": 6,
+    "sentence-pair": [
+      {
+        "sentence": "不要过分拘泥于书本上的内容。",
+        "sentence-translation-speech": "Don%27t+stick+too+precisely+to+what+it+says+in+the+book.&le=eng",
+        "sentence-eng": "不要过分拘泥于<b>书本</b>上的内容。",
+        "sentence-translation": "Don't stick too precisely to what it says in the book.",
+        "speech-size": "14kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "3",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "3",
+                "@e": "7",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "7",
+                "@e": "8",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "8",
+                "@e": "10",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "4"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "6",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "13",
+                "@e": "16",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "43",
+                "@e": "45",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "50",
+                "@e": "54",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              }
+            ]
+          }
+        },
+        "source": "《柯林斯英汉双解大词典》",
+        "url": "https://《柯林斯英汉双解大词典》/"
+      },
+      {
+        "sentence": "我进房间时，她从书本上抬起头来看了看。",
+        "sentence-translation-speech": "She+looked+up+from+her+book+as+I+entered+the+room.&le=eng",
+        "sentence-eng": "我进房间时，她从<b>书本</b>上抬起头来看了看。",
+        "sentence-translation": "She looked up from her book as I entered the room.",
+        "speech-size": "13kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "2",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "2",
+                "@e": "3",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "3",
+                "@e": "5",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "7",
+                "@e": "8",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "8",
+                "@e": "9",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "9",
+                "@e": "11",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "11",
+                "@e": "19",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "6"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "4",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "5",
+                "@e": "11",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "15",
+                "@e": "19",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "24",
+                "@e": "28",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "32",
+                "@e": "33",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "34",
+                "@e": "45",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "46",
+                "@e": "50",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "6"
+              }
+            ]
+          }
+        },
+        "source": "《牛津词典》",
+        "url": "https://《牛津词典》/"
+      },
+      {
+        "sentence": "我们可以看到书本从印刷机上源源不断地印出。",
+        "sentence-translation-speech": "We+were+able+to+watch+the+books+rolling+off+the+presses.&le=eng",
+        "sentence-eng": "我们可以看到<b>书本</b>从印刷机上源源不断地印出。",
+        "sentence-translation": "We were able to watch the books rolling off the presses.",
+        "speech-size": "15kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "3",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "3",
+                "@e": "5",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "5",
+                "@e": "7",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "7",
+                "@e": "9",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "9",
+                "@e": "10",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "10",
+                "@e": "13",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "3",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "9",
+                "@e": "16",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "17",
+                "@e": "22",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "27",
+                "@e": "32",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "41",
+                "@e": "48",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "49",
+                "@e": "56",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              }
+            ]
+          }
+        },
+        "source": "《牛津词典》",
+        "url": "https://《牛津词典》/"
+      }
+    ],
+    "more": "blng_sents",
+    "trs-classify": [
+      {
+        "proportion": "100%",
+        "tr": "全部"
+      },
+      {
+        "proportion": "100.0%",
+        "tr": "book"
+      }
+    ]
+  },
+  "ce": {
+    "source": {
+      "name": "有道词典",
+      "url": "https://dict.youdao.com"
+    },
+    "word": {
+      "trs": [
+        {
+          "voice": "book&type=2",
+          "#text": "book",
+          "#tran": "书，书籍；本子，簿册；（长篇作品的）篇，卷，部；装订成册之物；赌局，打赌；账册，账簿；预订，预约；（警方）将……记录在案；（裁判）记名警告；【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）；"
+        }
+      ],
+      "phone": "shū běn",
+      "return-phrase": "书本"
+    }
+  },
+  "wuguanghua": {
+    "dataList": [
+      {
+        "trs": [
+          {
+            "tr": {
+              "en": "book"
+            },
+            "sents": [
+              {
+                "en": "hit the [one's] books",
+                "cn": "啃书本"
+              },
+              {
+                "en": "book knowledge [learning]",
+                "cn": "书本知识"
+              }
+            ]
+          }
+        ],
+        "phone": "[shū běn]",
+        "speech": "shu1 ben3"
+      }
+    ],
+    "source": {
+      "name": "《吴光华汉英大辞典》"
+    },
+    "word": "书本"
+  },
+  "ce_new": {
+    "source": {
+      "name": "新汉英大辞典"
+    },
+    "word": [
+      {
+        "trs": [
+          {
+            "tr": [
+              {
+                "exam": [
+                  {
+                    "i": {
+                      "f": {
+                        "l": {
+                          "i": "hit the [one's] books;"
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "啃书本"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "i": {
+                      "f": {
+                        "l": {
+                          "i": "book knowledge [learning]"
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "书本知识"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "l": {
+                  "i": ["book:"]
+                }
+              }
+            ]
+          }
+        ],
+        "phone": "shū běn",
+        "return-phrase": {
+          "l": {
+            "i": ["书本"]
+          }
+        }
+      }
+    ]
+  },
+  "simple": {
+    "query": "书本",
+    "word": [
+      {
+        "phone": "shū běn",
+        "return-phrase": "书本"
+      }
+    ]
+  },
+  "media_sents_part": {
+    "sentence-count": 6,
+    "more": "media_sents",
+    "query": "书本",
+    "sent": [
+      {
+        "@mediatype": "video",
+        "snippets": {
+          "snippet": [
+            {
+              "sourceUrl": "youdao",
+              "streamUrl": "movie=http://dict.youdao.com/purevideo?docid=-8753669685491104315&auto=true",
+              "swf": "http://shared.ydstatic.com/dict/4.0/simplayer.swf",
+              "imageUrl": "http://dict.youdao.com/pureimage?docid=-8753669685491104315",
+              "name": "耶鲁公开课",
+              "source": "1945年后的美国小说课程节选"
+            }
+          ]
+        },
+        "chn": "你们想发自肺腑地说一句：“哦不，不要这样“吗，如果是，那你们和我从小被教育的一样：绝对不要损坏<b>书本</b>。<br>",
+        "eng": "Do you have a visceral sense, \"oh, don't do that\"? If you do, you were probably taught, like me: \"never, never damage a book.<br>"
+      },
+      {
+        "@mediatype": "video",
+        "snippets": {
+          "snippet": [
+            {
+              "sourceUrl": "youdao",
+              "streamUrl": "movie=http://dict.youdao.com/purevideo?docid=987462166566018251&auto=true",
+              "swf": "http://shared.ydstatic.com/dict/4.0/simplayer.swf",
+              "imageUrl": "http://dict.youdao.com/pureimage?docid=987462166566018251",
+              "name": "麻省理工公开课",
+              "source": "固态化学导论课程节选"
+            }
+          ]
+        },
+        "chn": "这是从你们<b>书本</b>上摘取下来的，图表3。<br>",
+        "eng": "And this is taken from your book, Table 1.3.<br>"
+      },
+      {
+        "@mediatype": "video",
+        "snippets": {
+          "snippet": [
+            {
+              "sourceUrl": "youdao",
+              "streamUrl": "movie=http://dict.youdao.com/purevideo?docid=-8402893536447505401&auto=true",
+              "swf": "http://shared.ydstatic.com/dict/4.0/simplayer.swf",
+              "imageUrl": "http://dict.youdao.com/pureimage?docid=-8402893536447505401",
+              "name": "耶鲁公开课",
+              "source": "弥尔顿课程节选"
+            }
+          ]
+        },
+        "chn": "创世纪》的故事中上帝坚决禁止,智慧树区分善恶的果实是我能想到的,最有力的和管制者对<b>书本</b>的坚决禁止的类比。<br>",
+        "eng": "The Genesis story of God's peremptory prohibition of the fruit from the tree of the knowledge of good and evil is the strongest analogy that I can think of to the licenser's peremptory prohibition of a book.<br>"
+      }
+    ]
+  },
+  "input": "书本",
+  "baike": {
+    "summarys": [
+      {
+        "summary": "书本是指装订成册的著作，包括纸质书、绢、，竹简、羊皮卷等。语出《后汉书》：酷吏樊晔为 天水郡 守， 凉州为之歌曰：‘宁见乳虎穴，不入冀府寺。“ 而江南书本‘穴’皆误作‘六’。 ",
+        "key": "书本"
+      }
+    ],
+    "source": {
+      "name": "百度百科",
+      "url": ""
+    }
+  },
+  "meta": {
+    "input": "书本",
+    "guessLanguage": "zh",
+    "isHasSimpleDict": "1",
+    "le": "en",
+    "lang": "eng",
+    "dicts": [
+      "web_trans",
+      "blng_sents_part",
+      "ce",
+      "baike",
+      "meta",
+      "wuguanghua",
+      "ce_new",
+      "simple",
+      "media_sents_part",
+      "newhh"
+    ]
+  },
+  "le": "en",
+  "lang": "eng",
+  "newhh": {
+    "dataList": [
+      {
+        "note": "㊀跟“书”②不同。“书本”是集合名词，不受表示具体数量的词语修饰。㊁跟“书籍”不同。“书本”着眼于一本本的书，有口语色彩；“书籍”着眼于与其他事物的分类区别，有书面语色彩。",
+        "pinyin": "shūběn",
+        "cat": "名词",
+        "sense": [
+          {
+            "def": ["图书的统称"],
+            "examples": [
+              "不要死啃<self>书本</self>",
+              "<self>书本</self>知识。"
+            ],
+            "cat": "名词"
+          }
+        ],
+        "word": "书本"
+      }
+    ],
+    "source": {
+      "name": "《现代汉语规范词典》"
+    },
+    "word": "书本"
+  }
+}
