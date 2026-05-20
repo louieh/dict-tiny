@@ -8,7 +8,7 @@ from dict_tiny.completer import YoudaoCompleter
 from dict_tiny.config import (
     SEPARATOR,
     TERMINAL_SIZE_COLUMN,
-    DEFAULT_TARGET_LANGUAGE,
+    DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
     DICT_TINY_DEFAULT_TRANS_ENV_NAME,
 )
@@ -35,7 +35,7 @@ class DefaultTrans(object):
         self.target_language = (
             dict_tiny_obj.target_language.lower()
             if dict_tiny_obj.target_language
-            else DEFAULT_TARGET_LANGUAGE
+            else None
         )
         self.console = Console()
 
@@ -46,10 +46,13 @@ class DefaultTrans(object):
             ["-i", "--interactive"], help="Interactive mode"
         )
         dict_tiny_cls.source_language = cli.SwitchAttr(
-            "--source-language", str, help="What language you want to translate"
+            ["--sl", "--source-language"],
+            str,
+            envname=DICT_TINY_SOURCE_LAN_ENV_NAME,
+            help="What language you want to translate",
         )
         dict_tiny_cls.target_language = cli.SwitchAttr(
-            "--target-language",
+            ["--tl", "--target-language"],
             str,
             envname=DICT_TINY_TARGET_LAN_ENV_NAME,
             help="What language you want to translate into",
