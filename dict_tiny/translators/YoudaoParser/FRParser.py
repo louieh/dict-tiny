@@ -22,12 +22,18 @@ class FRParser(YoudaoParser):
                     l = each_tr.get("l", {}).get("i", [])
                     for each_i in l:
                         normal_info_printer(each_i)
+                    normal_info_printer("")
                     exam = each_tr.get("exam", {}).get("i", [])
                     for each_exam in exam:
                         f = each_exam.get("f", {}).get("l", {}).get("i", [])
-                        n = each_exam.get("n", {}).get("l", {}).get("i", {})
+                        n = each_exam.get("n", {}).get("l", {}).get("i", [])
                         if f:
-                            normal_info_printer(f"{f[0]}: {n}")
+                            normal_info_printer(f"  {f[0]}")
+                            if n:
+                                normal_info_printer(
+                                    f"  {n[0] if isinstance(n, list) else n}"
+                                )
+                            normal_info_printer("")
                 normal_info_printer("")
 
 

@@ -12,7 +12,11 @@ class JAParser(YoudaoParser):
             phrList = each_sense.get("phrList", [])
             for each_phrList in phrList:
                 jmsy = each_phrList.get("jmsy")
-                if jmsy:
+                jmsyT = each_phrList.get("jmsyT")
+                if jmsy and jmsyT:
+                    normal_info_printer(jmsy)
+                    normal_info_printer(jmsyT)
+                elif jmsy:
                     normal_info_printer(jmsy)
                 normal_info_printer("")
 

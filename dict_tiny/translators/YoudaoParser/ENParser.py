@@ -44,16 +44,6 @@ class ENParser(YoudaoParser):
 
 
 class ECParser(ENParser):
-    # TODO 网络释义
-    # TODO 专业释义
-    # TODO 英英释义
-    # TODO 双语例句
-    # TODO 原声例句
-    # TODO 权威例句
-    # TODO 词典短语
-    # TODO 同近义词
-    # TODO 同根词
-    # TODO 词源
     def parse_detail_content(self):
         collins = self.data.get("collins", {}).get("collins_entries", [])
         if collins:
@@ -80,10 +70,6 @@ class ECParser(ENParser):
 
 
 class CEParser(ENParser):
-    # TODO 网络释义
-    # TODO 短语
-    # TODO 双语例句
-    # TODO 原声例句
     def parse_detail_content(self):
         wuguanghua = self.data.get("wuguanghua")
         if wuguanghua:
