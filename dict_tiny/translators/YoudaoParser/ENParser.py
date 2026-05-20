@@ -93,7 +93,7 @@ class CEParser(ENParser):
                 phone = item.get("phone", "")
                 for entry in item.get("trs", []):
                     tr = entry.get("tr") or {}
-                    normal_title_printer(f"{tr.get('en', '')}  {phone}:")
+                    normal_title_printer(f"{tr.get('en', '')}")
                     sents = entry.get("sents", [])
                     for sent in sents:
                         normal_info_printer("  %s" % sent.get("en"))
