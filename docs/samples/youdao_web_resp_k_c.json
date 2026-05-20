@@ -1,0 +1,301 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "@same": "true",
+        "key": "태양",
+        "trans": [
+          {
+            "summary": {
+              "line": [
+                "圈圈代表<b>太阳</b>（ <b>태양</b> ）、也就是天（ 천 ），横线代表地（ 지 ），直线则是人，韩文字形代表天、地、人等，宇宙（ 우주 ）的自然法则。"
+              ]
+            },
+            "value": "太阳",
+            "support": 4408,
+            "url": ""
+          }
+        ]
+      },
+      {
+        "key": "주군의 태양",
+        "trans": [
+          {
+            "value": "主君的太阳"
+          },
+          {
+            "value": "主君的太阴"
+          }
+        ]
+      },
+      {
+        "key": "지지 않는 태양",
+        "trans": [
+          {
+            "value": "不落的太阳"
+          }
+        ]
+      },
+      {
+        "key": "너는 태양",
+        "trans": [
+          {
+            "value": "太阳"
+          },
+          {
+            "value": "你是太阳"
+          }
+        ]
+      },
+      {
+        "key": "봄의 태양",
+        "trans": [
+          {
+            "value": "前奏跪"
+          },
+          {
+            "value": "春天的太阳"
+          }
+        ]
+      },
+      {
+        "key": "태양：",
+        "trans": [
+          {
+            "value": "月球"
+          }
+        ]
+      },
+      {
+        "key": "불의 태양",
+        "trans": [
+          {
+            "value": "火的太阳"
+          }
+        ]
+      },
+      {
+        "key": "태양 가까이",
+        "trans": [
+          {
+            "value": "靠近太阳"
+          }
+        ]
+      },
+      {
+        "key": "지겹게도 눈부신 태양",
+        "trans": [
+          {
+            "value": "再次承担耀眼的太阳"
+          }
+        ]
+      },
+      {
+        "key": "태양 가득히",
+        "trans": [
+          {
+            "value": "太阳满满的"
+          },
+          {
+            "value": "太阳火辣辣"
+          }
+        ]
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-count": 6,
+    "sentence-pair": [
+      {
+        "sentence": "붉디붉은 아름다운 <b>태양</b>.",
+        "sentence-eng": "붉디붉은 아름다운 <b>태양</b>.",
+        "sentence-translation": "红艳艳的太阳。",
+        "speech-size": "5kb",
+        "url": "youdao",
+        "sentence-speech": "%EB%B6%89%EB%94%94%EB%B6%89%EC%9D%80+%EC%95%84%EB%A6%84%EB%8B%A4%EC%9A%B4+%ED%83%9C%EC%96%91.&le=ko"
+      },
+      {
+        "sentence": "봄철의 밝은 <b>태양</b>.",
+        "sentence-eng": "봄철의 밝은 <b>태양</b>.",
+        "sentence-translation": "春日艳阳。",
+        "speech-size": "4kb",
+        "url": "youdao",
+        "sentence-speech": "%EB%B4%84%EC%B2%A0%EC%9D%98+%EB%B0%9D%EC%9D%80+%ED%83%9C%EC%96%91.&le=ko"
+      },
+      {
+        "sentence": "이글거리는 <b>태양</b>.",
+        "sentence-eng": "이글거리는 <b>태양</b>.",
+        "sentence-translation": "灼热的太阳。",
+        "speech-size": "4kb",
+        "url": "youdao",
+        "sentence-speech": "%EC%9D%B4%EA%B8%80%EA%B1%B0%EB%A6%AC%EB%8A%94+%ED%83%9C%EC%96%91.&le=ko"
+      }
+    ],
+    "more": "blng_sents"
+  },
+  "input": "태양",
+  "meta": {
+    "input": "태양",
+    "guessLanguage": "ko",
+    "isHasSimpleDict": "1",
+    "le": "ko",
+    "lang": "ko",
+    "dicts": [
+      "web_trans",
+      "blng_sents_part",
+      "meta",
+      "kc",
+      "longchao-kc",
+      "simple"
+    ]
+  },
+  "kc": {
+    "source": {
+      "name": "现代韩中中韩词典",
+      "url": "https://www.youdao.com/help/dict/source/001"
+    },
+    "word": [
+      {
+        "trs": [
+          {
+            "pos": "名词",
+            "tr": [
+              {
+                "exam": {
+                  "i": [
+                    {
+                      "f": {
+                        "l": {
+                          "i": ["민족의 태양."]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "民族的太阳。"
+                        }
+                      }
+                    },
+                    {
+                      "f": {
+                        "l": {
+                          "i": [" 태양에너지 실험기지"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "太阳城"
+                        }
+                      }
+                    },
+                    {
+                      "f": {
+                        "l": {
+                          "i": [" 태양이 얼굴을 나타내다"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "日头冒嘴儿"
+                        }
+                      }
+                    },
+                    {
+                      "f": {
+                        "l": {
+                          "i": ["마음의 태양"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "心中的太阳"
+                        }
+                      }
+                    },
+                    {
+                      "f": {
+                        "l": {
+                          "i": ["눈부신 태양"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "耀眼的太阳"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "l": {
+                  "i": ["1.(太陽)太阳。2.(太陽)(喻指希望或珍贵的)太阳。"]
+                }
+              },
+              {
+                "l": {
+                  "i": ["1.【人名】太阳. BigBang成员之一."]
+                }
+              }
+            ]
+          }
+        ],
+        "speech": "%ED%83%9C%EC%96%91&le=ko",
+        "return-phrase": {
+          "l": {
+            "i": "태양"
+          }
+        }
+      }
+    ]
+  },
+  "longchao-kc": {
+    "dataList": [
+      {
+        "pos": "名词",
+        "source": {
+          "source-content": "太陽"
+        },
+        "word": "태양",
+        "meanings": {
+          "sense": [
+            {
+              "trs": [
+                {
+                  "terminology": "<天>",
+                  "tr": "太阳<pinyin>tàiyáng</pinyin>。"
+                },
+                {
+                  "sentences": [
+                    {
+                      "ko": "민족의 태양.",
+                      "cn": "民族的太阳。"
+                    },
+                    {
+                      "ko": "내 마음의 태양.",
+                      "cn": "我心中的太阳。"
+                    }
+                  ],
+                  "tr": "(喻指希望或珍贵的)太阳<pinyin>tàiyáng</pinyin>。"
+                }
+              ],
+              "pos": "名词"
+            }
+          ]
+        }
+      }
+    ],
+    "source": {
+      "name": "《龙朝韩中词典》"
+    },
+    "word": "태양"
+  },
+  "le": "ko",
+  "simple": {
+    "query": "태양",
+    "word": [
+      {
+        "speech": "%ED%83%9C%EC%96%91&le=ko",
+        "return-phrase": "태양"
+      }
+    ]
+  },
+  "lang": "ko"
+}

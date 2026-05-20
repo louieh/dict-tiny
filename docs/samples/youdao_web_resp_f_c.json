@@ -1,0 +1,211 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "@same": "true",
+        "key": "badminton",
+        "trans": [
+          {
+            "summary": {
+              "line": [
+                "... 11） <b>羽毛球 羽毛球</b> <b>badminton</b> 羽毛球运动员 joueur de <b>badminton</b> 青年级运动员 joueur junior ; junior ..."
+              ]
+            },
+            "value": "羽毛球 羽毛球",
+            "support": 10,
+            "url": ""
+          }
+        ]
+      },
+      {
+        "key": "joueur de badminton",
+        "trans": [
+          {
+            "value": "羽毛球运动员"
+          }
+        ]
+      },
+      {
+        "key": "court de badminton",
+        "trans": [
+          {
+            "value": "羽毛球场"
+          }
+        ]
+      },
+      {
+        "key": "raquette de badminton",
+        "trans": [
+          {
+            "value": "羽毛球拍"
+          },
+          {
+            "value": "球拍"
+          }
+        ]
+      },
+      {
+        "key": "Badminton 2",
+        "trans": [
+          {
+            "value": "羽毛球之星2"
+          }
+        ]
+      },
+      {
+        "key": "le badminton",
+        "trans": [
+          {
+            "value": "胣 羽毛球"
+          },
+          {
+            "value": "羽毛球"
+          }
+        ]
+      },
+      {
+        "key": "Badminton World Cup",
+        "trans": [
+          {
+            "value": "羽毛球世界杯"
+          }
+        ]
+      }
+    ]
+  },
+  "ee": {
+    "source": {
+      "name": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Badminton"
+    },
+    "word": {
+      "trs": [
+        {
+          "pos": "abstract:",
+          "tr": [
+            {
+              "tran": "Badminton is a 2003 EP by breakcore artist Venetian Snares. Released on Addict Records."
+            }
+          ]
+        }
+      ],
+      "speech": "Badminton",
+      "return-phrase": "Badminton"
+    }
+  },
+  "pic_dict": {
+    "pic": [
+      {
+        "image": "https://ydlunacommon-cdn.nosdn.127.net/1130184af7725c6c4582ef1f1a9fa8ed.jpg?",
+        "host": "",
+        "url": "https://ydlunacommon-cdn.nosdn.127.net/1130184af7725c6c4582ef1f1a9fa8ed.jpg?"
+      },
+      {
+        "image": "https://ydlunacommon-cdn.nosdn.127.net/066b0f693a37eee80f95b247ce13e50f.jpg?",
+        "host": "",
+        "url": "https://ydlunacommon-cdn.nosdn.127.net/066b0f693a37eee80f95b247ce13e50f.jpg?"
+      },
+      {
+        "image": "https://ydlunacommon-cdn.nosdn.127.net/f4402b03d4a9c91e268dea3c4a96565c.jpg?",
+        "host": "",
+        "url": "https://ydlunacommon-cdn.nosdn.127.net/f4402b03d4a9c91e268dea3c4a96565c.jpg?"
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-pair": [
+      {
+        "sentence": "Tant mieux! Désormais, on pourra jouer au <b>badminton</b> après les cours.",
+        "sentence-eng": "Tant mieux! Désormais, on pourra jouer au <b>badminton</b> après les cours.",
+        "sentence-translation": "太好了！以后下课我们可以打羽毛球了！",
+        "speech-size": "22kb",
+        "url": "youdao",
+        "sentence-speech": "Tant+mieux%21+D%C3%A9sormais%2C+on+pourra+jouer+au+badminton+apr%C3%A8s+les+cours.&le=fr"
+      },
+      {
+        "sentence": "Les joueuses de <b>badminton</b> auront sans doute apprécié la différence de traitement.",
+        "sentence-eng": "Les joueuses de <b>badminton</b> auront sans doute apprécié la différence de traitement.",
+        "sentence-translation": "可耻！毫无疑问羽毛球的女选手都被差别对待了。",
+        "speech-size": "25kb",
+        "url": "youdao",
+        "sentence-speech": "Les+joueuses+de+badminton+auront+sans+doute+appr%C3%A9ci%C3%A9+la+diff%C3%A9rence+de+traitement.&le=fr"
+      },
+      {
+        "sentence": "parvenu à un professionnel de <b>badminton</b> engagés dans la production et la vente d'entreprises industrielles.",
+        "sentence-eng": "parvenu à un professionnel de <b>badminton</b> engagés dans la production et la vente d'entreprises industrielles.",
+        "sentence-translation": "上海锐达体育用品有限公司是一家专业从事羽毛球的生产与销售的实业公司。",
+        "speech-size": "33kb",
+        "url": "youdao",
+        "sentence-speech": "parvenu+%C3%A0+un+professionnel+de+badminton+engag%C3%A9s+dans+la+production+et+la+vente+d%27entreprises+industrielles.&le=fr"
+      }
+    ]
+  },
+  "input": "badminton",
+  "meta": {
+    "input": "badminton",
+    "guessLanguage": "eng",
+    "isHasSimpleDict": "1",
+    "le": "fr",
+    "lang": "fr",
+    "dicts": [
+      "web_trans",
+      "ee",
+      "pic_dict",
+      "blng_sents_part",
+      "meta",
+      "simple",
+      "wikipedia_digest",
+      "fc"
+    ]
+  },
+  "le": "fr",
+  "simple": {
+    "query": "badminton",
+    "word": [
+      {
+        "speech": "badminton&le=fr",
+        "return-phrase": "badminton"
+      }
+    ]
+  },
+  "wikipedia_digest": {
+    "summarys": [
+      {
+        "summary": "Badminton is a racquet sport played by either two opposing players (singles) or two opposing pairs (doubles), who take positions on opposite halves of a rectangular court divided by a net. Players score points by striking a shuttlecock with their racquet so that it passes over the net and lands in their opponents' half of the court. Each side may only strike the shuttlecock once before it passes over the net. A rally ends once the shuttlecock has struck the floor, or if a fault has been called by either the umpire or service judge or, in their absence, the offending player, at any time during the rally.The shuttlecock is a feathered or (mainly in noncompetitive matches) plastic projectile whose unique aerodynamic properties cause it to fly differently from the balls used in most racquet sports; in particular, the feathers create much higher drag, causing the shuttlecock to decelerate more rapidly than a ball. Shuttlecocks have a much higher top speed, when compared to other racquet sports. Because shuttlecock flight is affected by wind, competitive badminton is played indoors. Badminton is also played outdoors as a casual recreational activity, often as a garden or beach game.Since 1992, badminton has been an Olympic sport with five events: men's and women's singles, men's and women's doubles, and mixed doubles, in which each pair consists of a man and a woman. At high levels of play, especially in singles, the sport demands excellent fitness: players require aerobic stamina, agility, explosive strength, speed and precision. It is also a technical sport, requiring good motor coordination and the development of sophisticated racquet movements.",
+        "key": "Badminton"
+      }
+    ],
+    "source": {
+      "name": "维基百科",
+      "url": "http://en.wikipedia.org/wiki/Badminton"
+    }
+  },
+  "lang": "fr",
+  "fc": {
+    "source": {
+      "name": "现代法汉汉法词典",
+      "url": "https://www.youdao.com/help/dict/source/001"
+    },
+    "word": [
+      {
+        "trs": [
+          {
+            "tr": [
+              {
+                "l": {
+                  "i": ["羽毛球"]
+                }
+              }
+            ]
+          }
+        ],
+        "speech": "badminton&le=fr",
+        "return-phrase": {
+          "l": {
+            "i": "badminton"
+          }
+        }
+      }
+    ]
+  }
+}
