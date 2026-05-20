@@ -8,16 +8,6 @@ from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
 
 
 class ENParser(YoudaoParser):
-    # TODO 网络释义
-    # TODO 专业释义
-    # TODO 英英释义
-    # TODO 双语例句
-    # TODO 原声例句
-    # TODO 权威例句
-    # TODO 词典短语
-    # TODO 同近义词
-    # TODO 同根词
-    # TODO 词源
 
     def parse_phone(self, word_data):
         phone = []
@@ -54,6 +44,16 @@ class ENParser(YoudaoParser):
 
 
 class ECParser(ENParser):
+    # TODO 网络释义
+    # TODO 专业释义
+    # TODO 英英释义
+    # TODO 双语例句
+    # TODO 原声例句
+    # TODO 权威例句
+    # TODO 词典短语
+    # TODO 同近义词
+    # TODO 同根词
+    # TODO 词源
     def parse_detail_content(self):
         collins = self.data.get("collins", {}).get("collins_entries", [])
         if collins:
@@ -61,7 +61,8 @@ class ECParser(ENParser):
             for each_collins_entry in collins:
                 headword = each_collins_entry.get("headword")
                 phonetic = each_collins_entry.get("phonetic")
-                normal_title_printer(f"{headword}/{phonetic}")
+                normal_title_printer(f"{headword}【{phonetic}】")
+                normal_info_printer("")
                 entries = each_collins_entry.get("entries", {}).get("entry")
                 for entry in entries:
                     tran_entry = entry.get("tran_entry")[0]
@@ -79,17 +80,44 @@ class ECParser(ENParser):
 
 
 class CEParser(ENParser):
+    # TODO 网络释义
+    # TODO 短语
+    # TODO 双语例句
+    # TODO 原声例句
     def parse_detail_content(self):
         wuguanghua = self.data.get("wuguanghua")
         if wuguanghua:
-            self.console.print("\n:book: [bold magenta]wuguanghua[/bold magenta]:")
-            for each_wuguanghua in wuguanghua.get("dataList", []):
-                for entry in each_wuguanghua.get("trs", []):
-                    tr = entry.get("tr")
-                    normal_info_printer(f"({tr.get('cn')}) {tr.get('en')}")
-                    normal_info_printer("")
+            source = wuguanghua.get("source", {}).get("name", "")
+            self.console.print(f"\n:book: [bold magenta]{source}[/bold magenta]:")
+            for item in wuguanghua.get("dataList", []):
+                phone = item.get("phone", "")
+                for entry in item.get("trs", []):
+                    tr = entry.get("tr") or {}
+                    normal_title_printer(f"{tr.get('en', '')}  {phone}:")
                     sents = entry.get("sents", [])
-                    for each_sent in sents:
-                        normal_info_printer(" 例: %s" % each_sent.get("en"))
-                        normal_info_printer("     %s" % each_sent.get("cn"))
+                    for sent in sents:
+                        normal_info_printer("  %s" % sent.get("en"))
+                        normal_info_printer("  %s" % sent.get("cn"))
                     normal_info_printer("")
+
+        newhh = self.data.get("newhh")
+        if newhh:
+            source = newhh.get("source", {}).get("name", "")
+            self.console.print(f"\n:book: [bold magenta]{source}[/bold magenta]:")
+            for each_newhh in newhh.get("dataList", []):
+                word = each_newhh.get("word", "")
+                pinyin = each_newhh.get("pinyin", "")
+                cat = each_newhh.get("cat", "")
+                normal_title_printer(f"{word} [{pinyin}] ({cat})")
+
+                note = each_newhh.get("note", "")
+                if note:
+                    normal_info_printer(note)
+                    normal_info_printer("")
+
+                for sense in each_newhh.get("sense", []):
+                    for definition in sense.get("def", []):
+                        normal_info_printer(definition)
+                    for example in sense.get("examples", []):
+                        normal_info_printer(f"  例: {remove_html_tags(example)}")
+                normal_info_printer("")
