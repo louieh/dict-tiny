@@ -44,7 +44,7 @@ class YoudaoTrans(DefaultTrans):
             self.target_language = ISO639NameToCode[self.target_language]
         if self.source_language and self.source_language in ISO639NameToCode:
             self.source_language = ISO639NameToCode[self.source_language]
-        self.trans_le = parse_le(self.source_language, self.target_language, trans=True)
+        self.trans_le = parse_le(self.source_language, self.target_language)
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):

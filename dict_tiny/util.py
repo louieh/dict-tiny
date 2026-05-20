@@ -85,31 +85,16 @@ def is_alphabet(word):
     return "other"
 
 
-def parse_le(source: str, target: str, trans=False) -> str:
-    """
-    Determine the le value in youdao based on the input target language or source language. Default le is en.
-    If trans is False which means the auto-completion section, the value of le depends on the source language, same as
-    target language is None.
-    If the source language is None, the value of le can only depend on the target language.
-    @param source: source language
-    @param target: target language
-    @param trans: translate or suggestion
-    @return le
-    """
-    st_set = {source, target}
+def parse_le(source: str, target: str) -> str:
     le_set = {
         ISO639LCodes.English.value,
         ISO639LCodes.French.value,
         ISO639LCodes.Korean.value,
         ISO639LCodes.Japanese.value,
     }
-    if not target or not trans:
-        return DEFAULT_LE if source not in le_set else source
-    if not source:
-        return DEFAULT_LE if target not in le_set else target
-    le = st_set.intersection(le_set)
-    if ISO639LCodes.Chinese.value in st_set and le:
-        return le.pop()
+    for lang in (source, target):
+        if lang and lang in le_set:
+            return lang
     return DEFAULT_LE
 
 
