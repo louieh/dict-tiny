@@ -1,5 +1,5 @@
 from dict_tiny.util import normal_title_printer, normal_info_printer
-from .YoudaoParser import YoudaoParser
+from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
 
 
 class JAParser(YoudaoParser):
@@ -12,10 +12,7 @@ class JAParser(YoudaoParser):
             phrList = each_sense.get("phrList", [])
             for each_phrList in phrList:
                 jmsy = each_phrList.get("jmsy")
-                jmsyT = each_phrList.get("jmsyT")
-                if jmsy and jmsyT:
-                    normal_info_printer(f"{jmsy}: {jmsyT}")
-                elif jmsy:
+                if jmsy:
                     normal_info_printer(jmsy)
                 normal_info_printer("")
 
@@ -23,9 +20,21 @@ class JAParser(YoudaoParser):
 class JCParser(JAParser):
     def parse_phone(self, word_data):
         head = word_data.get("head", {})
+        parts = []
+        hw = head.get("hw")
+        if hw:
+            parts.append(hw)
         rs = head.get("rs")
         if rs:
-            normal_title_printer(rs)
+            parts.append(rs)
+        pjm = head.get("pjm")
+        if pjm:
+            parts.append(f"【平】{pjm}")
+        ppjm = head.get("ppjm")
+        if ppjm:
+            parts.append(f"【片】{ppjm}")
+        if parts:
+            normal_title_printer(" ".join(parts))
             normal_info_printer("")
 
 
