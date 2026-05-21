@@ -1,5 +1,4 @@
 import re
-from collections import defaultdict
 from functools import partial
 
 import requests
@@ -70,7 +69,6 @@ downloader = Downloader()
 
 
 def is_alphabet(word):
-    # TODO refactor
     """
     return the word is English or Chinese
     :param word:
@@ -78,26 +76,16 @@ def is_alphabet(word):
     """
     if not word:
         return "other"
-    is_alphabet = defaultdict(int)
-    word = word.replace(" ", "")
-    for each_letter in word:
-        if each_letter >= "\u4e00" and each_letter <= "\u9fff":
-            is_alphabet["zh"] += 1
-        # elif word >= '\u0030' and word <= '\u0039':
-        #     return 'num'
-        elif (each_letter >= "\u0041" and each_letter <= "\u005a") or (
-            each_letter >= "\u0061" and each_letter <= "\u007a"
-        ):
-            is_alphabet["en"] += 1
-        else:
-            is_alphabet["other"] += 1
+    cn = sum(1 for c in word if "\u4e00" <= c <= "\u9fff")
+    en = len(re.findall(r"[a-zA-Z]+(?:['-][a-zA-Z]+)*", word))
 
-    is_alphabet["en"] /= 4
-
-    for len_type, num in is_alphabet.items():
-        if num >= sum(is_alphabet.values()) * 0.7:
-            return len_type
-    return "other"
+    if cn == 0 and en == 0:
+        return "other"
+    if cn == 0:
+        return "en"
+    if en == 0:
+        return "zh"
+    return "zh" if cn >= en else "en"
 
 
 def parse_le(source: str, target: str) -> str:
