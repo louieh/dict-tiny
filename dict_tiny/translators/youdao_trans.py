@@ -156,8 +156,8 @@ class YoudaoTrans(DefaultTrans):
         :param text:
         :return:
         """
-        resp = downloader.download(
-            "GET", YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER
+        resp = downloader.get(
+            YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER
         )
         if not resp:
             return
@@ -178,7 +178,7 @@ class YoudaoTrans(DefaultTrans):
         if not resp:
             return
         try:
-            return json.loads(resp.text)
+            return resp.json()
         except json.JSONDecodeError as e:
             pass
         except Exception as e:

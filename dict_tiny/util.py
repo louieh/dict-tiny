@@ -19,36 +19,51 @@ from dict_tiny.config import (
 
 class Downloader:
 
-    def __init__(self):
-        self.retries = Retry(total=RETRY, backoff_factor=BACKOFF_FACTOR)
-        self.session = Session()  # reuse tcp connection
-        self.session.mount("http://", HTTPAdapter(max_retries=self.retries))
-        self.session.mount("https://", HTTPAdapter(max_retries=self.retries))
+    def __init__(
+        self,
+        retries: int = RETRY,
+        backoff_factor: float = BACKOFF_FACTOR,
+        timeout: int = TIMEOUT,
+    ):
+        self._retries = retries
+        self._backoff_factor = backoff_factor
+        self.timeout = timeout
+        self._session = None
 
-    def download(self, method, url, **kwargs) -> requests.Response:
+    @property
+    def session(self):
+        if self._session is None:
+            retry = Retry(total=self._retries, backoff_factor=self._backoff_factor)
+            self._session = Session()
+            self._session.mount("http://", HTTPAdapter(max_retries=retry))
+            self._session.mount("https://", HTTPAdapter(max_retries=retry))
+        return self._session
+
+    def download(self, method: str, url: str, **kwargs):
         """
-        normal download method
-        :param method: request method
-        :param url: url to download
-        :param kwargs: additional arguments: headers, data, json
-        :return: Response object
+        Send a request and return the response on success.
+
+        On failure, prints a user-friendly error and returns None.
         """
         try:
-            resp = self.session.request(method, url, timeout=TIMEOUT, **kwargs)
+            resp = self.session.request(
+                method, url, timeout=kwargs.pop("timeout", self.timeout), **kwargs
+            )
             if resp.status_code == 200:
                 return resp
-            normal_warn_printer(
-                f"Download error, status code: {resp.status_code} resp: {resp.text}"
-            )
+            normal_warn_printer(f"Download error, status code: {resp.status_code}")
         except requests.exceptions.ConnectionError as e:
-            normal_error_printer(
-                f"Connection Error. Please check your network. error: {e}"
-            )
-        except requests.exceptions.Timeout as e:
-            normal_error_printer("Time out. Please try again.")
+            normal_error_printer(f"Connection error. Please check your network. ({e})")
+        except requests.exceptions.Timeout:
+            normal_error_printer("Request timed out. Please try again.")
         except Exception as e:
-            # print(f"download error: {str(e)}")
-            normal_error_printer("Something went wrong. Please try again.")
+            normal_error_printer(f"Something went wrong: {e}")
+
+    def get(self, url: str, **kwargs):
+        return self.download("GET", url, **kwargs)
+
+    def post(self, url: str, **kwargs):
+        return self.download("POST", url, **kwargs)
 
 
 downloader = Downloader()
