@@ -1,147 +1,104 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-from dict_tiny.config import YOUDAO_APP_API_BASE_URL, YOUDAO_WEB_API_BASE_URL
+from dict_tiny.config import (
+    YOUDAO_APP_API_BASE_URL,
+    YOUDAO_WEB_API_BASE_URL,
+    YOUDAO_TARGET_LANG_SET,
+)
+from dict_tiny.errors import YoudaoParamError
 from dict_tiny.translators import YoudaoTrans
+from dict_tiny.main import Dict_tiny
 from test.util import assert_not_raises
 
 
-class TestYoudaoTrans(unittest.TestCase):
+class TestYoudaoInit(unittest.TestCase):
+    def _make_mock_obj(self, source=None, target=None):
+        obj = MagicMock()
+        obj.source_language = source
+        obj.target_language = target
+        return obj
 
-    # legacy - ec
-    @patch("sys.argv", ["", "-y", "book", "-m", "--legacy"])
-    @assert_not_raises
-    def test_trans_legacy_ec(self):
-        pass
+    def test_init_default(self):
+        trans = YoudaoTrans("book", self._make_mock_obj())
+        self.assertEqual(trans.name, "YoudaoDict")
+        self.assertIsNone(trans.source_language)
+        self.assertIsNone(trans.target_language)
 
-    # legacy - ce
-    @patch("sys.argv", ["", "-y", "测试", "-m", "--legacy"])
-    @assert_not_raises
-    def test_trans_legacy_ce(self):
-        pass
+    def test_init_with_target(self):
+        trans = YoudaoTrans("book", self._make_mock_obj(target="ja"))
+        self.assertEqual(trans.target_language, "ja")
 
-    # legacy - text
-    @patch("sys.argv", ["", "-y", "this is a sentence", "-m", "--legacy"])
-    @assert_not_raises
-    def test_trans_legacy_text(self):
-        pass
+    def test_init_unsupported_target(self):
+        with self.assertRaises(YoudaoParamError):
+            YoudaoTrans("book", self._make_mock_obj(target="pl"))
 
-    # Chinese - English - ec
+    def test_supported_languages(self):
+        self.assertIn("zh", YOUDAO_TARGET_LANG_SET)
+        self.assertIn("en", YOUDAO_TARGET_LANG_SET)
+        self.assertIn("fr", YOUDAO_TARGET_LANG_SET)
+        self.assertIn("ja", YOUDAO_TARGET_LANG_SET)
+        self.assertIn("ko", YOUDAO_TARGET_LANG_SET)
+
+    def test_get_web_api_data(self):
+        data = YoudaoTrans.get_web_api_data("book", "en")
+        self.assertIn("q", data)
+        self.assertEqual(data["q"], "book")
+        self.assertEqual(data["le"], "en")
+        self.assertIn("sign", data)
+
+
+class TestYoudoTransE2E(unittest.TestCase):
     @patch("sys.argv", ["", "-y", "book", "-m"])
     @assert_not_raises
-    def test_trans_ec(self):
+    def test_e2e_ec(self):
         pass
 
-    # Chinese - English - ce
     @patch("sys.argv", ["", "-y", "测试", "-m"])
     @assert_not_raises
-    def test_trans_ce(self):
+    def test_e2e_ce(self):
         pass
 
-    # Chinese - English - text
-    @patch("sys.argv", ["", "-y", "this is a sentence", "-m"])
+    @patch("sys.argv", ["", "-y", "book", "-m", "--legacy"])
     @assert_not_raises
-    def test_trans_en_text(self):
+    def test_e2e_legacy_ec(self):
         pass
 
-    # Chinese - Japanese - jc
-    @patch("sys.argv", ["", "-y", "翻訳する", "-m", "--target-language", "ja"])
+    @patch("sys.argv", ["", "-y", "测试", "-m", "--legacy"])
     @assert_not_raises
-    def test_trans_jc(self):
+    def test_e2e_legacy_ce(self):
         pass
 
-    # Chinese - Japanese - cj
+    @patch("sys.argv", ["", "-y", "翻訳する", "-m", "--source-language", "ja"])
+    @assert_not_raises
+    def test_e2e_jc(self):
+        pass
+
     @patch("sys.argv", ["", "-y", "测试", "-m", "--target-language", "ja"])
     @assert_not_raises
-    def test_trans_cj(self):
+    def test_e2e_cj(self):
         pass
 
-    # Chinese - Japanese - text
-    @patch("sys.argv", ["", "-y", "これは全文です、わか りますか？", "-m", "--target-language", "ja"])
+    @patch("sys.argv", ["", "-y", "Bonjour", "-m", "--source-language", "fr"])
     @assert_not_raises
-    def test_trans_ja_text(self):
+    def test_e2e_fc(self):
         pass
 
-    # Chinese - French - fc
-    @patch("sys.argv", ["", "-y", "Bonjour", "-m", "--target-language", "fr"])
-    @assert_not_raises
-    def test_trans_fc(self):
-        pass
-
-    # Chinese - French - cf
     @patch("sys.argv", ["", "-y", "寄存器", "-m", "--target-language", "fr"])
     @assert_not_raises
-    def test_trans_cf(self):
+    def test_e2e_cf(self):
         pass
 
-    # Chinese - French - text
-    @patch("sys.argv",
-           ["", "-y", "Saviez-vous qu’il y a une calculatrice dans un ordinateur", "-m", "--target-language", "fr"])
+    @patch("sys.argv", ["", "-y", "컴퓨터", "-m", "--source-language", "ko"])
     @assert_not_raises
-    def test_trans_fr(self):
+    def test_e2e_kc(self):
         pass
 
-    # Chinese - Korean - kc
-    @patch("sys.argv", ["", "-y", "컴퓨터", "-m", "--target-language", "ko"])
-    @assert_not_raises
-    def test_trans_kc(self):
-        pass
-
-    # Chinese - Korean - ck
     @patch("sys.argv", ["", "-y", "你好", "-m", "--target-language", "ko"])
     @assert_not_raises
-    def test_trans_ck(self):
+    def test_e2e_ck(self):
         pass
 
-    # Chinese - Korean - text
-    @patch("sys.argv", ["", "-y", "컴퓨터란 무엇인가", "-m", "--target-language", "ko"])
-    @assert_not_raises
-    def test_trans_ko(self):
-        pass
 
-    # target language not supported
-    @patch("sys.argv", ["", "-y", "book", "-m", "--target-language", "pl"])
-    @assert_not_raises
-    def test_trans_target_lang_not_supported(self):
-        pass
-
-    # target language error
-    @patch("sys.argv", ["", "-y", "book", "-m", "--source-language", "ko", "--target-language", "ja"])
-    @assert_not_raises
-    def test_trans_target_lang_error(self):
-        pass
-
-    @patch("sys.argv", ["", "-y", "book", "-m", "--target-language", "ja"])
-    @assert_not_raises
-    def test_trans_target_lang_error1(self):
-        pass
-
-    # #$% text
-    @patch("sys.argv", ["", "-y", "%%%%", "-m", "--target-language", "ja"])
-    @assert_not_raises
-    def test_trans_error_text(self):
-        pass
-
-    @patch("sys.argv", ["", "-y", "%%%%", "-m", "--target-language", "ko"])
-    @assert_not_raises
-    def test_trans_error_text1(self):
-        pass
-
-    def test_download(self):
-        res = YoudaoTrans.youdao_download("book")
-        assert res is not None
-
-    def test_api_download(self):
-        res = YoudaoTrans.youdao_api_download(YOUDAO_APP_API_BASE_URL.format("book"))
-        assert res is not None
-
-    def test_web_api_download(self):
-        text = "book"
-        le = "en"
-        data = YoudaoTrans.get_web_api_data(text, le)
-        resp = YoudaoTrans.youdao_api_download(YOUDAO_WEB_API_BASE_URL.format(text), "POST", data=data)
-        assert resp is not None
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -10,7 +10,10 @@ class TestGoogleTrans(unittest.TestCase):
     def test_translate(self):
         pass
 
-    @patch("sys.argv", ["", "-g", "book", "--source-language", "en", "--target-language", "ja"])
+    @patch(
+        "sys.argv",
+        ["", "-g", "book", "--source-language", "en", "--target-language", "ja"],
+    )
     @assert_not_raises
     def test_translate_with_sou_tar_lang(self):
         pass
