@@ -1,7 +1,6 @@
 import json
 from hashlib import md5
 
-from lxml import html
 from plumbum import cli
 
 from dict_tiny.config import (
@@ -161,6 +160,8 @@ class YoudaoTrans(DefaultTrans):
         )
         if not resp:
             return
+        from lxml import html
+
         return html.etree.HTML(resp.text)
 
     @staticmethod

@@ -1,10 +1,5 @@
-import pyperclip
 from plumbum import cli
-from prompt_toolkit import PromptSession
-from prompt_toolkit.styles import Style
-from rich.console import Console
 
-from dict_tiny.completer import YoudaoCompleter
 from dict_tiny.config import (
     SEPARATOR,
     TERMINAL_SIZE_COLUMN,
@@ -37,6 +32,8 @@ class DefaultTrans(object):
             if dict_tiny_obj.target_language
             else None
         )
+        from rich.console import Console
+
         self.console = Console()
 
     @classmethod
@@ -72,6 +69,8 @@ class DefaultTrans(object):
             """
 
             try:
+                import pyperclip
+
                 clipboard_data = pyperclip.paste().strip().replace("\n", "")
             except Exception as e:
                 self.stop = True
@@ -134,6 +133,10 @@ class DefaultTrans(object):
             return
 
     def get_prompt_session(self):
+        from dict_tiny.completer import YoudaoCompleter
+        from prompt_toolkit import PromptSession
+        from prompt_toolkit.styles import Style
+
         style = Style.from_dict(
             {
                 # completion
