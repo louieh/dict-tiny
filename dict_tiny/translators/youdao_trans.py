@@ -15,7 +15,6 @@ from dict_tiny.config import (
     YOUDAO_WEB_API_BASE_URL,
 )
 from dict_tiny.errors import YoudaoParamError, TextInputError
-from dict_tiny.translators.YoudaoParser import *
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
@@ -24,6 +23,44 @@ from dict_tiny.util import (
     is_alphabet,
     normal_error_printer,
 )
+
+
+_PARSER_CACHE = {}
+
+
+def _get_parser_cls(main_key):
+    key = main_key.upper()
+    if key not in _PARSER_CACHE:
+        if key == "EC":
+            from dict_tiny.translators.YoudaoParser.ENParser import ECParser
+            _PARSER_CACHE[key] = ECParser
+        elif key == "CE":
+            from dict_tiny.translators.YoudaoParser.ENParser import CEParser
+            _PARSER_CACHE[key] = CEParser
+        elif key == "FC":
+            from dict_tiny.translators.YoudaoParser.FRParser import FCParser
+            _PARSER_CACHE[key] = FCParser
+        elif key == "CF":
+            from dict_tiny.translators.YoudaoParser.FRParser import CFParser
+            _PARSER_CACHE[key] = CFParser
+        elif key == "KC":
+            from dict_tiny.translators.YoudaoParser.KOParser import KCParser
+            _PARSER_CACHE[key] = KCParser
+        elif key == "CK":
+            from dict_tiny.translators.YoudaoParser.KOParser import CKParser
+            _PARSER_CACHE[key] = CKParser
+        elif key == "JC":
+            from dict_tiny.translators.YoudaoParser.JAParser import JCParser
+            _PARSER_CACHE[key] = JCParser
+        elif key == "CJ":
+            from dict_tiny.translators.YoudaoParser.JAParser import CJParser
+            _PARSER_CACHE[key] = CJParser
+        elif key == "FANYI":
+            from dict_tiny.translators.YoudaoParser.FANYIParser import FANYIParser
+            _PARSER_CACHE[key] = FANYIParser
+        else:
+            raise ValueError(f"Unknown parser key: {main_key}")
+    return _PARSER_CACHE[key]
 
 
 class YoudaoTrans(DefaultTrans):
@@ -92,7 +129,7 @@ class YoudaoTrans(DefaultTrans):
             else:
                 normal_warn_printer("No results found.")
                 return
-        parser_cls = globals()[f"{main_key.upper()}Parser"]
+        parser_cls = _get_parser_cls(main_key)
         parser_cls(main_key, resp, self.console, self.dict_tiny_obj.more_detail).parse()
 
     def do_translate_legacy(self, text):
@@ -110,6 +147,11 @@ class YoudaoTrans(DefaultTrans):
             )
             raise
 
+        from dict_tiny.translators.YoudaoParser.ENParserLegacy import (
+            ECParserLegacy,
+            CEParserLegacy,
+        )
+
         parser_obj = (
             ECParserLegacy()
             if self.source_language == ISO639LCodes.English.value
@@ -117,7 +159,6 @@ class YoudaoTrans(DefaultTrans):
         )
         parser_obj.parse_phone(data)
         parser_obj.parse_simple_content(data)
-
         if not self.dict_tiny_obj.more_detail:
             return
         data_base = self.youdao_api_download(YOUDAO_APP_API_BASE_URL.format(text))
