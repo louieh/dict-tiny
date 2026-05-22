@@ -1,10 +1,4 @@
 import re
-from functools import partial
-
-import requests
-from plumbum import colors
-from requests import Session
-from requests.adapters import HTTPAdapter, Retry
 
 from dict_tiny.config import (
     TIMEOUT,
@@ -32,6 +26,9 @@ class Downloader:
     @property
     def session(self):
         if self._session is None:
+            from requests import Session
+            from requests.adapters import HTTPAdapter, Retry
+
             retry = Retry(total=self._retries, backoff_factor=self._backoff_factor)
             self._session = Session()
             self._session.mount("http://", HTTPAdapter(max_retries=retry))
@@ -45,6 +42,8 @@ class Downloader:
         On failure, prints a user-friendly error and returns None.
         """
         try:
+            import requests
+
             resp = self.session.request(
                 method, url, timeout=kwargs.pop("timeout", self.timeout), **kwargs
             )
@@ -105,16 +104,37 @@ def normal_color_printer(text, color=None, **kwargs):
     if color is None:
         print(text, **kwargs)
     else:
+        from plumbum import colors
+
         print(color | text, **kwargs)
 
 
-normal_separator_printer = partial(
-    normal_color_printer, color=colors.bold & colors.yellow
-)
-normal_info_printer = partial(normal_color_printer, color=None)
-normal_title_printer = partial(normal_color_printer, color=colors.green)
-normal_warn_printer = partial(normal_color_printer, color=colors.yellow)
-normal_error_printer = partial(normal_color_printer, color=colors.red)
+def normal_separator_printer(text, **kwargs):
+    from plumbum import colors
+
+    normal_color_printer(text, color=colors.bold & colors.yellow, **kwargs)
+
+
+def normal_info_printer(text, **kwargs):
+    normal_color_printer(text, color=None, **kwargs)
+
+
+def normal_title_printer(text, **kwargs):
+    from plumbum import colors
+
+    normal_color_printer(text, color=colors.green, **kwargs)
+
+
+def normal_warn_printer(text, **kwargs):
+    from plumbum import colors
+
+    normal_color_printer(text, color=colors.yellow, **kwargs)
+
+
+def normal_error_printer(text, **kwargs):
+    from plumbum import colors
+
+    normal_color_printer(text, color=colors.red, **kwargs)
 
 
 def print_equal(string):
