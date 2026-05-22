@@ -1,5 +1,12 @@
 import re
 
+try:
+    import colorama
+
+    colorama.init()
+except ImportError:
+    pass
+
 from dict_tiny.config import (
     TIMEOUT,
     DEFAULT_LE,
