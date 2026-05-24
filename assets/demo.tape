@@ -1,14 +1,15 @@
 Output demo_2_0_0.gif
-Set FontSize 20
-Set Width 800
+Set FontFamily "Sarasa Term SC"
+Set FontSize 22
+Set Width 880
 Set Height 600
 Set TypingSpeed 100ms
-Set LineHeight 1.4
-Set Theme { "name": "Whimsy", "black": "#535178", "red": "#ef6487", "green": "#5eca89", "yellow": "#fdd877", "blue": "#65aef7", "magenta": "#aa7ff0", "cyan": "#43c1be", "white": "#ffffff", "brightBlack": "#535178", "brightRed": "#ef6487", "brightGreen": "#5eca89", "brightYellow": "#fdd877", "brightBlue": "#65aef7", "brightMagenta": "#aa7ff0", "brightCyan": "#43c1be", "brightWhite": "#ffffff", "background": "#29283b", "foreground": "#b3b0d6", "selection": "#3d3c58", "cursor": "#b3b0d6" }
-Set Padding 32
-Set Margin 16
-Set MarginFill "#1e1e2e"
-Set BorderRadius 12
+Set LineHeight 1.6
+Set Theme { "black": "#45475a", "red": "#f38ba8", "green": "#a6e3a1", "yellow": "#f9e2af", "blue": "#89b4fa", "magenta": "#f5c2e7", "cyan": "#94e2d5", "white": "#bac2de", "brightBlack": "#585b70", "brightRed": "#f38ba8", "brightGreen": "#a6e3a1", "brightYellow": "#f9e2af", "brightBlue": "#89b4fa", "brightMagenta": "#f5c2e7", "brightCyan": "#94e2d5", "brightWhite": "#a6adc8", "background": "#1e1e2e", "foreground": "#cdd6f4", "selection": "#585b70", "cursor": "#f5e0dc" }
+Set Padding 40
+Set Margin 20
+Set MarginFill "#11111b"
+Set BorderRadius 16
 Set WindowBar Colorful
 Set Framerate 30
 Set CursorBlink false
