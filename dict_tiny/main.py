@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-from plumbum import cli
-from plumbum import colors
+from plumbum import cli, colors
 
 from dict_tiny import version
-from dict_tiny.config import YOUDAO_NAME, GOOGLE_NAME
+from dict_tiny.config import GOOGLE_NAME, YOUDAO_NAME
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
-from dict_tiny.util import normal_warn_printer, normal_error_printer
+from dict_tiny.util import normal_error_printer, normal_warn_printer
 
 
 class Dict_tiny(cli.Application):

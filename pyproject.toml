@@ -1,9 +1,17 @@
 [project]
 name = "dict-tiny"
-version = "2.0.0"
+version = "2.0.0rc1"
 description = "A command-line tool that integrates Youdao Dict and Google Translate."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
+authors = [{name = "louie", email = "louiehan1015@gmail.com"}]
+keywords = ["youdao", "dictionary", "command-line", "plumbum", "translator", "translate", "google-translation-api"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
 dependencies = [
     "lxml>=6.1.0",
     "plumbum>=1.10.0",
@@ -12,3 +20,16 @@ dependencies = [
     "requests>=2.32.5",
     "rich>=15.0.0",
 ]
+
+[project.scripts]
+dict-tiny = "dict_tiny.main:run"
+
+[project.urls]
+Home = "https://github.com/louieh/dict-tiny"
+
+[tool.setuptools.packages.find]
+include = ["dict_tiny*"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
