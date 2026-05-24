@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import tomllib
-from pathlib import Path
+import importlib.metadata
 
-_pyproject = Path(__file__).resolve().parents[1] / "pyproject.toml"
-_data = tomllib.loads(_pyproject.read_text())
-
-name = _data["project"]["name"]
-__version__ = _data["project"]["version"]
-DESCRIPTION = _data["project"]["description"]
+__version__ = importlib.metadata.version("dict-tiny")
+_metadata = importlib.metadata.metadata("dict-tiny")
+name = _metadata["Name"]
+DESCRIPTION = _metadata["Summary"]
