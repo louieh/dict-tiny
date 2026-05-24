@@ -1,0 +1,191 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "key": "电源线",
+        "trans": [
+          {
+            "value": "전원선"
+          }
+        ]
+      },
+      {
+        "key": "电源供给装置",
+        "trans": [
+          {
+            "value": "전원 공급장치"
+          }
+        ]
+      },
+      {
+        "key": "关闭--切断电源",
+        "trans": [
+          {
+            "value": "꺼짐--전원차단"
+          }
+        ]
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-count": 6,
+    "sentence-pair": [
+      {
+        "sentence": "太阳能<b>电源</b>。",
+        "sentence-translation-speech": "%ED%83%9C%EC%96%91%EC%97%90%EB%84%88%EC%A7%80+%EC%A0%84%EC%9B%90.&le=ko",
+        "sentence-eng": "太阳能<b>电源</b>。",
+        "sentence-translation": "태양에너지 전원.",
+        "speech-size": "2kb",
+        "url": "youdao"
+      },
+      {
+        "sentence": "整流<b>电源</b>。",
+        "sentence-translation-speech": "%EC%A0%95%EB%A5%98+%EC%A0%84%EC%9B%90.&le=ko",
+        "sentence-eng": "整流<b>电源</b>。",
+        "sentence-translation": "정류 전원.",
+        "speech-size": "1kb",
+        "url": "youdao"
+      },
+      {
+        "sentence": "移动<b>电源</b>可以托运吗？",
+        "sentence-translation-speech": "%EB%B3%B4%EC%A1%B0+%EB%B0%B0%ED%84%B0%EB%A6%AC%EB%8F%84+%EB%B6%80%EC%B9%A0+%EC%88%98+%EC%9E%88%EB%82%98%EC%9A%94%3F&le=ko",
+        "sentence-eng": "移动<b>电源</b>可以托运吗？",
+        "sentence-translation": "보조 배터리도 부칠 수 있나요?",
+        "speech-size": "4kb",
+        "url": "youdao"
+      }
+    ],
+    "more": "blng_sents"
+  },
+  "input": "电源",
+  "baike": {
+    "summarys": [
+      {
+        "summary": "电源是将其它形式的能转换成电能的装置。 电源自“磁生电”原理，由水力、风力、海潮、水坝水压差、太阳能等可再生能源，及烧煤炭、油渣等产生电力来源。 常见的电源是干电池（直流电）与家用的110V-220V 交流电源。 ",
+        "key": "电源"
+      }
+    ],
+    "source": {
+      "name": "百度百科",
+      "url": ""
+    }
+  },
+  "meta": {
+    "input": "电源",
+    "guessLanguage": "zh",
+    "isHasSimpleDict": "1",
+    "le": "ko",
+    "lang": "ko",
+    "dicts": [
+      "web_trans",
+      "blng_sents_part",
+      "baike",
+      "meta",
+      "ck",
+      "longchao-ck",
+      "simple"
+    ]
+  },
+  "ck": {
+    "source": {
+      "name": "现代韩中中韩词典",
+      "url": "https://www.youdao.com/help/dict/source/001"
+    },
+    "word": [
+      {
+        "trs": [
+          {
+            "pos": "名词",
+            "tr": [
+              {
+                "exam": {
+                  "i": [
+                    {
+                      "f": {
+                        "l": {
+                          "i": ["这些装置不应该接通电源。"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "이들 장비는 전원에 연결시키면 안 된다."
+                        }
+                      }
+                    },
+                    {
+                      "f": {
+                        "l": {
+                          "i": ["把电视插头插到线板上。"]
+                        }
+                      },
+                      "n": {
+                        "l": {
+                          "i": "텔레비전 전원 플러그를 콘센트에 꼽아라."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "l": {
+                  "i": ["전원"]
+                }
+              }
+            ]
+          }
+        ],
+        "phone": "diànyuán",
+        "return-phrase": {
+          "l": {
+            "i": "电源"
+          }
+        }
+      }
+    ]
+  },
+  "longchao-ck": {
+    "dataList": [
+      {
+        "pinyin": "diànyuán",
+        "pos": "名词",
+        "word": "电源",
+        "meanings": {
+          "terminology": "<物>",
+          "sense": [
+            {
+              "trs": [
+                {
+                  "sentences": [
+                    {
+                      "ko": "전원 전선.",
+                      "cn": "电源线。"
+                    }
+                  ],
+                  "tr": "전자 제품에 전기 에너지를 공급하는 장치. [예를 들면 축전지[배터리]나 발전소 등을 가리킴]"
+                },
+                {
+                  "tr": "전자 설비 중 전기 에너지 형식을 변환하는 장치. [예를 들면 정류기(整流器)･변압기 등을 가리킴]"
+                }
+              ],
+              "pos": "名词"
+            }
+          ]
+        }
+      }
+    ],
+    "source": {
+      "name": "《龙朝中韩词典》"
+    },
+    "word": "电源"
+  },
+  "le": "ko",
+  "simple": {
+    "query": "电源",
+    "word": [
+      {
+        "phone": "diànyuán",
+        "return-phrase": "电源"
+      }
+    ]
+  },
+  "lang": "ko"
+}

@@ -1,0 +1,219 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "@same": "true",
+        "key": "羽毛球",
+        "trans": [
+          {
+            "summary": {
+              "line": [
+                "... 26、 乒乓球 le tennis de table 27、 网球 le tennis 28、 <b>羽毛球</b> <b>le badminton</b> ..."
+              ]
+            },
+            "value": "le badminton",
+            "support": 1,
+            "url": ""
+          }
+        ]
+      },
+      {
+        "key": "羽毛球运动员",
+        "trans": [
+          {
+            "value": "joueur de badminton"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球场",
+        "trans": [
+          {
+            "value": "court de badminton"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球 羽毛球",
+        "trans": [
+          {
+            "value": "badminton"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球拍",
+        "trans": [
+          {
+            "value": "raquette de badminton"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球之星2",
+        "trans": [
+          {
+            "value": "Badminton 2"
+          }
+        ]
+      },
+      {
+        "key": "胣 羽毛球",
+        "trans": [
+          {
+            "value": "le badminton"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球世界杯",
+        "trans": [
+          {
+            "value": "Badminton World Cup"
+          }
+        ]
+      },
+      {
+        "key": "打羽毛球的女孩",
+        "trans": [
+          {
+            "value": "Jeunes filles jouant au volant"
+          }
+        ]
+      },
+      {
+        "key": "羽毛球拍就叫做",
+        "trans": [
+          {
+            "value": "la raquette de volant"
+          }
+        ]
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-count": 5,
+    "sentence-pair": [
+      {
+        "sentence": "除了<b>羽毛</b><b>球</b>，你还有什么爱好？",
+        "sentence-translation-speech": "Quel+go%C3%BBt+tu+as+autre+que+le+volant%3F&le=fr",
+        "sentence-eng": "除了<b>羽毛</b><b>球</b>，你还有什么爱好？",
+        "sentence-translation": "Quel goût tu as autre que le volant?",
+        "speech-size": "9kb",
+        "url": "youdao"
+      },
+      {
+        "sentence": "太好了！以后下课我们可以打<b>羽毛</b><b>球</b>了！",
+        "sentence-translation-speech": "Tant+mieux%21+D%C3%A9sormais%2C+on+pourra+jouer+au+badminton+apr%C3%A8s+les+cours.&le=fr",
+        "sentence-eng": "太好了！以后下课我们可以打<b>羽毛</b><b>球</b>了！",
+        "sentence-translation": "Tant mieux! Désormais, on pourra jouer au badminton après les cours.",
+        "speech-size": "18kb",
+        "url": "youdao"
+      },
+      {
+        "sentence": "可耻！毫无疑问<b>羽毛</b><b>球</b>的女选手都被差别对待了。",
+        "sentence-translation-speech": "Les+joueuses+de+badminton+auront+sans+doute+appr%C3%A9ci%C3%A9+la+diff%C3%A9rence+de+traitement.&le=fr",
+        "sentence-eng": "可耻！毫无疑问<b>羽毛</b><b>球</b>的女选手都被差别对待了。",
+        "sentence-translation": "Les joueuses de badminton auront sans doute apprécié la différence de traitement.",
+        "speech-size": "21kb",
+        "url": "youdao"
+      }
+    ],
+    "more": "blng_sents"
+  },
+  "input": "羽毛球",
+  "cf": {
+    "source": {
+      "name": "现代法汉汉法词典",
+      "url": "https://www.youdao.com/help/dict/source/001"
+    },
+    "word": [
+      {
+        "trs": [
+          {
+            "tr": [
+              {
+                "l": {
+                  "i": ["volant"]
+                }
+              },
+              {
+                "l": {
+                  "i": ["badminton"]
+                }
+              }
+            ]
+          }
+        ],
+        "phone": "yŭ máoqiú",
+        "return-phrase": {
+          "l": {
+            "i": "羽毛球"
+          }
+        }
+      }
+    ]
+  },
+  "baike": {
+    "summarys": [
+      {
+        "summary": "\"羽毛球\"是个多义词，它可以指羽毛球（体育项目）,羽毛球（西安电子科技大学出版社书籍）,羽毛球。",
+        "key": "羽毛球"
+      }
+    ],
+    "source": {
+      "name": "百度百科",
+      "url": ""
+    }
+  },
+  "meta": {
+    "input": "羽毛球",
+    "guessLanguage": "zh",
+    "isHasSimpleDict": "1",
+    "le": "fr",
+    "lang": "fr",
+    "dicts": [
+      "web_trans",
+      "blng_sents_part",
+      "cf",
+      "baike",
+      "meta",
+      "simple",
+      "newhh"
+    ]
+  },
+  "le": "fr",
+  "simple": {
+    "query": "羽毛球",
+    "word": [
+      {
+        "return-phrase": "羽毛球"
+      }
+    ]
+  },
+  "lang": "fr",
+  "newhh": {
+    "dataList": [
+      {
+        "pinyin": "yǔmáoqiú",
+        "sense": [
+          {
+            "def": ["球类运动项目，球场长方形，中间横隔球网，双方各占半场。"],
+            "cat": "名词"
+          },
+          {
+            "def": [
+              "羽毛球运动使用的球。用半球形软木外包羊皮，上面固定羽毛制成。也有用塑料制的。"
+            ],
+            "cat": "名词"
+          }
+        ],
+        "word": "羽毛球"
+      }
+    ],
+    "source": {
+      "name": "《现代汉语规范词典》"
+    },
+    "word": "羽毛球"
+  }
+}

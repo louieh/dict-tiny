@@ -1,48 +1,77 @@
-import pyperclip
 from plumbum import cli
-from prompt_toolkit import PromptSession
-from prompt_toolkit.styles import Style
 
-from dict_tiny.completer import YoudaoCompleter
-from dict_tiny.config import SEPARATOR, TERMINAL_SIZE_COLUMN, DEFAULT_TARGET_LANGUAGE, DICT_TINY_TARGET_LAN_ENV_NAME, \
-    DICT_TINY_DEFAULT_TRANS_ENV_NAME
+from dict_tiny.config import (
+    SEPARATOR,
+    TERMINAL_SIZE_COLUMN,
+    DICT_TINY_SOURCE_LAN_ENV_NAME,
+    DICT_TINY_TARGET_LAN_ENV_NAME,
+    DICT_TINY_DEFAULT_TRANS_ENV_NAME,
+)
 from dict_tiny.errors import CustomException
-from dict_tiny.util import normal_error_printer, normal_warn_printer, normal_separator_printer, normal_info_printer, \
-    normal_title_printer, parse_le
+from dict_tiny.util import (
+    normal_error_printer,
+    normal_warn_printer,
+    normal_separator_printer,
+    normal_info_printer,
+    normal_title_printer,
+    parse_le,
+)
 
 
 class DefaultTrans(object):
     def __init__(self, text, dict_tiny_obj):
         self.text = text
         self.dict_tiny_obj = dict_tiny_obj
-        self.source_language = dict_tiny_obj.source_language
-        self.target_language = dict_tiny_obj.target_language or DEFAULT_TARGET_LANGUAGE
+        self.source_language = (
+            dict_tiny_obj.source_language.lower()
+            if dict_tiny_obj.source_language
+            else None
+        )
+        self.target_language = (
+            dict_tiny_obj.target_language.lower()
+            if dict_tiny_obj.target_language
+            else None
+        )
+        from rich.console import Console
+
+        self.console = Console()
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
 
-        dict_tiny_cls.interactive = cli.Flag(["-i", "--interactive"],
-                                             help="Interactive mode")
-        dict_tiny_cls.source_language = cli.SwitchAttr("--source-language",
-                                                       str,
-                                                       help="What language you want to translate")
-        dict_tiny_cls.target_language = cli.SwitchAttr("--target-language",
-                                                       str,
-                                                       envname=DICT_TINY_TARGET_LAN_ENV_NAME,
-                                                       help="What language you want to translate into")
-        dict_tiny_cls.default_translator = cli.SwitchAttr("--default-translator",
-                                                          str,
-                                                          envname=DICT_TINY_DEFAULT_TRANS_ENV_NAME,
-                                                          help="Set default translator")
+        dict_tiny_cls.interactive = cli.Flag(
+            ["-i", "--interactive"], help="Interactive mode"
+        )
+        dict_tiny_cls.source_language = cli.SwitchAttr(
+            ["--sl", "--source-language"],
+            str,
+            envname=DICT_TINY_SOURCE_LAN_ENV_NAME,
+            help="What language you want to translate",
+        )
+        dict_tiny_cls.target_language = cli.SwitchAttr(
+            ["--tl", "--target-language"],
+            str,
+            envname=DICT_TINY_TARGET_LAN_ENV_NAME,
+            help="What language you want to translate into",
+        )
+        dict_tiny_cls.default_translator = cli.SwitchAttr(
+            "--default-translator",
+            str,
+            envname=DICT_TINY_DEFAULT_TRANS_ENV_NAME,
+            help="Set default translator",
+        )
 
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
             """
+            @:param self: Dict_tiny object
             Use the contents of the clipboard.
             """
 
             try:
-                clipboard_data = pyperclip.paste().strip().replace('\n', '')
+                import pyperclip
+
+                clipboard_data = pyperclip.paste().strip().replace("\n", "")
             except Exception as e:
                 self.stop = True
                 normal_error_printer("[Error!] Cannot get clipboard content.")
@@ -53,12 +82,14 @@ class DefaultTrans(object):
             else:
                 normal_warn_printer("There is no content in the clipboard.")
 
+        # set instance method to dict tiny class
         dict_tiny_cls.trans_clipboard = trans_clipboard
 
     @classmethod
     def trans_obj_getter(cls, text, dict_tiny_obj):
         flag = f"use_{cls.__name__.lower()}"  # use_googletrans
-        if not getattr(dict_tiny_obj, flag, False): return
+        if not getattr(dict_tiny_obj, flag, False):
+            return
         return cls(text, dict_tiny_obj)
 
     def pre_action(self, text):
@@ -95,45 +126,54 @@ class DefaultTrans(object):
             self.extra_action(self.text)
         except CustomException as e:
             normal_error_printer(e.message)
+        except NotImplementedError as e:
+            normal_error_printer("method is not implemented")
         except Exception as e:
-            # print(f"error: {e}")
-            pass
+            normal_error_printer(f"translate error: {e}")
+            return
 
     def get_prompt_session(self):
-        style = Style.from_dict({
-            # completion
-            'completion-menu.completion': 'bg:#008888 #ffffff',
-            'completion-menu.completion.current': 'bg:#00aaaa #000000',
-            'scrollbar.background': 'bg:#88aaaa',
-            'scrollbar.button': 'bg:#222222',
+        from dict_tiny.completer import YoudaoCompleter
+        from prompt_toolkit import PromptSession
+        from prompt_toolkit.styles import Style
 
-            # User input (default text).
-            '': '#ffbe54',
-
-            # Prompt.
-            'prompt_name': '#E2FDA8',
-            'prompt_sign': '#E2FDA8',
-        })
+        style = Style.from_dict(
+            {
+                # completion
+                "completion-menu.completion": "bg:#008888 #ffffff",
+                "completion-menu.completion.current": "bg:#00aaaa #000000",
+                "scrollbar.background": "bg:#88aaaa",
+                "scrollbar.button": "bg:#222222",
+                # User input (default text).
+                "": "#ffbe54",
+                # Prompt.
+                "prompt_name": "#E2FDA8",
+                "prompt_sign": "#E2FDA8",
+            }
+        )
 
         normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
         normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
 
         suggest_le = parse_le(self.source_language, self.target_language)
-        session = PromptSession(completer=YoudaoCompleter(suggest_le),
-                                style=style,
-                                complete_while_typing=False,
-                                complete_in_thread=True)
+        session = PromptSession(
+            completer=YoudaoCompleter(suggest_le),
+            style=style,
+            complete_while_typing=False,
+            complete_in_thread=True,
+        )
         return session
 
     def interactive_loop(self, session):
         message = [
-            ('class:prompt_name', self.name),
-            ('class:prompt_sign', ' > '),
+            ("class:prompt_name", self.name),
+            ("class:prompt_sign", " > "),
         ]
         while True:
             try:
                 text = session.prompt(message)
-                if not text: continue
+                if not text:
+                    continue
             except KeyboardInterrupt:
                 normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
                 continue  # Control-C pressed. Try again.
@@ -149,7 +189,7 @@ class DefaultTrans(object):
                 except Exception as e:
                     # print(f"error: {e}")
                     continue
-        print('GoodBye!')
+        print("GoodBye!")
 
     def interactive(self):
         session = self.get_prompt_session()

@@ -4,13 +4,9 @@ class CustomException(Exception):
         self.message = message
 
 
-class LLMParamError(CustomException):
-    """llm param error"""
+class YoudaoParamError(CustomException):
+    """ "youdao param error"""
 
 
 class TextInputError(CustomException):
     """text input error"""
-
-
-class InitDialogError(CustomException):
-    """init dialog error"""
