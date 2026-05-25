@@ -12,6 +12,9 @@ Just for fun :)
 - Google Translate
 - Interactive mode with word auto-completion
 
+</br>
+<p align="left"><img src="./assets/demo_2_0_0.gif" alt="demo_2_0_0" width="50%" height="50%" /></p>
+
 ## Installing
 
 Install with `pip`. (Python >= 3.9)
