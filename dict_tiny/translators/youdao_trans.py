@@ -96,9 +96,9 @@ class YoudaoTrans(DefaultTrans):
         dict_tiny_cls.more_detail = cli.Flag(
             ["-m", "--more"], group=YOUDAO_NAME, help="Get more details"
         )
-        dict_tiny_cls.legacy = cli.Flag(
-            ["--legacy"], group=YOUDAO_NAME, help="Use legacy translate method"
-        )
+        # dict_tiny_cls.legacy = cli.Flag(
+        #     ["--legacy"], group=YOUDAO_NAME, help="Use legacy translate method"
+        # )
 
     def do_translate(self, text):
         if self.dict_tiny_obj.legacy:

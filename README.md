@@ -54,7 +54,6 @@ Switches:
     --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
 
 YoudaoDict:
-    --legacy                               Use legacy translate method
     -m, --more                             Get more details
     -y, --youdao                           Use Youdao Dictionary to translate
 ```
