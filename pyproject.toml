@@ -1,6 +1,6 @@
 [project]
 name = "dict-tiny"
-version = "2.0.0rc4"
+version = "2.0.0rc5"
 description = "A command-line tool that integrates Youdao Dict and Google Translate."
 readme = "README.md"
 requires-python = ">=3.11"
