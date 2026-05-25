@@ -303,7 +303,7 @@ In interactive mode you can:
   machine learning
   ```
 
-  You can use the environment variable `$DICT_TINY_DEFAULT_TRANS` to set the default translator. There are two options described above: `YoudaoDict` and `GoogleTranslate`. Case insensitive.
+  You can use the environment variable `$DICT_TINY_DEFAULT_TRANS` to set the default translator. Options: `youdaodict` or `googletranslate` (case-insensitive).
 
 - For Youdao Dict and Google Translate, if the target language is not specified, Chinese and English are used as the target language for one another.
 - In non-interactive mode, multiple translators can be used at the same time, for example `dict-tiny formulation -y -g`.
@@ -344,11 +344,11 @@ n. 偶遇，邂逅；经历，体验；冲突；比赛，交锋
 
 ### Environment variables
 
-| name                      | default    | description                                                       |
-| ------------------------- | ---------- | ----------------------------------------------------------------- |
-| `DICT_TINY_TARGET_LAN`    |            | Specify the default target language.                              |
-| `DICT_TINY_SOURCE_LAN`    |            | Specify the default source language.                              |
-| `DICT_TINY_DEFAULT_TRANS` | youdaodict | Specify the default translator.<br>`YoudaoDict` `GoogleTranslate` |
+| name                      | default    | description                                                                            |
+| ------------------------- | ---------- | -------------------------------------------------------------------------------------- |
+| `DICT_TINY_TARGET_LAN`    |            | Specify the default target language.                                                   |
+| `DICT_TINY_SOURCE_LAN`    |            | Specify the default source language.                                                   |
+| `DICT_TINY_DEFAULT_TRANS` | youdaodict | Specify the default translator.<br>`youdaodict` / `googletranslate` (case-insensitive) |
 
 ## License
 
