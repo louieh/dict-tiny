@@ -101,9 +101,9 @@ class YoudaoTrans(DefaultTrans):
         # )
 
     def do_translate(self, text):
-        if self.dict_tiny_obj.legacy:
-            self.do_translate_legacy(text)
-            return
+        # if self.dict_tiny_obj.legacy:
+        #     self.do_translate_legacy(text)
+        #     return
         data = self.get_web_api_data(text, self.trans_le)
         resp = self.youdao_api_download(
             YOUDAO_WEB_API_BASE_URL.format(text), "POST", data=data

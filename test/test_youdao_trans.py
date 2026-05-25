@@ -58,16 +58,6 @@ class TestYoudoTransE2E(unittest.TestCase):
     def test_e2e_ce(self):
         pass
 
-    @patch("sys.argv", ["", "-y", "book", "-m", "--legacy"])
-    @assert_not_raises
-    def test_e2e_legacy_ec(self):
-        pass
-
-    @patch("sys.argv", ["", "-y", "测试", "-m", "--legacy"])
-    @assert_not_raises
-    def test_e2e_legacy_ce(self):
-        pass
-
     @patch("sys.argv", ["", "-y", "翻訳する", "-m", "--source-language", "ja"])
     @assert_not_raises
     def test_e2e_jc(self):
