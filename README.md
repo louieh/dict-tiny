@@ -13,7 +13,7 @@ Just for fun :)
 - Interactive mode with word auto-completion
 
 </br>
-<p align="left"><img src="./assets/demo_2_0_0.gif" alt="demo_2_0_0" width="50%" height="50%" /></p>
+<p align="left"><img src="./assets/demo_2_0_0.gif" alt="demo_2_0_0" width="65%" height="65%" /></p>
 
 ## Installing
 
