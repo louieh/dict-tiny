@@ -5,7 +5,6 @@ from dict_tiny.config import (
     TERMINAL_SIZE_COLUMN,
     DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
-    DICT_TINY_DEFAULT_TRANS_ENV_NAME,
 )
 from dict_tiny.errors import CustomException
 from dict_tiny.util import (
@@ -54,19 +53,11 @@ class DefaultTrans(object):
             envname=DICT_TINY_TARGET_LAN_ENV_NAME,
             help="Target language (YoudaoDict only supports en/fr/ja/ko)",
         )
-        dict_tiny_cls.default_translator = cli.SwitchAttr(
-            "--default-translator",
-            str,
-            envname=DICT_TINY_DEFAULT_TRANS_ENV_NAME,
-            help="Set default translator",
-        )
 
         @cli.switch(["-c", "--clipboard"])
         def trans_clipboard(self):
-            """
-            @:param self: Dict_tiny object
-            Use the contents of the clipboard.
-            """
+            # @param self: Dict_tiny object
+            """Use the contents of the clipboard."""
 
             try:
                 import pyperclip
