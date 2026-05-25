@@ -34,7 +34,6 @@ class TestYoudaoInit(unittest.TestCase):
             YoudaoTrans("book", self._make_mock_obj(target="pl"))
 
     def test_supported_languages(self):
-        self.assertIn("zh", YOUDAO_TARGET_LANG_SET)
         self.assertIn("en", YOUDAO_TARGET_LANG_SET)
         self.assertIn("fr", YOUDAO_TARGET_LANG_SET)
         self.assertIn("ja", YOUDAO_TARGET_LANG_SET)

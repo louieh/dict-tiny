@@ -46,13 +46,13 @@ class DefaultTrans(object):
             ["--sl", "--source-language"],
             str,
             envname=DICT_TINY_SOURCE_LAN_ENV_NAME,
-            help="What language you want to translate",
+            help="Source language (YoudaoDict only supports en/fr/ja/ko)",
         )
         dict_tiny_cls.target_language = cli.SwitchAttr(
             ["--tl", "--target-language"],
             str,
             envname=DICT_TINY_TARGET_LAN_ENV_NAME,
-            help="What language you want to translate into",
+            help="Target language (YoudaoDict only supports en/fr/ja/ko)",
         )
         dict_tiny_cls.default_translator = cli.SwitchAttr(
             "--default-translator",

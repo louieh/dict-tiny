@@ -11,7 +11,6 @@ from dict_tiny.config import (
     YOUDAO_NAME,
     ISO639LCodes,
     YOUDAO_TARGET_LANG_SET,
-    ISO639NameToCode,
     YOUDAO_WEB_API_BASE_URL,
 )
 from dict_tiny.errors import YoudaoParamError, TextInputError
@@ -24,7 +23,6 @@ from dict_tiny.util import (
     normal_error_printer,
 )
 
-
 _PARSER_CACHE = {}
 
 
@@ -33,30 +31,39 @@ def _get_parser_cls(main_key):
     if key not in _PARSER_CACHE:
         if key == "EC":
             from dict_tiny.translators.YoudaoParser.ENParser import ECParser
+
             _PARSER_CACHE[key] = ECParser
         elif key == "CE":
             from dict_tiny.translators.YoudaoParser.ENParser import CEParser
+
             _PARSER_CACHE[key] = CEParser
         elif key == "FC":
             from dict_tiny.translators.YoudaoParser.FRParser import FCParser
+
             _PARSER_CACHE[key] = FCParser
         elif key == "CF":
             from dict_tiny.translators.YoudaoParser.FRParser import CFParser
+
             _PARSER_CACHE[key] = CFParser
         elif key == "KC":
             from dict_tiny.translators.YoudaoParser.KOParser import KCParser
+
             _PARSER_CACHE[key] = KCParser
         elif key == "CK":
             from dict_tiny.translators.YoudaoParser.KOParser import CKParser
+
             _PARSER_CACHE[key] = CKParser
         elif key == "JC":
             from dict_tiny.translators.YoudaoParser.JAParser import JCParser
+
             _PARSER_CACHE[key] = JCParser
         elif key == "CJ":
             from dict_tiny.translators.YoudaoParser.JAParser import CJParser
+
             _PARSER_CACHE[key] = CJParser
         elif key == "FANYI":
             from dict_tiny.translators.YoudaoParser.FANYIParser import FANYIParser
+
             _PARSER_CACHE[key] = FANYIParser
         else:
             raise ValueError(f"Unknown parser key: {main_key}")
@@ -76,10 +83,6 @@ class YoudaoTrans(DefaultTrans):
             raise YoudaoParamError(
                 f"the source language {self.source_language} is not supported"
             )
-        if self.target_language and self.target_language in ISO639NameToCode:
-            self.target_language = ISO639NameToCode[self.target_language]
-        if self.source_language and self.source_language in ISO639NameToCode:
-            self.source_language = ISO639NameToCode[self.source_language]
         self.trans_le = parse_le(self.source_language, self.target_language)
 
     @classmethod

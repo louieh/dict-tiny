@@ -50,8 +50,8 @@ Switches:
     -c, --clipboard                        Use the contents of the clipboard.
     --default-translator VALUE:str         Set default translator
     -i, --interactive                      Interactive mode
-    --sl, --source-language VALUE:str      Source language of the input text
-    --tl, --target-language VALUE:str      What language you want to translate into
+    --sl, --source-language VALUE:str      Source language (YoudaoDict only supports en/fr/ja/ko)
+    --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
 
 YoudaoDict:
     --legacy                               Use legacy translate method
@@ -65,9 +65,18 @@ YoudaoDict:
 
 Add `-y` / `--youdao` to use Youdao Dict:
 
-You can use Youdao for Chinese-English, Chinese-Japanese, Chinese-French, and Chinese-Korean translation. The default is Chinese-English translation.
+Youdao only supports Chinese↔English, Chinese↔French, Chinese↔Japanese, and Chinese↔Korean translation. The default is Chinese↔English.
 
-**Note:** When using non-Chinese↔English translation, you need to specify `--source-language` or `--target-language`. For example, Chinese↔Japanese requires at least one of `--source-language ja` or `--target-language ja`.
+`--source-language` / `--target-language` only accept the following codes:
+
+| Code | Language |
+| ---- | -------- |
+| `en` | English  |
+| `fr` | French   |
+| `ja` | Japanese |
+| `ko` | Korean   |
+
+Chinese is the implicit counterpart — no need to specify `zh`. For example, Chinese↔Japanese requires `--target-language ja` or `--source-language ja`.
 
 ```bash
 $ dict-tiny -y book
