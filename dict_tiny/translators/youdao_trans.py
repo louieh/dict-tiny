@@ -4,10 +4,7 @@ from hashlib import md5
 from plumbum import cli
 
 from dict_tiny.config import (
-    YOUDAO_WEB_FAKE_HEADER,
     YOUDAO_API_FAKE_HEADER,
-    YOUDAO_WEB_BASE_URL,
-    YOUDAO_APP_API_BASE_URL,
     YOUDAO_NAME,
     ISO639LCodes,
     YOUDAO_TARGET_LANG_SET,
@@ -19,8 +16,6 @@ from dict_tiny.util import (
     downloader,
     normal_warn_printer,
     parse_le,
-    is_alphabet,
-    normal_error_printer,
 )
 
 _PARSER_CACHE = {}
@@ -96,14 +91,8 @@ class YoudaoTrans(DefaultTrans):
         dict_tiny_cls.more_detail = cli.Flag(
             ["-m", "--more"], group=YOUDAO_NAME, help="Get more details"
         )
-        # dict_tiny_cls.legacy = cli.Flag(
-        #     ["--legacy"], group=YOUDAO_NAME, help="Use legacy translate method"
-        # )
 
     def do_translate(self, text):
-        # if self.dict_tiny_obj.legacy:
-        #     self.do_translate_legacy(text)
-        #     return
         data = self.get_web_api_data(text, self.trans_le)
         resp = self.youdao_api_download(
             YOUDAO_WEB_API_BASE_URL.format(text), "POST", data=data
@@ -135,43 +124,6 @@ class YoudaoTrans(DefaultTrans):
         parser_cls = _get_parser_cls(main_key)
         parser_cls(main_key, resp, self.console, self.dict_tiny_obj.more_detail).parse()
 
-    def do_translate_legacy(self, text):
-        data = self.youdao_download(text)
-        if data is None:
-            return
-
-        self.source_language = is_alphabet(text)
-        if self.source_language not in (
-            ISO639LCodes.Chinese.value,
-            ISO639LCodes.English.value,
-        ):
-            normal_error_printer(
-                "The input content is neither an English word nor a Chinese word."
-            )
-            raise
-
-        from dict_tiny.translators.YoudaoParser.ENParserLegacy import (
-            ECParserLegacy,
-            CEParserLegacy,
-        )
-
-        parser_obj = (
-            ECParserLegacy()
-            if self.source_language == ISO639LCodes.English.value
-            else CEParserLegacy()
-        )
-        parser_obj.parse_phone(data)
-        parser_obj.parse_simple_content(data)
-        if not self.dict_tiny_obj.more_detail:
-            return
-        data_base = self.youdao_api_download(YOUDAO_APP_API_BASE_URL.format(text))
-        if not data_base:
-            normal_warn_printer(
-                "The detail translation of this word cannot be found at this time. Please try again later."
-            )
-            return
-        parser_obj.parse_detail_content(data_base, self.source_language)
-
     @staticmethod
     def get_web_api_data(text, le):
         """
@@ -193,22 +145,6 @@ class YoudaoTrans(DefaultTrans):
         return {"q": text, "le": le, "t": t, "client": _, "sign": f, "keyfrom": v}
 
     @staticmethod
-    def youdao_download(text):
-        """
-        download from web
-        :param text:
-        :return:
-        """
-        resp = downloader.get(
-            YOUDAO_WEB_BASE_URL.format(text), headers=YOUDAO_WEB_FAKE_HEADER
-        )
-        if not resp:
-            return
-        from lxml import html
-
-        return html.etree.HTML(resp.text)
-
-    @staticmethod
     def youdao_api_download(url, method="GET", **kwargs):
         """
         download data from API
@@ -224,7 +160,7 @@ class YoudaoTrans(DefaultTrans):
             return
         try:
             return resp.json()
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             pass
-        except Exception as e:
+        except Exception:
             pass
