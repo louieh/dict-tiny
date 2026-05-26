@@ -17,7 +17,7 @@ Just for fun :)
 
 ## Installing
 
-Install with `pip`. (Python >= 3.9)
+Install with `pip`. (Python >= 3.11)
 
 ```bash
 $ pip install dict-tiny
