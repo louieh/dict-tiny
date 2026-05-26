@@ -6,8 +6,16 @@ from dict_tiny.config import (
     ISO639LCodes,
     RETRY,
     BACKOFF_FACTOR,
-    TERMINAL_SIZE_COLUMN,
 )
+
+
+def get_terminal_size_column():
+    import os
+
+    try:
+        return os.get_terminal_size().columns
+    except Exception:
+        return 20
 
 
 class Downloader:
@@ -144,7 +152,7 @@ def print_equal(string):
     :return:
     """
 
-    equal_length = TERMINAL_SIZE_COLUMN - len(string) - get_cn_length(string) - 2
+    equal_length = get_terminal_size_column() - len(string) - get_cn_length(string) - 2
     if equal_length >= 16:  # 8 equal each side
         normal_title_printer("======== %s ========" % string)
     elif equal_length <= 1:

@@ -1,5 +1,5 @@
-from dict_tiny.config import ISO639LCodes, TERMINAL_SIZE_COLUMN
-from dict_tiny.util import normal_title_printer, normal_info_printer, normal_warn_printer, print_equal
+from dict_tiny.config import ISO639LCodes
+from dict_tiny.util import normal_title_printer, normal_info_printer, normal_warn_printer, print_equal, get_terminal_size_column
 
 
 class ENParserLegacy(object):
@@ -20,8 +20,9 @@ class ENParserLegacy(object):
 
         for each_pos in detailtrans_dict.keys():
             if each_pos == None:
-                if TERMINAL_SIZE_COLUMN < 20:
-                    normal_title_printer("=" * (TERMINAL_SIZE_COLUMN - 1))
+                tsc = get_terminal_size_column()
+                if tsc < 20:
+                    normal_title_printer("=" * (tsc - 1))
                 else:
                     normal_title_printer("====================")
             else:
@@ -194,7 +195,8 @@ class ENParserLegacy(object):
             normal_info_printer("美[%s]" % usphone)
 
         # -----basic trans Not modified because it is not being used
-        equal_length = TERMINAL_SIZE_COLUMN - 1 if len(word) + 1 > TERMINAL_SIZE_COLUMN else len(word) - 1
+        tsc = get_terminal_size_column()
+        equal_length = tsc - 1 if len(word) + 1 > tsc else len(word) - 1
         normal_title_printer("=" * equal_length)
         data = data.get("trs")
         for each_data in data:

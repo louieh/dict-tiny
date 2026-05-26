@@ -2,7 +2,6 @@ from plumbum import cli
 
 from dict_tiny.config import (
     SEPARATOR,
-    TERMINAL_SIZE_COLUMN,
     DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
 )
@@ -14,6 +13,7 @@ from dict_tiny.util import (
     normal_info_printer,
     normal_title_printer,
     parse_le,
+    get_terminal_size_column,
 )
 
 
@@ -91,9 +91,10 @@ class DefaultTrans(object):
 
     def print_input(self, text):
         normal_title_printer(text)
+        tsc = get_terminal_size_column()
         length = len(text) + 2
-        if length > TERMINAL_SIZE_COLUMN:
-            length = TERMINAL_SIZE_COLUMN - 1
+        if length > tsc:
+            length = tsc - 1
         normal_title_printer("=" * length)
 
     def do_translate(self, text):

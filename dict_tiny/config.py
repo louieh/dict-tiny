@@ -1,11 +1,5 @@
-import os
 from enum import Enum
 
-# SYSTEM
-try:
-    TERMINAL_SIZE_COLUMN = os.get_terminal_size().columns
-except:
-    TERMINAL_SIZE_COLUMN = 20
 SEPARATOR = ">>> {} <<<"
 
 TIMEOUT = 5
