@@ -5,6 +5,7 @@
 ### Removed
 
 - Remove Gemini and OpenAI support along with their dependencies.
+- Remove legacy Youdao parser (`ENParserLegacy`) and the dependent `lxml` package.
 
 ### Changed
 
