@@ -7,9 +7,7 @@ from dict_tiny.config import (
     GOOGLE_NAME,
     ISO639LCodes,
     GOOGLE_TRANS_API_HEADER,
-    MAX_TEXT_LENGTH,
 )
-from dict_tiny.errors import TextInputError
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
@@ -48,8 +46,7 @@ class GoogleTrans(DefaultTrans):
         # dict_tiny_cls.detect_language = detect_language
 
     def pre_action(self, text):
-        if len(text) > MAX_TEXT_LENGTH:
-            raise TextInputError("The entered text is too long")
+        super().pre_action(text)
         # exchange Chinese and English
         source_guess = (
             ISO639LCodes.English.value

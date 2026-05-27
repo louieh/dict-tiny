@@ -4,8 +4,9 @@ from dict_tiny.config import (
     SEPARATOR,
     DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
+    MAX_TEXT_LENGTH,
 )
-from dict_tiny.errors import CustomException
+from dict_tiny.errors import CustomException, TextInputError
 from dict_tiny.util import (
     normal_error_printer,
     normal_warn_printer,
@@ -83,9 +84,6 @@ class DefaultTrans(object):
             return
         return cls(text, dict_tiny_obj)
 
-    def pre_action(self, text):
-        pass
-
     def print_separator(self):
         normal_separator_printer(SEPARATOR.format(self.name))
 
@@ -102,6 +100,10 @@ class DefaultTrans(object):
 
     def extra_action(self, text):
         pass
+
+    def pre_action(self, text):
+        if len(text) > MAX_TEXT_LENGTH:
+            raise TextInputError("The entered text is too long")
 
     def translate(self):
         # 1. pre action (set default source or target language)

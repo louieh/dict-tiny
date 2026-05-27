@@ -1,9 +1,11 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from dict_tiny.main import run
-from dict_tiny.config import ISO639LCodes
+from dict_tiny.config import ISO639LCodes, MAX_TEXT_LENGTH
 from dict_tiny.translators import _ALL_TRANSLATORS
+from dict_tiny.errors import TextInputError
+from dict_tiny.translators.translator import DefaultTrans
 
 
 class TestCliInit(unittest.TestCase):
@@ -25,6 +27,57 @@ class TestCliInit(unittest.TestCase):
         self.assertEqual(ISO639LCodes.French.value, "fr")
         self.assertEqual(ISO639LCodes.Japanese.value, "ja")
         self.assertEqual(ISO639LCodes.Korean.value, "ko")
+
+
+class TestTextLengthLimit(unittest.TestCase):
+    def setUp(self):
+        self.mock_obj = MagicMock()
+        self.mock_obj.source_language = None
+        self.mock_obj.target_language = None
+
+    def _make_trans(self, cls, text):
+        return cls(text, self.mock_obj)
+
+    def test_normal_text_passes(self):
+        trans = self._make_trans(DefaultTrans, "hello")
+        trans.pre_action("hello")
+
+    def test_exact_limit_passes(self):
+        text = "a" * MAX_TEXT_LENGTH
+        trans = self._make_trans(DefaultTrans, text)
+        trans.pre_action(text)
+
+    def test_oversized_text_raises(self):
+        text = "a" * (MAX_TEXT_LENGTH + 1)
+        trans = self._make_trans(DefaultTrans, text)
+        with self.assertRaises(TextInputError):
+            trans.pre_action(text)
+
+    def test_chinese_oversized_text_raises(self):
+        text = "中" * (MAX_TEXT_LENGTH + 1)
+        trans = self._make_trans(DefaultTrans, text)
+        with self.assertRaises(TextInputError):
+            trans.pre_action(text)
+
+    def test_google_translate_normal_passes(self):
+        trans = self._make_trans(_ALL_TRANSLATORS["googletranslate"], "hello")
+        trans.pre_action("hello")
+
+    def test_google_translate_oversized_raises(self):
+        trans = self._make_trans(_ALL_TRANSLATORS["googletranslate"], "hello")
+        text = "a" * (MAX_TEXT_LENGTH + 1)
+        with self.assertRaises(TextInputError):
+            trans.pre_action(text)
+
+    def test_youdao_dict_normal_passes(self):
+        trans = self._make_trans(_ALL_TRANSLATORS["youdaodict"], "hello")
+        trans.pre_action("hello")
+
+    def test_youdao_dict_oversized_raises(self):
+        trans = self._make_trans(_ALL_TRANSLATORS["youdaodict"], "hello")
+        text = "a" * (MAX_TEXT_LENGTH + 1)
+        with self.assertRaises(TextInputError):
+            trans.pre_action(text)
 
 
 class TestCliIntegration(unittest.TestCase):
