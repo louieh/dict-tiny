@@ -99,7 +99,10 @@ class DefaultTrans(object):
         raise NotImplementedError
 
     def extra_action(self, text):
-        pass
+        wb = self.dict_tiny_obj.wordbook
+        if wb:
+            wb.record(text, self.source_language,
+                      self.target_language, self.name)
 
     def pre_action(self, text):
         if len(text) > MAX_TEXT_LENGTH:
@@ -178,6 +181,7 @@ class DefaultTrans(object):
                     self.pre_action(text)
                     self.print_input(text)
                     self.do_translate(text)
+                    self.extra_action(text)
                 except CustomException as e:
                     normal_error_printer(e.message)
                 except Exception as e:

@@ -1,4 +1,7 @@
+import os
 import re
+import sys
+from pathlib import Path
 
 from dict_tiny.config import (
     TIMEOUT,
@@ -180,3 +183,13 @@ def get_cn_length(string):
 def remove_html_tags(text):
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
+
+
+def get_data_dir():
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData" / "Local"))
+    elif sys.platform == "darwin":
+        base = str(Path.home() / "Library" / "Application Support")
+    else:
+        base = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local" / "share"))
+    return Path(base) / "dict-tiny"

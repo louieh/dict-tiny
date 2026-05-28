@@ -6,10 +6,12 @@ import os
 from plumbum import cli, colors
 
 from dict_tiny import version
-from dict_tiny.config import GOOGLE_NAME, YOUDAO_NAME, DICT_TINY_DEFAULT_TRANS_ENV_NAME
+from dict_tiny.config import DICT_TINY_DEFAULT_TRANS_ENV_NAME, GOOGLE_NAME, YOUDAO_NAME
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_error_printer, normal_warn_printer
+from dict_tiny.wordbook import WordBook
+from dict_tiny.wordbook_cli import WordBookApp
 
 
 class Dict_tiny(cli.Application):
@@ -24,10 +26,43 @@ class Dict_tiny(cli.Application):
 
     stop = False  # whether return directly in main
     clipBoardContent = None  # Record the word in clipboard
+    wordbook = None  # WordBook instance, set lazily
+
+    record = cli.Flag("--record", help="Record query to word book")
+    no_record = cli.Flag("--no-record", help="Skip recording this query")
+
+    def get_wordbook(self):
+        if self.wordbook is not None and self.wordbook._conn is not None:
+            return self.wordbook
+        try:
+            self.wordbook = WordBook()
+            return self.wordbook
+        except Exception as e:
+            normal_error_printer(f"Failed to init wordbook: {e}")
+            return None
 
     def main(self, *words):
+        if self.nested_command:
+            return
+
         if self.stop:
             return
+
+        # ── recording decision ──────────────────────────────
+        if self.record:
+            should_record = True
+        elif self.no_record:
+            should_record = False
+        elif WordBook.db_exists():
+            wb = self.get_wordbook()
+            should_record = wb.get_default_record() if wb else False
+        else:
+            should_record = False
+
+        if should_record and self.wordbook is None:
+            self.get_wordbook()
+        # ─────────────────────────────────────────────────────
+
         text = words or self.clipBoardContent  # word has high priority
         if not text and not self.interactive:
             self.help()
@@ -66,6 +101,8 @@ class Dict_tiny(cli.Application):
                 )
                 return
             trans_objs[0].interactive()
+            if self.wordbook:
+                self.wordbook.close()
             return
 
         # not interactive mode
@@ -73,6 +110,12 @@ class Dict_tiny(cli.Application):
             if trans_obj is None:
                 continue
             trans_obj.translate()
+
+        if self.wordbook:
+            self.wordbook.close()
+
+
+Dict_tiny.subcommand("wb")(WordBookApp)
 
 
 def run():
