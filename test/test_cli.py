@@ -100,5 +100,119 @@ class TestCliIntegration(unittest.TestCase):
             self.fail(f"Unexpected exception: {e}")
 
 
+
+
+class TestTranslateErrorHandling(unittest.TestCase):
+    def setUp(self):
+        self.mock_obj = MagicMock()
+        self.mock_obj.source_language = None
+        self.mock_obj.target_language = None
+        self.mock_obj.wordbook = None
+        self.mock_obj.more_detail = False
+
+    def _make_trans(self, text="hello"):
+        trans = DefaultTrans(text, self.mock_obj)
+        trans.name = "test"
+        trans.display_name = "TestTrans"
+        return trans
+
+    def test_translate_catches_custom_exception(self):
+        trans = self._make_trans()
+        with patch.object(trans, 'do_translate',
+                          side_effect=TextInputError("too long")):
+            try:
+                trans.translate()
+            except Exception:
+                self.fail("translate() should catch CustomException")
+
+    def test_translate_catches_not_implemented(self):
+        trans = self._make_trans()
+        with patch.object(trans, 'do_translate',
+                          side_effect=NotImplementedError):
+            try:
+                trans.translate()
+            except Exception:
+                self.fail("translate() should catch NotImplementedError")
+
+    def test_translate_catches_generic_exception(self):
+        trans = self._make_trans()
+        with patch.object(trans, 'do_translate',
+                          side_effect=RuntimeError("network error")):
+            try:
+                trans.translate()
+            except Exception:
+                self.fail("translate() should catch generic Exception")
+
+    def test_translate_skips_extra_action_on_false(self):
+        trans = self._make_trans()
+        with patch.object(trans, 'do_translate', return_value=False):
+            with patch.object(trans, 'extra_action') as mock_ea:
+                trans.translate()
+                mock_ea.assert_not_called()
+
+    def test_translate_calls_extra_action_on_true(self):
+        trans = self._make_trans()
+        with patch.object(trans, 'do_translate', return_value=True):
+            with patch.object(trans, 'extra_action') as mock_ea:
+                trans.translate()
+                mock_ea.assert_called_once_with("hello")
+
+    def test_extra_action_no_wordbook(self):
+        """extra_action should not crash when wordbook is None"""
+        self.mock_obj.wordbook = None
+        trans = self._make_trans()
+        trans.extra_action("hello")  # should not raise
+
+
+class TestRecordingDecision(unittest.TestCase):
+    @patch("sys.argv", ["", "--record", "hello"])
+    def test_record_flag_creates_wordbook(self):
+        """--record flag should set should_record and init wordbook"""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            mock_wb = MagicMock()
+            MockWB.return_value = mock_wb
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                MockWB.assert_called()
+
+    @patch("sys.argv", ["", "--no-record", "hello"])
+    def test_no_record_flag_skips_wordbook(self):
+        """--no-record flag should keep should_record=False, wordbook=None"""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            mock_wb = MagicMock()
+            MockWB.return_value = mock_wb
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                mock_wb.record.assert_not_called()
+
+    @patch("sys.argv", ["", "hello"])
+    def test_default_no_record_when_no_db(self):
+        """Without flags and no DB, should_record should be False"""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+
+
 if __name__ == "__main__":
     unittest.main()

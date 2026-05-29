@@ -1,4 +1,5 @@
 .idea
+.coverage
 build/
 dict_tiny.egg-info/
 dist/
