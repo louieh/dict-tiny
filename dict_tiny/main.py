@@ -31,6 +31,7 @@ class Dict_tiny(cli.Application):
     stop = False  # whether return directly in main
     clipBoardContent = None  # Record the word in clipboard
     wordbook = None  # WordBook instance, set lazily
+    should_record = False  # recording decision, used by subcommands
 
     record = cli.Flag("--record", help="Record query to word book")
     no_record = cli.Flag("--no-record", help="Skip recording this query")
@@ -46,9 +47,6 @@ class Dict_tiny(cli.Application):
             return None
 
     def main(self, *words):
-        if self.nested_command:
-            return
-
         if self.stop:
             return
 
@@ -63,9 +61,17 @@ class Dict_tiny(cli.Application):
         else:
             should_record = False
 
+        self.should_record = should_record
+
         if should_record and self.wordbook is None:
             self.get_wordbook()
         # ─────────────────────────────────────────────────────
+
+        if self.nested_command:
+            if self.wordbook:
+                self.wordbook.close()
+                self.wordbook = None
+            return
 
         text = words or self.clipBoardContent  # word has high priority
         if not text and not self.interactive:

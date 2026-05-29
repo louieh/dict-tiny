@@ -30,8 +30,8 @@ class TestYoudaoParserBase(unittest.TestCase):
 
     def test_parse_empty_data(self):
         parser = YoudaoParser("ec", {}, MagicMock())
-        with self.assertRaises((TypeError, AttributeError)):
-            parser.parse()
+        result = parser.parse()
+        self.assertFalse(result)
 
 
 class TestENParser(unittest.TestCase):

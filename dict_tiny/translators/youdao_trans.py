@@ -104,7 +104,7 @@ class YoudaoTrans(DefaultTrans):
             YOUDAO_WEB_API_BASE_URL.format(text), "POST", data=data
         )
         if not resp:
-            return
+            return False
 
         if resp.get("code") == 20:
             raise TextInputError(resp.get("message"))
@@ -126,9 +126,11 @@ class YoudaoTrans(DefaultTrans):
                 main_key = "fanyi"
             else:
                 normal_warn_printer("No results found.")
-                return
+                return False
         parser_cls = _get_parser_cls(main_key)
-        parser_cls(main_key, resp, self.console, self.dict_tiny_obj.more_detail).parse()
+        return parser_cls(
+            main_key, resp, self.console, self.dict_tiny_obj.more_detail
+        ).parse()
 
     @staticmethod
     def get_web_api_data(text, le):

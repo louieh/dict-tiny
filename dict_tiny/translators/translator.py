@@ -99,8 +99,6 @@ class DefaultTrans(object):
         raise NotImplementedError
 
     def extra_action(self, text):
-        if getattr(self.dict_tiny_obj, "detect_language", False):
-            return
         wb = self.dict_tiny_obj.wordbook
         if wb:
             wb.record(text, self.source_language, self.target_language, self.name)
@@ -110,25 +108,27 @@ class DefaultTrans(object):
             raise TextInputError("The entered text is too long")
 
     def translate(self):
-        # 1. pre action (set default source or target language)
-        # 2. translate (fetch data)
-        # 3. print separator
-        # 4. print user input
-        # 5. print translation
-        # 6. extra action (get more detail translation)
+        """
+        1. pre action (set default source or target language)
+        2. translate (fetch data)
+        3. print separator
+        4. print user input
+        5. print translation
+        6. extra action (get more detail translation)
+        """
+
         try:
             self.print_separator()
             self.pre_action(self.text)
             self.print_input(self.text)
-            self.do_translate(self.text)
-            self.extra_action(self.text)
+            if self.do_translate(self.text):
+                self.extra_action(self.text)
         except CustomException as e:
             normal_error_printer(e.message)
         except NotImplementedError as e:
             normal_error_printer("method is not implemented")
         except Exception as e:
             normal_error_printer(f"translate error: {e}")
-            return
 
     def get_prompt_session(self):
         from prompt_toolkit import PromptSession
@@ -184,8 +184,8 @@ class DefaultTrans(object):
                 try:
                     self.pre_action(text)
                     self.print_input(text)
-                    self.do_translate(text)
-                    self.extra_action(text)
+                    if self.do_translate(text):
+                        self.extra_action(text)
                 except CustomException as e:
                     normal_error_printer(e.message)
                 except Exception as e:

@@ -71,7 +71,7 @@ class GoogleTrans(DefaultTrans):
     def do_translate(self, text):
         if self.dict_tiny_obj.detect_language:
             self.detect_language(text)
-            return
+            return False
 
         data = {"text": text}
         if self.target_language:
@@ -85,15 +85,15 @@ class GoogleTrans(DefaultTrans):
             headers=GOOGLE_TRANS_API_HEADER,
         )
         if not resp:
-            return
+            return False
         try:
             resp_json = resp.json()
         except Exception as e:
             normal_error_printer(f"resp.json error，resp: {resp.text}")
-            return
+            return False
         if resp_json["code"] != 200:
             normal_error_printer(resp_json["msg"])
-            return
+            return False
         res = {"output": unescape(resp_json["data"]["translatedText"])}
         if not self.source_language:
             res.update(
@@ -103,6 +103,7 @@ class GoogleTrans(DefaultTrans):
             res.update({"source language": self.source_language})
         for k, v in res.items():
             normal_info_printer("{}: {}".format(k, v))
+        return True
 
     def detect_language(self, text):
         """
@@ -117,14 +118,15 @@ class GoogleTrans(DefaultTrans):
             headers=GOOGLE_TRANS_API_HEADER,
         )
         if not resp:
-            return
+            return False
         try:
             resp_json = resp.json()
         except Exception as e:
             normal_error_printer(f"resp.json error，resp: {resp.text}")
-            return
+            return False
         if resp_json["code"] != 200:
             normal_error_printer(resp_json["msg"])
-            return
+            return False
         for k, v in resp_json["data"].items():
             normal_info_printer("{}: {}".format(k, v))
+        return True

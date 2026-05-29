@@ -151,7 +151,14 @@ class WbQuery(cli.Application):
 
         trans = trans_cls(entry.text, dict_tiny_obj)
         trans.translate()
-        wb.record(entry.text, trans.source_language, trans.target_language, trans.name)
+
+        if dict_tiny_obj.should_record:
+            wb.record(
+                entry.text,
+                trans.source_language,
+                trans.target_language,
+                trans.name,
+            )
         wb.close()
 
 
