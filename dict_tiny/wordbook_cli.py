@@ -60,10 +60,15 @@ class WbList(cli.Application):
         table = Table(
             show_header=True,
             header_style="bold",
+            style="cyan",
             box=SIMPLE_HEAVY,
             caption=f"Page {self.page}/{total_pages}  ({total} entries, limit {MAX_ENTRIES})",
+            caption_justify="left",
+            caption_style="dim",
+            padding=(0, 1),
+            row_styles=["", "on grey19"],
         )
-        table.add_column("", justify="right", width=4, no_wrap=True)
+        table.add_column("", justify="right", width=4, no_wrap=True, style="dim")
         table.add_column("Word", no_wrap=True)
         table.add_column("Lang", justify="center", width=8)
         table.add_column("Time", justify="center", width=16)
