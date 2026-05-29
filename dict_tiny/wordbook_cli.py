@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from plumbum import cli
-from rich.box import MINIMAL
+from rich.box import SIMPLE_HEAVY
 from rich.console import Console
 from rich.table import Table
 
@@ -56,7 +56,13 @@ class WbList(cli.Application):
             return
 
         start_idx = (self.page - 1) * self.page_size + 1
-        table = Table(show_header=True, header_style="bold", box=MINIMAL)
+        total_pages = max(1, -(-total // self.page_size))
+        table = Table(
+            show_header=True,
+            header_style="bold",
+            box=SIMPLE_HEAVY,
+            caption=f"Page {self.page}/{total_pages}  ({total} entries, limit {MAX_ENTRIES})",
+        )
         table.add_column("", justify="right", width=4, no_wrap=True)
         table.add_column("Word", no_wrap=True)
         table.add_column("Lang", justify="center", width=8)
@@ -79,9 +85,6 @@ class WbList(cli.Application):
             )
 
         console.print(table)
-
-        total_pages = max(1, -(-total // self.page_size))
-        print(f"\nPage {self.page}/{total_pages}  (Total: {total} / {MAX_ENTRIES})")
         wb.close()
 
 
