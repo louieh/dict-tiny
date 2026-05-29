@@ -29,6 +29,7 @@ class WordBook:
             os.makedirs(os.path.dirname(self._path), exist_ok=True)
             self._conn = sqlite3.connect(self._path, check_same_thread=False)
             self._conn.execute("PRAGMA journal_mode=WAL")
+            self._conn.execute("PRAGMA busy_timeout=3000")
             self._init_db()
         except Exception:
             if self._conn:
@@ -81,31 +82,24 @@ class WordBook:
             return False
         try:
             now = time.time()
-            cur = self._conn.execute(
-                "SELECT id, access_count FROM entries WHERE text = ?", (text,)
+            count = self._conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
+            if count >= MAX_ENTRIES:
+                self._conn.execute(
+                    "DELETE FROM entries WHERE id = ("
+                    "SELECT id FROM entries ORDER BY last_access ASC LIMIT 1"
+                    ")"
+                )
+            self._conn.execute(
+                "INSERT INTO entries (text, source_language, target_language,"
+                " translator, timestamp, last_access, access_count)"
+                " VALUES (?, ?, ?, ?, ?, ?, 1)"
+                " ON CONFLICT(text) DO UPDATE SET"
+                " last_access=excluded.last_access, access_count=access_count+1,"
+                " source_language=excluded.source_language,"
+                " target_language=excluded.target_language,"
+                " translator=excluded.translator",
+                (text, source_language, target_language, translator, now, now),
             )
-            row = cur.fetchone()
-            if row:
-                self._conn.execute(
-                    "UPDATE entries SET last_access = ?, access_count = access_count + 1,"
-                    " source_language = ?, target_language = ?, translator = ?"
-                    " WHERE id = ?",
-                    (now, source_language, target_language, translator, row[0]),
-                )
-            else:
-                count = self._conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
-                if count >= MAX_ENTRIES:
-                    self._conn.execute(
-                        "DELETE FROM entries WHERE id = ("
-                        "SELECT id FROM entries ORDER BY last_access ASC LIMIT 1"
-                        ")"
-                    )
-                self._conn.execute(
-                    "INSERT INTO entries (text, source_language, target_language,"
-                    " translator, timestamp, last_access, access_count)"
-                    " VALUES (?, ?, ?, ?, ?, ?, 1)",
-                    (text, source_language, target_language, translator, now, now),
-                )
             self._conn.commit()
             return True
         except Exception:
