@@ -111,15 +111,15 @@ class WordBook:
         except Exception:
             return False
 
-    def get_entry(self, index):
-        if not self._conn or index < 1:
+    def get_entry(self, entry_id):
+        if not self._conn or entry_id < 1:
             return None
         try:
             row = self._conn.execute(
                 "SELECT id, text, source_language, target_language, translator,"
                 " timestamp, last_access, access_count"
-                " FROM entries ORDER BY timestamp DESC LIMIT 1 OFFSET ?",
-                (index - 1,),
+                " FROM entries WHERE id = ?",
+                (entry_id,),
             ).fetchone()
             if row is None:
                 return None
@@ -127,29 +127,23 @@ class WordBook:
         except Exception:
             return None
 
-    def delete(self, index):
+    def delete(self, entry_id):
         if not self._conn:
             return False
         try:
-            row = self._conn.execute(
-                "SELECT id FROM entries ORDER BY timestamp DESC LIMIT 1 OFFSET ?",
-                (index - 1,),
-            ).fetchone()
-            if row is None:
-                return False
-            self._conn.execute("DELETE FROM entries WHERE id = ?", (row[0],))
+            cur = self._conn.execute("DELETE FROM entries WHERE id = ?", (entry_id,))
             self._conn.commit()
-            return True
+            return cur.rowcount > 0
         except Exception:
             return False
 
     # ── list / query ───────────────────────────────────────────
 
-    def list_entries(self, page=1, page_size=20, sort_by="time"):
+    def list_entries(self, page=1, page_size=20, sort_by="created"):
         if not self._conn or page < 1:
             return [], 0
         sort_map = {
-            "time": "timestamp DESC",
+            "created": "timestamp DESC",
             "freq": "access_count DESC",
             "recent": "last_access DESC",
         }

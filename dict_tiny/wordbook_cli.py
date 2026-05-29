@@ -25,7 +25,7 @@ class WbList(cli.Application):
     page = cli.SwitchAttr("--page", int, default=1, help="Page number")
     page_size = cli.SwitchAttr("--page-size", int, default=20, help="Entries per page")
     sort = cli.SwitchAttr(
-        "--sort", str, default="time", help="Sort by: time, freq, recent"
+        "--sort", str, default="created", help="Sort by: created, freq, recent"
     )
     since = cli.SwitchAttr(
         "--since", str, default=None, help="Filter by start date (YYYY-MM-DD)"
@@ -36,9 +36,9 @@ class WbList(cli.Application):
         if wb is None:
             return
 
-        VALID_SORTS = ("time", "freq", "recent")
+        VALID_SORTS = ("created", "freq", "recent")
         if self.sort not in VALID_SORTS:
-            print(f"Invalid --sort '{self.sort}'. Choose from: time, freq, recent")
+            print(f"Invalid --sort '{self.sort}'. Choose from: created, freq, recent")
             return
 
         if self.since:
@@ -55,7 +55,6 @@ class WbList(cli.Application):
             print("(empty)")
             return
 
-        start_idx = (self.page - 1) * self.page_size + 1
         total_pages = max(1, -(-total // self.page_size))
         table = Table(
             show_header=True,
@@ -68,13 +67,13 @@ class WbList(cli.Application):
             padding=(0, 1),
             row_styles=["", "on grey19"],
         )
-        table.add_column("", justify="right", width=4, no_wrap=True, style="dim")
+        table.add_column("ID", justify="right", width=4, no_wrap=True, style="dim")
         table.add_column("Word", no_wrap=True)
         table.add_column("Lang", justify="center", width=8)
         table.add_column("Time", justify="center", width=16)
         table.add_column("Count", justify="right", width=5)
 
-        for i, entry in enumerate(entries):
+        for entry in entries:
             dt = datetime.fromtimestamp(entry.timestamp)
             time_str = dt.strftime("%Y-%m-%d %H:%M")
             if entry.source_language or entry.target_language:
@@ -82,7 +81,7 @@ class WbList(cli.Application):
             else:
                 lang = ""
             table.add_row(
-                str(start_idx + i),
+                str(entry.id),
                 entry.text,
                 lang,
                 time_str,
@@ -95,38 +94,38 @@ class WbList(cli.Application):
 
 @WordBookApp.subcommand("detail")
 class WbDetail(cli.Application):
-    def main(self, index):
-        index = int(index)
+    def main(self, entry_id):
+        entry_id = int(entry_id)
         wb = WordBook.open()
         if wb is None:
             return
-        entry = wb.get_entry(index)
+        entry = wb.get_entry(entry_id)
         if entry is None:
-            print(f"Entry {index} not found.")
+            print(f"Entry ID:{entry_id} not found.")
             wb.close()
             return
         dt = datetime.fromtimestamp(entry.timestamp)
         la = datetime.fromtimestamp(entry.last_access)
         print(f"  Text:              {entry.text}")
-        print(f"  Source Language:   {entry.source_language or 'auto'}")
-        print(f"  Target Language:   {entry.target_language or 'auto'}")
+        print(f"  Source Language:   {entry.source_language or ''}")
+        print(f"  Target Language:   {entry.target_language or ''}")
         print(f"  Translator:        {entry.translator or 'default'}")
         print(f"  First Recorded:    {dt.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"  Last Access:       {la.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"  Last Query:        {la.strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"  Access Count:      {entry.access_count}")
         wb.close()
 
 
 @WordBookApp.subcommand("query")
 class WbQuery(cli.Application):
-    def main(self, index):
-        index = int(index)
+    def main(self, entry_id):
+        entry_id = int(entry_id)
         wb = WordBook.open()
         if wb is None:
             return
-        entry = wb.get_entry(index)
+        entry = wb.get_entry(entry_id)
         if entry is None:
-            print(f"Entry {index} not found.")
+            print(f"Entry ID:{entry_id} not found.")
             wb.close()
             return
 
@@ -158,15 +157,15 @@ class WbQuery(cli.Application):
 
 @WordBookApp.subcommand("delete")
 class WbDelete(cli.Application):
-    def main(self, index):
-        index = int(index)
+    def main(self, entry_id):
+        entry_id = int(entry_id)
         wb = WordBook.open()
         if wb is None:
             return
-        if wb.delete(index):
-            print(f"Entry {index} deleted.")
+        if wb.delete(entry_id):
+            print(f"Entry ID:{entry_id} deleted.")
         else:
-            print(f"Entry {index} not found.")
+            print(f"Entry ID:{entry_id} not found.")
         wb.close()
 
 
