@@ -36,6 +36,15 @@ class WordBook:
                 self._conn = None
 
     @classmethod
+    def open(cls, path=None):
+        """Create WordBook instance. Returns None if database is unavailable."""
+        instance = cls(path)
+        if instance._conn is None:
+            print("Word book database is not available.")
+            return None
+        return instance
+
+    @classmethod
     def db_exists(cls, path=None):
         if path is None:
             path = str(get_data_dir() / "wordbook.db")

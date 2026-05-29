@@ -1,27 +1,15 @@
 from datetime import datetime
 
 from plumbum import cli
+from rich.box import MINIMAL
+from rich.console import Console
+from rich.table import Table
 
 from dict_tiny.config import MAX_ENTRIES
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.wordbook import WordBook
 
-
-def _open_wordbook():
-    wb = WordBook()
-    if wb._conn is None:
-        print("Word book database is not available.")
-        return None
-    return wb
-
-
-def _format_entry(entry, index=None):
-    dt = datetime.fromtimestamp(entry.timestamp)
-    time_str = dt.strftime("%Y-%m-%d %H:%M")
-    sl = entry.source_language or "auto"
-    tl = entry.target_language or "auto"
-    idx = f"{index:>3}. " if index is not None else ""
-    return f"{idx}{entry.text:<20} | {sl}→{tl} | {time_str} | ×{entry.access_count}"
+console = Console()
 
 
 class WordBookApp(cli.Application):
@@ -44,7 +32,7 @@ class WbList(cli.Application):
     )
 
     def main(self):
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             return
 
@@ -68,8 +56,29 @@ class WbList(cli.Application):
             return
 
         start_idx = (self.page - 1) * self.page_size + 1
+        table = Table(show_header=True, header_style="bold", box=MINIMAL)
+        table.add_column("", justify="right", width=4, no_wrap=True)
+        table.add_column("Word", no_wrap=True)
+        table.add_column("Lang", justify="center", width=8)
+        table.add_column("Time", justify="center", width=16)
+        table.add_column("Count", justify="right", width=5)
+
         for i, entry in enumerate(entries):
-            print(_format_entry(entry, start_idx + i))
+            dt = datetime.fromtimestamp(entry.timestamp)
+            time_str = dt.strftime("%Y-%m-%d %H:%M")
+            if entry.source_language or entry.target_language:
+                lang = f"{entry.source_language or ''}→{entry.target_language or ''}"
+            else:
+                lang = ""
+            table.add_row(
+                str(start_idx + i),
+                entry.text,
+                lang,
+                time_str,
+                f"×{entry.access_count}",
+            )
+
+        console.print(table)
 
         total_pages = max(1, -(-total // self.page_size))
         print(f"\nPage {self.page}/{total_pages}  (Total: {total} / {MAX_ENTRIES})")
@@ -80,7 +89,7 @@ class WbList(cli.Application):
 class WbDetail(cli.Application):
     def main(self, index):
         index = int(index)
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             return
         entry = wb.get_entry(index)
@@ -104,7 +113,7 @@ class WbDetail(cli.Application):
 class WbQuery(cli.Application):
     def main(self, index):
         index = int(index)
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             return
         entry = wb.get_entry(index)
@@ -143,7 +152,7 @@ class WbQuery(cli.Application):
 class WbDelete(cli.Application):
     def main(self, index):
         index = int(index)
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             return
         if wb.delete(index):
@@ -160,7 +169,7 @@ class WbConfig(cli.Application):
     )
 
     def main(self):
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             return
 
@@ -183,7 +192,7 @@ class WbConfig(cli.Application):
 @WordBookApp.subcommand("db-delete")
 class WbDbDelete(cli.Application):
     def main(self):
-        wb = _open_wordbook()
+        wb = WordBook.open()
         if wb is None:
             print("No database to delete.")
             return
