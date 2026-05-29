@@ -21,7 +21,7 @@ class TestYoudaoInit(unittest.TestCase):
 
     def test_init_default(self):
         trans = YoudaoTrans("book", self._make_mock_obj())
-        self.assertEqual(trans.name, "YoudaoDict")
+        self.assertEqual(trans.name, "youdaodict")
         self.assertIsNone(trans.source_language)
         self.assertIsNone(trans.target_language)
 

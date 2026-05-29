@@ -3,35 +3,43 @@ from html import unescape
 from plumbum import cli
 
 from dict_tiny.config import (
-    GOOGLE_TRANS_API_BASE_URL,
+    GOOGLE_DISPLAY,
     GOOGLE_NAME,
-    ISO639LCodes,
+    GOOGLE_TRANS_API_BASE_URL,
     GOOGLE_TRANS_API_HEADER,
+    ISO639LCodes,
 )
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
-    normal_info_printer,
     is_alphabet,
     normal_error_printer,
+    normal_info_printer,
 )
 
 
 class GoogleTrans(DefaultTrans):
+    name = GOOGLE_NAME
+    display_name = GOOGLE_DISPLAY
 
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.name = GOOGLE_NAME
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
-        dict_tiny_cls.use_googletrans = cli.Flag(
-            ["-g", "--google"], group=GOOGLE_NAME, help="Use Google Translate"
+        setattr(
+            dict_tiny_cls,
+            f"use_{cls.name}",
+            cli.Flag(
+                ["-g", "--google"],
+                group=cls.display_name,
+                help="Use Google Translate",
+            ),
         )
         dict_tiny_cls.detect_language = cli.Flag(
             "--detect-language",
-            group=GOOGLE_NAME,
+            group=cls.display_name,
             help="Detect the language of the given text",
         )
         # TODO

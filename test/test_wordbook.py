@@ -198,6 +198,7 @@ class TestWordBookExtraAction(unittest.TestCase):
         mock_dt.wordbook = mock_wb
         mock_dt.source_language = 'en'
         mock_dt.target_language = 'zh'
+        mock_dt.detect_language = False
 
         from dict_tiny.translators.translator import DefaultTrans
         trans = DefaultTrans('hello', mock_dt)

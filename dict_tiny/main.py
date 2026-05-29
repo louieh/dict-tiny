@@ -6,7 +6,11 @@ import os
 from plumbum import cli, colors
 
 from dict_tiny import version
-from dict_tiny.config import DICT_TINY_DEFAULT_TRANS_ENV_NAME, GOOGLE_NAME, YOUDAO_NAME
+from dict_tiny.config import (
+    DICT_TINY_DEFAULT_TRANS_ENV_NAME,
+    GOOGLE_DISPLAY,
+    YOUDAO_DISPLAY,
+)
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_error_printer, normal_warn_printer
@@ -20,8 +24,8 @@ class Dict_tiny(cli.Application):
     DESCRIPTION = version.DESCRIPTION
     COLOR_GROUPS = {
         "Switches": colors.yellow,
-        YOUDAO_NAME: colors.green,
-        GOOGLE_NAME: colors.green,
+        YOUDAO_DISPLAY: colors.green,
+        GOOGLE_DISPLAY: colors.green,
     }
 
     stop = False  # whether return directly in main

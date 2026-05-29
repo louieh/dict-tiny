@@ -5,12 +5,13 @@ from plumbum import cli
 
 from dict_tiny.config import (
     YOUDAO_API_FAKE_HEADER,
+    YOUDAO_DISPLAY,
     YOUDAO_NAME,
-    ISO639LCodes,
     YOUDAO_TARGET_LANG_SET,
     YOUDAO_WEB_API_BASE_URL,
+    ISO639LCodes,
 )
-from dict_tiny.errors import YoudaoParamError, TextInputError
+from dict_tiny.errors import TextInputError, YoudaoParamError
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
@@ -66,10 +67,11 @@ def _get_parser_cls(main_key):
 
 
 class YoudaoTrans(DefaultTrans):
+    name = YOUDAO_NAME
+    display_name = YOUDAO_DISPLAY
 
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.name = YOUDAO_NAME
         if self.target_language and self.target_language not in YOUDAO_TARGET_LANG_SET:
             raise YoudaoParamError(
                 f"the target language {self.target_language} is not supported"
@@ -83,13 +85,17 @@ class YoudaoTrans(DefaultTrans):
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
-        dict_tiny_cls.use_youdaotrans = cli.Flag(
-            ["-y", "--youdao"],
-            group=YOUDAO_NAME,
-            help="Use Youdao Dictionary to translate",
+        setattr(
+            dict_tiny_cls,
+            f"use_{cls.name}",
+            cli.Flag(
+                ["-y", "--youdao"],
+                group=cls.display_name,
+                help="Use Youdao Dictionary to translate",
+            ),
         )
         dict_tiny_cls.more_detail = cli.Flag(
-            ["-m", "--more"], group=YOUDAO_NAME, help="Get more details"
+            ["-m", "--more"], group=cls.display_name, help="Get more details"
         )
 
     def do_translate(self, text):

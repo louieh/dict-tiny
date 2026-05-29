@@ -1,20 +1,20 @@
 from plumbum import cli
 
 from dict_tiny.config import (
-    SEPARATOR,
     DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
     MAX_TEXT_LENGTH,
+    SEPARATOR,
 )
 from dict_tiny.errors import CustomException, TextInputError
 from dict_tiny.util import (
-    normal_error_printer,
-    normal_warn_printer,
-    normal_separator_printer,
-    normal_info_printer,
-    normal_title_printer,
-    parse_le,
     get_terminal_size_column,
+    normal_error_printer,
+    normal_info_printer,
+    normal_separator_printer,
+    normal_title_printer,
+    normal_warn_printer,
+    parse_le,
 )
 
 
@@ -79,13 +79,13 @@ class DefaultTrans(object):
 
     @classmethod
     def trans_obj_getter(cls, text, dict_tiny_obj):
-        flag = f"use_{cls.__name__.lower()}"  # use_googletrans
+        flag = f"use_{cls.name}"  # use_googletranslate
         if not getattr(dict_tiny_obj, flag, False):
             return
         return cls(text, dict_tiny_obj)
 
     def print_separator(self):
-        normal_separator_printer(SEPARATOR.format(self.name))
+        normal_separator_printer(SEPARATOR.format(self.display_name))
 
     def print_input(self, text):
         normal_title_printer(text)
@@ -99,10 +99,11 @@ class DefaultTrans(object):
         raise NotImplementedError
 
     def extra_action(self, text):
+        if getattr(self.dict_tiny_obj, "detect_language", False):
+            return
         wb = self.dict_tiny_obj.wordbook
         if wb:
-            wb.record(text, self.source_language,
-                      self.target_language, self.name)
+            wb.record(text, self.source_language, self.target_language, self.name)
 
     def pre_action(self, text):
         if len(text) > MAX_TEXT_LENGTH:
@@ -130,9 +131,10 @@ class DefaultTrans(object):
             return
 
     def get_prompt_session(self):
-        from dict_tiny.completer import YoudaoCompleter
         from prompt_toolkit import PromptSession
         from prompt_toolkit.styles import Style
+
+        from dict_tiny.completer import YoudaoCompleter
 
         style = Style.from_dict(
             {
@@ -149,7 +151,9 @@ class DefaultTrans(object):
             }
         )
 
-        normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
+        normal_separator_printer(
+            SEPARATOR.format(f"{self.display_name} interactive mode")
+        )
         normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
 
         suggest_le = parse_le(self.source_language, self.target_language)
@@ -163,7 +167,7 @@ class DefaultTrans(object):
 
     def interactive_loop(self, session):
         message = [
-            ("class:prompt_name", self.name),
+            ("class:prompt_name", self.display_name),
             ("class:prompt_sign", " > "),
         ]
         while True:

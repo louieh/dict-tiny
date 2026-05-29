@@ -24,15 +24,6 @@ def _format_entry(entry, index=None):
     return f"{idx}{entry.text:<20} | {sl}→{tl} | {time_str} | ×{entry.access_count}"
 
 
-def _resolve_translator(name):
-    if name is None:
-        return DEFAULT_TRANSLATOR
-    for t_cls in _ALL_TRANSLATORS.values():
-        if t_cls.name == name:
-            return t_cls
-    return DEFAULT_TRANSLATOR
-
-
 class WordBookApp(cli.Application):
     def main(self):
         if self.nested_command:
@@ -122,24 +113,29 @@ class WbQuery(cli.Application):
             wb.close()
             return
 
-        t_cls = _resolve_translator(entry.translator)
+        dict_tiny_obj, trans_cls = self.parent.parent, None
 
-        class _Ctx:
-            pass
+        # User's CLI translator flag overrides entry's stored translator
+        for t_cls_candidate in _ALL_TRANSLATORS.values():
+            if getattr(dict_tiny_obj, f"use_{t_cls_candidate.name}", False):
+                trans_cls = t_cls_candidate
+                break
+        if trans_cls is None:
+            trans_cls = DEFAULT_TRANSLATOR
+            for t_cls_candidate in _ALL_TRANSLATORS.values():
+                if t_cls_candidate.name == entry.translator:
+                    trans_cls = t_cls_candidate
+                    break
 
-        ctx = _Ctx()
-        ctx.source_language = entry.source_language
-        ctx.target_language = entry.target_language
-        ctx.wordbook = None
+        # User's CLI language switches override entry values
+        if not dict_tiny_obj.source_language:
+            dict_tiny_obj.source_language = entry.source_language
+        if not dict_tiny_obj.target_language:
+            dict_tiny_obj.target_language = entry.target_language
 
-        trans = t_cls(entry.text, ctx)
+        trans = trans_cls(entry.text, dict_tiny_obj)
         trans.translate()
-        wb.record(
-            entry.text,
-            entry.source_language,
-            entry.target_language,
-            t_cls.name if t_cls else entry.translator,
-        )
+        wb.record(entry.text, trans.source_language, trans.target_language, trans.name)
         wb.close()
 
 
