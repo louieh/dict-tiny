@@ -68,7 +68,7 @@ class WbList(cli.Application):
             row_styles=["", "on grey19"],
         )
         table.add_column("ID", justify="right", width=4, no_wrap=True, style="dim")
-        table.add_column("Word", no_wrap=True)
+        table.add_column("Word", overflow="fold")
         table.add_column("Lang", justify="center", width=8)
         table.add_column("Time", justify="center", width=16)
         table.add_column("Count", justify="right", width=5)
