@@ -51,10 +51,15 @@ Switches:
     -i, --interactive                      Interactive mode
     --sl, --source-language VALUE:str      Source language (YoudaoDict only supports en/fr/ja/ko)
     --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
+    --record                               Record translation to word book
+    --no-record                            Skip recording this translation
 
 YoudaoDict:
     -m, --more                             Get more details
     -y, --youdao                           Use Youdao Dictionary to translate
+
+Sub-commands:
+    wb                         see 'dict-tiny wb --help' for more info
 ```
 
 ## Details and examples
@@ -286,6 +291,133 @@ In interactive mode you can:
 - Continuously query words in an interactive session.
 - Press <kbd>Tab</kbd> for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
 - Settings cannot be changed after entering interactive mode, such as target-language or source-language. You need to exit and re-enter to change them.
+
+### Word Book
+
+The word book records translation history. Recording is **off by default**.
+Use `--record` to record a single translation, or set it as the default with
+`dict-tiny wb config --record on`.
+
+```bash
+$ dict-tiny -y hello --record
+
+>>> YoudaoDict <<<
+...
+```
+
+#### Subcommands
+
+##### `wb list` — list entries
+
+```bash
+$ dict-tiny wb list
+
+   ID   Text                       Lang           Created        Count
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     1   book                      zh↔en     2026-05-28 16:36    ×252
+    24   测试                       →ja      2026-05-28 16:40    ×102
+    29   컴퓨터                     ko→      2026-05-28 16:40     ×53
+    28   翻訳する                   ja→      2026-05-28 16:40     ×53
+    27   Bonjour                    fr→      2026-05-28 16:40     ×51
+    26   你好                       →ko      2026-05-28 16:40     ×51
+    25   寄存器                     →fr      2026-05-28 16:40     ×51
+    48   resilience                zh↔en     2026-06-01 16:15      ×1
+    46   guardrails                zh↔en     2026-06-01 15:22      ×1
+    41   get the model the         zh↔en     2026-06-01 13:51      ×1
+         right context at the
+         right time for the
+         given task.
+
+Page 1/3  (32 entries, limit 10000)
+```
+
+When the number of entries reaches the limit (10000), the least recently queried entry is
+automatically evicted to make room for new ones.
+
+| Option          | Description                          |
+| --------------- | ------------------------------------ |
+| `--sort SORT`   | Sort by: `created`, `freq`, `recent` |
+| `--since DATE`  | Filter by start date (YYYY-MM-DD)    |
+| `--page N`      | Page number (default: 1)             |
+| `--page-size N` | Entries per page (default: 20)       |
+
+##### `wb detail <ID>` — show entry details
+
+```bash
+$ dict-tiny wb detail 1
+
+  Text:              hello
+  Source Language:
+  Target Language:
+  Translator:        youdaodict
+  Created:           2026-06-01 10:30:00
+  Last Query:        2026-06-01 11:20:00
+  Access Count:      3
+```
+
+##### `wb query <ID>` — re-translate an entry
+
+```bash
+$ dict-tiny wb query 1
+```
+
+Re-translates the entry using its stored text and languages. Supports overriding the translator
+or languages via top-level flags (e.g., `-g`, `--target-language`).
+
+##### `wb delete <ID>` — delete an entry
+
+```bash
+$ dict-tiny wb delete 1
+Entry ID:1 deleted.
+```
+
+##### `wb search <text>` — search entries by text
+
+```bash
+$ dict-tiny wb search hello
+```
+
+Fuzzy search by default (`LIKE '%hello%'`). Use `--exact` for exact match.
+
+| Option          | Description                          |
+| --------------- | ------------------------------------ |
+| `--exact`       | Exact match instead of fuzzy         |
+| `--sort SORT`   | Sort by: `created`, `freq`, `recent` |
+| `--since DATE`  | Filter by start date (YYYY-MM-DD)    |
+| `--page N`      | Page number (default: 1)             |
+| `--page-size N` | Entries per page (default: 20)       |
+
+##### `wb config` — view or change settings
+
+```bash
+$ dict-tiny wb config
+
+  Entries:          3 / 10000
+  Default Recording: OFF
+
+$ dict-tiny wb config --record on
+Default recording: ON
+```
+
+##### `wb db-delete` — delete the database
+
+```bash
+$ dict-tiny wb db-delete
+Word book database deleted.
+```
+
+#### Notes
+
+- Top-level flags (`-y`, `-g`, `--record`, `--no-record`, `--sl`, `--tl`) **must** come before `wb`,
+  not after:
+
+  ```bash
+  $ dict-tiny -y --no-record wb query 1   # OK
+  $ dict-tiny wb query 1 -y --no-record   # NOT OK
+  ```
+
+- Subcommands like `detail`, `query`, and `delete` take the entry ID as shown in the first column of
+  `wb list` output.
 
 ### Other
 
