@@ -160,9 +160,9 @@ class WbQuery(cli.Application):
             dict_tiny_obj.target_language = entry.target_language
 
         trans = trans_cls(entry.text, dict_tiny_obj)
-        trans.translate()
+        trans_res = trans.translate()
 
-        if dict_tiny_obj.should_record:
+        if trans_res and dict_tiny_obj.should_record:
             wb.record(
                 entry.text,
                 trans.source_language,

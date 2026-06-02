@@ -121,14 +121,19 @@ class DefaultTrans(object):
             self.print_separator()
             self.pre_action(self.text)
             self.print_input(self.text)
-            if self.do_translate(self.text):
+            result = self.do_translate(self.text)
+            if result:
                 self.extra_action(self.text)
+            return result
         except CustomException as e:
             normal_error_printer(e.message)
+            return False
         except NotImplementedError as e:
             normal_error_printer("method is not implemented")
+            return False
         except Exception as e:
             normal_error_printer(f"translate error: {e}")
+            return False
 
     def get_prompt_session(self):
         from prompt_toolkit import PromptSession
