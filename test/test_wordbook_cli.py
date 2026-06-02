@@ -69,12 +69,14 @@ class TestWbList(unittest.TestCase):
     def test_list_since(self):
         entries = [self._entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.list_entries_since.return_value = (entries, 1)
+            mo.return_value.list_entries.return_value = (entries, 1)
             try:
                 run()
             except SystemExit:
                 pass
-            mo.return_value.list_entries_since.assert_called_once()
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, "created", since=1704038400.0
+            )
 
     @patch("sys.argv", ["", "wb", "list", "--since", "not-a-date"])
     def test_list_invalid_since(self):
@@ -158,44 +160,52 @@ class TestWbSearch(unittest.TestCase):
     def test_search_fuzzy(self):
         entries = [self._entry(id=1), self._entry(id=2, text="hello_world")]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.search_entries.return_value = (entries, 2)
+            mo.return_value.list_entries.return_value = (entries, 2)
             try:
                 run()
             except SystemExit:
                 pass
-            mo.return_value.search_entries.assert_called_once_with("hello", 1, 20, False)
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="created", since=None, search="hello", exact=False
+            )
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--exact"])
     def test_search_exact(self):
         entries = [self._entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.search_entries.return_value = (entries, 1)
+            mo.return_value.list_entries.return_value = (entries, 1)
             try:
                 run()
             except SystemExit:
                 pass
-            mo.return_value.search_entries.assert_called_once_with("hello", 1, 20, True)
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="created", since=None, search="hello", exact=True
+            )
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--page", "2", "--page-size", "5"])
     def test_search_pagination(self):
         entries = [self._entry(id=i) for i in range(1, 6)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.search_entries.return_value = (entries, 50)
+            mo.return_value.list_entries.return_value = (entries, 50)
             try:
                 run()
             except SystemExit:
                 pass
-            mo.return_value.search_entries.assert_called_once_with("hello", 2, 5, False)
+            mo.return_value.list_entries.assert_called_once_with(
+                2, 5, sort_by="created", since=None, search="hello", exact=False
+            )
 
     @patch("sys.argv", ["", "wb", "search", "zzz"])
     def test_search_empty(self):
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.search_entries.return_value = ([], 0)
+            mo.return_value.list_entries.return_value = ([], 0)
             try:
                 run()
             except SystemExit:
                 pass
-            mo.return_value.search_entries.assert_called_once_with("zzz", 1, 20, False)
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="created", since=None, search="zzz", exact=False
+            )
 
     @patch("sys.argv", ["", "wb", "search", "hello"])
     def test_search_open_fails(self):
@@ -205,6 +215,41 @@ class TestWbSearch(unittest.TestCase):
                 run()
             except SystemExit:
                 pass
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "freq"])
+    def test_search_sort_freq(self):
+        entries = [self._entry(id=1, access_count=5)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="freq", since=None, search="hello", exact=False
+            )
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--since", "2024-01-01"])
+    def test_search_since(self):
+        entries = [self._entry(id=1)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="created", since=1704038400.0, search="hello", exact=False
+            )
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "invalid"])
+    def test_search_invalid_sort(self):
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_not_called()
 
 
 class TestWbConfig(unittest.TestCase):

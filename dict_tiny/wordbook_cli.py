@@ -5,7 +5,7 @@ from rich.box import SIMPLE_HEAVY
 from rich.console import Console
 from rich.table import Table
 
-from dict_tiny.config import MAX_ENTRIES
+from dict_tiny.config import MAX_ENTRIES, YOUDAO_NAME
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.wordbook import WordBook
 
@@ -28,9 +28,9 @@ def _render_table(entries, page, page_size, total, caption):
         row_styles=["", "on grey19"],
     )
     table.add_column("ID", justify="right", width=4, no_wrap=True, style="dim")
-    table.add_column("Word", overflow="fold")
+    table.add_column("Text", overflow="fold")
     table.add_column("Lang", justify="center", width=8)
-    table.add_column("Time", justify="center", width=16)
+    table.add_column("Created", justify="center", width=16)
     table.add_column("Count", justify="right", width=5)
 
     for entry in entries:
@@ -38,6 +38,8 @@ def _render_table(entries, page, page_size, total, caption):
         time_str = dt.strftime("%Y-%m-%d %H:%M")
         if entry.source_language or entry.target_language:
             lang = f"{entry.source_language or ''}→{entry.target_language or ''}"
+        elif entry.translator and entry.translator == YOUDAO_NAME:
+            lang = "zh↔en"
         else:
             lang = ""
         table.add_row(
@@ -85,7 +87,9 @@ class WbList(cli.Application):
             except ValueError:
                 print("Invalid date format. Use YYYY-MM-DD.")
                 return
-            entries, total = wb.list_entries_since(since_ts, self.page, self.page_size)
+            entries, total = wb.list_entries(
+                self.page, self.page_size, self.sort, since=since_ts
+            )
         else:
             entries, total = wb.list_entries(self.page, self.page_size, self.sort)
 
@@ -116,7 +120,7 @@ class WbDetail(cli.Application):
         print(f"  Source Language:   {entry.source_language or ''}")
         print(f"  Target Language:   {entry.target_language or ''}")
         print(f"  Translator:        {entry.translator or 'default'}")
-        print(f"  First Recorded:    {dt.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"  Created:           {dt.strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"  Last Query:        {la.strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"  Access Count:      {entry.access_count}")
         wb.close()
@@ -185,6 +189,12 @@ class WbDelete(cli.Application):
 @WordBookApp.subcommand("search")
 class WbSearch(cli.Application):
     exact = cli.Flag("--exact", help="Exact match instead of fuzzy")
+    sort = cli.SwitchAttr(
+        "--sort", str, default="created", help="Sort by: created, freq, recent"
+    )
+    since = cli.SwitchAttr(
+        "--since", str, default=None, help="Filter by start date (YYYY-MM-DD)"
+    )
     page = cli.SwitchAttr("--page", int, default=1, help="Page number")
     page_size = cli.SwitchAttr("--page-size", int, default=20, help="Entries per page")
 
@@ -193,7 +203,29 @@ class WbSearch(cli.Application):
         if wb is None:
             return
 
-        entries, total = wb.search_entries(text, self.page, self.page_size, self.exact)
+        VALID_SORTS = ("created", "freq", "recent")
+        if self.sort not in VALID_SORTS:
+            print(f"Invalid --sort '{self.sort}'. Choose from: created, freq, recent")
+            wb.close()
+            return
+
+        since_ts = None
+        if self.since:
+            try:
+                since_ts = datetime.strptime(self.since, "%Y-%m-%d").timestamp()
+            except ValueError:
+                print("Invalid date format. Use YYYY-MM-DD.")
+                wb.close()
+                return
+
+        entries, total = wb.list_entries(
+            self.page,
+            self.page_size,
+            sort_by=self.sort,
+            since=since_ts,
+            search=text,
+            exact=self.exact,
+        )
 
         if not entries:
             print("(empty)")
@@ -233,7 +265,6 @@ class WbConfig(cli.Application):
             print(f"Default recording: {'ON' if val == 'on' else 'OFF'}")
 
         config = wb.get_config()
-        print(f"Path:             {wb._path}")
         print(f"Entries:          {config['count']} / {MAX_ENTRIES}")
         print(f"Default Recording: {'ON' if config['default_record'] else 'OFF'}")
         wb.close()
@@ -246,7 +277,5 @@ class WbDbDelete(cli.Application):
         if wb is None:
             print("No database to delete.")
             return
-        path = wb._path
         wb.delete_db()
-        print(f"Database deleted: {path}")
-        print("A new one will be created on next use.")
+        print("Word book database deleted.")

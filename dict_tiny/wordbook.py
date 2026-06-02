@@ -133,7 +133,15 @@ class WordBook:
 
     # ── list / query ───────────────────────────────────────────
 
-    def list_entries(self, page=1, page_size=20, sort_by="created"):
+    def list_entries(
+        self,
+        page=1,
+        page_size=20,
+        sort_by="created",
+        since=None,
+        search=None,
+        exact=False,
+    ):
         if not self._conn or page < 1:
             return [], 0
         sort_map = {
@@ -142,56 +150,29 @@ class WordBook:
             "recent": "last_access DESC",
         }
         order = sort_map.get(sort_by, "timestamp DESC")
-        try:
-            total = self._conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
-            offset = (page - 1) * page_size
-            rows = self._conn.execute(
-                f"SELECT id, text, source_language, target_language, translator,"
-                f" timestamp, last_access, access_count"
-                f" FROM entries ORDER BY {order} LIMIT ? OFFSET ?",
-                (page_size, offset),
-            ).fetchall()
-            return [WordBookEntry(*r) for r in rows], total
-        except Exception:
-            return [], 0
-
-    def list_entries_since(self, timestamp, page=1, page_size=20):
-        if not self._conn or page < 1:
-            return [], 0
-        try:
-            total = self._conn.execute(
-                "SELECT COUNT(*) FROM entries WHERE timestamp >= ?", (timestamp,)
-            ).fetchone()[0]
-            offset = (page - 1) * page_size
-            rows = self._conn.execute(
-                "SELECT id, text, source_language, target_language, translator,"
-                " timestamp, last_access, access_count"
-                " FROM entries WHERE timestamp >= ?"
-                " ORDER BY timestamp DESC LIMIT ? OFFSET ?",
-                (timestamp, page_size, offset),
-            ).fetchall()
-            return [WordBookEntry(*r) for r in rows], total
-        except Exception:
-            return [], 0
-
-    def search_entries(self, text, page=1, page_size=20, exact=False):
-        if not self._conn or page < 1:
-            return [], 0
-        try:
+        clauses = []
+        params = ()
+        if search is not None:
             if exact:
-                where = "WHERE text = ?"
+                clauses.append("text = ?")
             else:
-                where = "WHERE text LIKE ?"
-                text = f"%{text}%"
+                clauses.append("text LIKE ?")
+                search = f"%{search}%"
+            params += (search,)
+        if since is not None:
+            clauses.append("timestamp >= ?")
+            params += (since,)
+        where = " WHERE " + " AND ".join(clauses) if clauses else ""
+        try:
             total = self._conn.execute(
-                f"SELECT COUNT(*) FROM entries {where}", (text,)
+                f"SELECT COUNT(*) FROM entries{where}", params
             ).fetchone()[0]
             offset = (page - 1) * page_size
             rows = self._conn.execute(
                 "SELECT id, text, source_language, target_language, translator,"
                 " timestamp, last_access, access_count"
-                f" FROM entries {where} ORDER BY timestamp DESC LIMIT ? OFFSET ?",
-                (text, page_size, offset),
+                f" FROM entries{where} ORDER BY {order} LIMIT ? OFFSET ?",
+                params + (page_size, offset),
             ).fetchall()
             return [WordBookEntry(*r) for r in rows], total
         except Exception:
