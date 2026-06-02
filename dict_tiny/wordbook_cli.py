@@ -6,7 +6,9 @@ from rich.console import Console
 from rich.table import Table
 
 from dict_tiny.config import MAX_ENTRIES, YOUDAO_NAME
+from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
+from dict_tiny.util import normal_error_printer
 from dict_tiny.wordbook import WordBook
 
 console = Console()
@@ -159,7 +161,17 @@ class WbQuery(cli.Application):
         if not dict_tiny_obj.target_language:
             dict_tiny_obj.target_language = entry.target_language
 
-        trans = trans_cls(entry.text, dict_tiny_obj)
+        try:
+            trans = trans_cls(entry.text, dict_tiny_obj)
+        except CustomException as e:
+            normal_error_printer(e.message)
+            wb.close()
+            return
+        except Exception as e:
+            normal_error_printer(f"translator init error: {e}")
+            wb.close()
+            return
+
         trans_res = trans.translate()
 
         if trans_res and dict_tiny_obj.should_record:
