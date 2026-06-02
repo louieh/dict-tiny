@@ -316,23 +316,15 @@ Each subcommand supports `--help` to show its available switches, e.g.
 ```bash
 $ dict-tiny wb list
 
-   ID   Text                       Lang           Created        Count
- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     1   book                      zh↔en     2026-05-28 16:36    ×252
-    24   测试                       →ja      2026-05-28 16:40    ×102
-    29   컴퓨터                     ko→      2026-05-28 16:40     ×53
-    28   翻訳する                   ja→      2026-05-28 16:40     ×53
-    27   Bonjour                    fr→      2026-05-28 16:40     ×51
-    26   你好                       →ko      2026-05-28 16:40     ×51
-    25   寄存器                     →fr      2026-05-28 16:40     ×51
-    48   resilience                zh↔en     2026-06-01 16:15      ×1
-    46   guardrails                zh↔en     2026-06-01 15:22      ×1
-    41   get the model the         zh↔en     2026-06-01 13:51      ×1
-         right context at the
-         right time for the
-         given task.
+   ID   Text           Lang         Created        Count
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     1   hello         en→zh     2026-05-28 16:36    ×252
+     2   world         en→zh     2026-05-28 16:37    ×100
+     3   apple         en→ja     2026-05-28 16:40     ×53
+     4   resilience    zh↔en     2026-06-01 16:15      ×1
+     5   guardrails    zh↔en     2026-06-01 15:22      ×1
 
-Page 1/3  (32 entries, limit 10000)
+Page 1/1  (5 entries, limit 10000)
 ```
 
 When the number of entries reaches the limit (10000), the least recently queried entry is
