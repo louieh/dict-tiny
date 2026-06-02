@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 
 from dict_tiny.config import (
-    TIMEOUT,
-    DEFAULT_LE,
-    ISO639LCodes,
-    RETRY,
     BACKOFF_FACTOR,
+    DEFAULT_LE,
+    RETRY,
+    TIMEOUT,
+    ISO639LCodes,
 )
 
 
@@ -115,8 +115,6 @@ def normal_color_printer(text, color=None, **kwargs):
     if color is None:
         print(text, **kwargs)
     else:
-        from plumbum import colors
-
         print(color | text, **kwargs)
 
 

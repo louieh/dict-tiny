@@ -11,6 +11,7 @@ Just for fun :)
 - Youdao dictionary
 - Google Translate
 - Interactive mode with word auto-completion
+- Word book to record and query translation history
 
 </br>
 <p align="left"><img src="./assets/demo_2_0_0.gif" alt="demo_2_0_0" width="65%" height="65%" /></p>
@@ -35,31 +36,31 @@ $ pip install --upgrade dict-tiny
 $ dict-tiny
 
 Usage:
-    dict-tiny [SWITCHES] words...
+    dict-tiny [SWITCHES] [SUBCOMMAND [SWITCHES]] words...
 
 GoogleTranslate:
-    --detect-language                   Detect the language of the given text
-    -g, --google                        Use Google Translate
+    --detect-language                      Detect the language of the given text
+    -g, --google                           Use Google Translate
 
 Meta-switches:
-    -h, --help                          Prints this help message and quits
-    --help-all                          Prints help messages of all sub-commands and quits
-    -v, --version                       Prints the program's version and quits
+    -h, --help                             Prints this help message and quits
+    --help-all                             Prints help messages of all sub-commands and quits
+    -v, --version                          Prints the program's version and quits
 
 Switches:
     -c, --clipboard                        Use the contents of the clipboard.
     -i, --interactive                      Interactive mode
+    --no-record                            Skip recording this query
+    --record                               Record query to word book
     --sl, --source-language VALUE:str      Source language (YoudaoDict only supports en/fr/ja/ko)
     --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
-    --record                               Record translation to word book
-    --no-record                            Skip recording this translation
 
 YoudaoDict:
     -m, --more                             Get more details
     -y, --youdao                           Use Youdao Dictionary to translate
 
 Sub-commands:
-    wb                         see 'dict-tiny wb --help' for more info
+    wb                                     see 'dict-tiny wb --help' for more info
 ```
 
 ## Details and examples
@@ -299,11 +300,14 @@ Use `--record` to record a single translation, or set it as the default with
 `dict-tiny wb config --record on`.
 
 ```bash
-$ dict-tiny -y hello --record
+$ dict-tiny wb
 
->>> YoudaoDict <<<
-...
+Usage: dict-tiny wb <command> [...]
+Commands: list, detail, query, search, delete, config, db-delete
 ```
+
+Each subcommand supports `--help` to show its available switches, e.g.
+`dict-tiny wb list --help`.
 
 #### Subcommands
 
@@ -412,8 +416,8 @@ Word book database deleted.
   not after:
 
   ```bash
-  $ dict-tiny -y --no-record wb query 1   # OK
-  $ dict-tiny wb query 1 -y --no-record   # NOT OK
+  $ dict-tiny -y --no-record wb query 1   # ✓
+  $ dict-tiny wb query 1 -y --no-record   # ✗
   ```
 
 - Subcommands like `detail`, `query`, and `delete` take the entry ID as shown in the first column of
