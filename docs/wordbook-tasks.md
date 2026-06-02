@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS config (
 **Status**: pending
 
 - `record(text, sl, tl, translator) -> bool` — INSERT or UPDATE (last_access, access_count, sl/tl/translator). If count >= 10000 before INSERT, evict oldest (ORDER BY last_access ASC LIMIT 1)
-- `get_entry(index) -> WordBookEntry | None` — fetch by 1-based display index (offset = (page-1) * page_size with page=1, page_size=count). Read-only.
+- `get_entry(index) -> WordBookEntry | None` — fetch by 1-based display index (offset = (page-1) \* page_size with page=1, page_size=count). Read-only.
 - `delete(index) -> bool` — resolve index to id, then DELETE
 
 ---
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS config (
 
 - `list_entries(page=1, page_size=20, sort_by='time') -> tuple[list[WordBookEntry], int]` — sort_by: time (timestamp DESC), freq (access_count DESC), recent (last_access DESC). Return paginated entries + total count.
 - `list_entries_since(timestamp, page=1, page_size=20) -> tuple[list[WordBookEntry], int]`
-- `count() -> int` — SELECT COUNT(*)
+- `count() -> int` — SELECT COUNT(\*)
 - `get_config() -> dict` — {count, default_record}
 - `get_default_record() -> bool` — read from config table, default False if not set
 - `set_default_record(on: bool)` — upsert config table
@@ -142,20 +142,22 @@ class WbDbDelete(cli.Application):
 
 **CLI interface:**
 
-| Command | Behavior |
-|---------|----------|
-| `dict-tiny wb list` | Paginated list, "word \| sl→tl \| time \| ×count" per line |
-| `dict-tiny wb list --page 2` | Page 2 |
-| `dict-tiny wb list --page-size 50` | 50 per page |
-| `dict-tiny wb list --sort freq` | Sort by frequency |
-| `dict-tiny wb list --sort recent` | Sort by last access |
-| `dict-tiny wb list --since 2026-05-01` | Filter by first-record time |
-| `dict-tiny wb detail <n>` | Print all fields |
-| `dict-tiny wb query <n>` | Re-translate using stored entry |
-| `dict-tiny wb delete <n>` | Delete by index |
-| `dict-tiny wb config` | Show count + default_record |
-| `dict-tiny wb config --record on\|off` | Set default recording |
-| `dict-tiny wb db-delete` | Delete DB file |
+| Command                                | Behavior                                                   |
+| -------------------------------------- | ---------------------------------------------------------- |
+| `dict-tiny wb list`                    | Paginated list, "word \| sl→tl \| time \| ×count" per line |
+| `dict-tiny wb list --page 2`           | Page 2                                                     |
+| `dict-tiny wb list --page-size 50`     | 50 per page                                                |
+| `dict-tiny wb list --sort freq`        | Sort by frequency                                          |
+| `dict-tiny wb list --sort recent`      | Sort by last access                                        |
+| `dict-tiny wb list --since 2026-05-01` | Filter by first-record time                                |
+| `dict-tiny wb detail <n>`              | Print all fields                                           |
+| `dict-tiny wb query <n>`               | Re-translate using stored entry                            |
+| `dict-tiny wb delete <n>`              | Delete by index                                            |
+| `dict-tiny wb search <text>`           | Search by text, fuzzy match                                |
+| `dict-tiny wb search <text> --exact`   | Search by text, exact match                                |
+| `dict-tiny wb config`                  | Show count + default_record                                |
+| `dict-tiny wb config --record on\|off` | Set default recording                                      |
+| `dict-tiny wb db-delete`               | Delete DB file                                             |
 
 **WbQuery implementation**:
 
@@ -213,24 +215,24 @@ Use `:memory:` SQLite for all WordBook tests.
 
 **Test cases**:
 
-| # | Test | Description |
-|---|------|-------------|
-| 1 | `test_record_new` | Insert new entry, verify count=1 |
-| 2 | `test_record_duplicate` | Insert same text twice, verify access_count=2 |
-| 3 | `test_record_eviction` | Insert 10001 entries, verify oldest evicted |
-| 4 | `test_get_entry` | Get by index, verify correct fields |
-| 5 | `test_get_entry_invalid` | Out-of-range index returns None |
-| 6 | `test_list_default` | Default sort by time DESC |
-| 7 | `test_list_sort_freq` | Sort by access_count DESC |
-| 8 | `test_list_sort_recent` | Sort by last_access DESC |
-| 9 | `test_list_pagination` | Page 2 with page_size=3 |
-| 10 | `test_list_since` | Filter by timestamp |
-| 11 | `test_delete` | Delete existing entry |
-| 12 | `test_delete_invalid` | Delete non-existent returns False |
-| 13 | `test_delete_db` | Delete file, verify file gone, re-init works |
-| 14 | `test_config_default_record` | Set and persist default_record |
-| 15 | `test_error_resilience` | Corrupted DB raises no exception |
-| 16 | `test_extra_action_hook` | Mock wordbook, verify record called |
+| #   | Test                         | Description                                   |
+| --- | ---------------------------- | --------------------------------------------- |
+| 1   | `test_record_new`            | Insert new entry, verify count=1              |
+| 2   | `test_record_duplicate`      | Insert same text twice, verify access_count=2 |
+| 3   | `test_record_eviction`       | Insert 10001 entries, verify oldest evicted   |
+| 4   | `test_get_entry`             | Get by index, verify correct fields           |
+| 5   | `test_get_entry_invalid`     | Out-of-range index returns None               |
+| 6   | `test_list_default`          | Default sort by time DESC                     |
+| 7   | `test_list_sort_freq`        | Sort by access_count DESC                     |
+| 8   | `test_list_sort_recent`      | Sort by last_access DESC                      |
+| 9   | `test_list_pagination`       | Page 2 with page_size=3                       |
+| 10  | `test_list_since`            | Filter by timestamp                           |
+| 11  | `test_delete`                | Delete existing entry                         |
+| 12  | `test_delete_invalid`        | Delete non-existent returns False             |
+| 13  | `test_delete_db`             | Delete file, verify file gone, re-init works  |
+| 14  | `test_config_default_record` | Set and persist default_record                |
+| 15  | `test_error_resilience`      | Corrupted DB raises no exception              |
+| 16  | `test_extra_action_hook`     | Mock wordbook, verify record called           |
 
 ---
 
@@ -244,3 +246,37 @@ python -m pytest test/ -v
 ```
 
 **Expected**: All existing tests pass (71 tests), new wordbook tests pass.
+
+---
+
+## Task 9: Add text search feature
+
+**Depends on**: Task 3
+**Status**: pending
+
+**WordBook method**:
+
+```python
+def search_entries(self, text, page=1, page_size=20, exact=False):
+    """按文本搜索 entries 表 text 字段。
+    exact=True 时精确匹配（WHERE text = ?），否则 LIKE 模糊匹配。
+    返回 (entries, total)，按时间倒序。
+    """
+```
+
+**CLI subcommand** (`WbSearch`):
+
+```
+dict-tiny wb search <text>                  # 模糊搜索，分页展示
+dict-tiny wb search <text> --exact          # 精确搜索
+dict-tiny wb search <text> --page 2         # 翻页
+```
+
+**Test cases**:
+
+| #   | Test                     | Description                             |
+| --- | ------------------------ | --------------------------------------- |
+| 1   | `test_search_fuzzy`      | Search "hello" matches "hello_world"    |
+| 2   | `test_search_exact`      | Exact match only returns identical text |
+| 3   | `test_search_no_match`   | Non-existent text returns empty list    |
+| 4   | `test_search_pagination` | Search results respect page/page_size   |

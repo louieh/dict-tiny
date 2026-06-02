@@ -174,6 +174,29 @@ class WordBook:
         except Exception:
             return [], 0
 
+    def search_entries(self, text, page=1, page_size=20, exact=False):
+        if not self._conn or page < 1:
+            return [], 0
+        try:
+            if exact:
+                where = "WHERE text = ?"
+            else:
+                where = "WHERE text LIKE ?"
+                text = f"%{text}%"
+            total = self._conn.execute(
+                f"SELECT COUNT(*) FROM entries {where}", (text,)
+            ).fetchone()[0]
+            offset = (page - 1) * page_size
+            rows = self._conn.execute(
+                "SELECT id, text, source_language, target_language, translator,"
+                " timestamp, last_access, access_count"
+                f" FROM entries {where} ORDER BY timestamp DESC LIMIT ? OFFSET ?",
+                (text, page_size, offset),
+            ).fetchall()
+            return [WordBookEntry(*r) for r in rows], total
+        except Exception:
+            return [], 0
+
     def count(self):
         if not self._conn:
             return 0

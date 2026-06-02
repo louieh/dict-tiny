@@ -67,6 +67,10 @@ class WordBook:
     def list_entries_since(self, timestamp: float, page: int = 1,
                            page_size: int = 20) -> tuple[list[WordBookEntry], int]:
 
+    def search_entries(self, text: str, page: int = 1, page_size: int = 20,
+                       exact: bool = False) -> tuple[list[WordBookEntry], int]:
+        """按文本搜索，模糊或精确匹配。返回 (entries, total)"""
+
     # --- 管理 ---
     def count(self) -> int:
     def get_config(self) -> dict:               # {count, default_record}
@@ -160,14 +164,15 @@ class WordBookApp(cli.Application):
 
 各子命令实现：
 
-| 子命令       | 实现                                                                                                                                          |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `WbList`     | `list_entries(page, page_size, sort_by)`，默认按时间倒序，`--since` 过滤用 `list_entries_since()`。逐行打印 "word \| sl→tl \| time \| ×count" |
-| `WbDetail`   | `get_entry(n)` → 打印 text / sl→tl / translator / timestamp / access_count 等全部字段                                                         |
-| `WbQuery`    | `get_entry(n)` → 用 entry 的 sl/tl/translator 调用翻译器重新翻译，完成后 `record()` 刷新 last_access                                          |
-| `WbDelete`   | `delete(n)`                                                                                                                                   |
-| `WbConfig`   | 无参数时打印 count + default_record；`--record on\|off` 调用 `set_default_record()`                                                           |
-| `WbDbDelete` | `delete_db()`，删除文件后打印提示                                                                                                             |
+| 子命令       | 实现                                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------- |
+| `WbList`     | `list_entries(page, page_size, sort_by)`，默认按时间倒序，`--since` 过滤用 `list_entries_since()`。表格展示 |
+| `WbSearch`   | `search_entries(text, page, page_size, exact)`。表格展示，格式同 `WbList`                                   |
+| `WbDetail`   | `get_entry(n)` → 打印 text / sl→tl / translator / timestamp / access_count 等全部字段                       |
+| `WbQuery`    | `get_entry(n)` → 用 entry 的 sl/tl/translator 调用翻译器重新翻译，完成后 `record()` 刷新 last_access        |
+| `WbDelete`   | `delete(n)`                                                                                                 |
+| `WbConfig`   | 无参数时打印 count + default_record；`--record on\|off` 调用 `set_default_record()`                         |
+| `WbDbDelete` | `delete_db()`，删除文件后打印提示                                                                           |
 
 对应 CLI：
 
@@ -176,6 +181,7 @@ dict-tiny wb list [--page N] [--page-size N] [--sort time|freq|recent] [--since 
 dict-tiny wb query <n>                     → get_entry() → re-translate → record() 刷新 last_access
 dict-tiny wb detail <n>                    → get_entry() → pretty print 全部字段
 dict-tiny wb delete <n>
+dict-tiny wb search <text> [--page N] [--page-size N] [--exact]
 dict-tiny wb config [--record on|off]
 dict-tiny wb db-delete
 ```

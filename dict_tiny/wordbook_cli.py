@@ -12,12 +12,50 @@ from dict_tiny.wordbook import WordBook
 console = Console()
 
 
+def _render_table(entries, page, page_size, total, caption):
+    """Render entries in a rich table. Returns a Table object ready to print."""
+    total_pages = max(1, -(-total // page_size))
+    table = Table(
+        show_header=True,
+        header_style="bold",
+        style="cyan",
+        box=SIMPLE_HEAVY,
+        caption=caption
+        or f"Page {page}/{total_pages}  ({total} entries, limit {MAX_ENTRIES})",
+        caption_justify="left",
+        caption_style="dim",
+        padding=(0, 1),
+        row_styles=["", "on grey19"],
+    )
+    table.add_column("ID", justify="right", width=4, no_wrap=True, style="dim")
+    table.add_column("Word", overflow="fold")
+    table.add_column("Lang", justify="center", width=8)
+    table.add_column("Time", justify="center", width=16)
+    table.add_column("Count", justify="right", width=5)
+
+    for entry in entries:
+        dt = datetime.fromtimestamp(entry.timestamp)
+        time_str = dt.strftime("%Y-%m-%d %H:%M")
+        if entry.source_language or entry.target_language:
+            lang = f"{entry.source_language or ''}→{entry.target_language or ''}"
+        else:
+            lang = ""
+        table.add_row(
+            str(entry.id),
+            entry.text,
+            lang,
+            time_str,
+            f"×{entry.access_count}",
+        )
+    return table
+
+
 class WordBookApp(cli.Application):
     def main(self):
         if self.nested_command:
             return
         print("Usage: dict-tiny wb <command> [...]")
-        print("Commands: list, detail, query, delete, config, db-delete")
+        print("Commands: list, detail, query, search, delete, config, db-delete")
 
 
 @WordBookApp.subcommand("list")
@@ -55,39 +93,7 @@ class WbList(cli.Application):
             print("(empty)")
             return
 
-        total_pages = max(1, -(-total // self.page_size))
-        table = Table(
-            show_header=True,
-            header_style="bold",
-            style="cyan",
-            box=SIMPLE_HEAVY,
-            caption=f"Page {self.page}/{total_pages}  ({total} entries, limit {MAX_ENTRIES})",
-            caption_justify="left",
-            caption_style="dim",
-            padding=(0, 1),
-            row_styles=["", "on grey19"],
-        )
-        table.add_column("ID", justify="right", width=4, no_wrap=True, style="dim")
-        table.add_column("Word", overflow="fold")
-        table.add_column("Lang", justify="center", width=8)
-        table.add_column("Time", justify="center", width=16)
-        table.add_column("Count", justify="right", width=5)
-
-        for entry in entries:
-            dt = datetime.fromtimestamp(entry.timestamp)
-            time_str = dt.strftime("%Y-%m-%d %H:%M")
-            if entry.source_language or entry.target_language:
-                lang = f"{entry.source_language or ''}→{entry.target_language or ''}"
-            else:
-                lang = ""
-            table.add_row(
-                str(entry.id),
-                entry.text,
-                lang,
-                time_str,
-                f"×{entry.access_count}",
-            )
-
+        table = _render_table(entries, self.page, self.page_size, total, caption=None)
         console.print(table)
         wb.close()
 
@@ -173,6 +179,36 @@ class WbDelete(cli.Application):
             print(f"Entry ID:{entry_id} deleted.")
         else:
             print(f"Entry ID:{entry_id} not found.")
+        wb.close()
+
+
+@WordBookApp.subcommand("search")
+class WbSearch(cli.Application):
+    exact = cli.Flag("--exact", help="Exact match instead of fuzzy")
+    page = cli.SwitchAttr("--page", int, default=1, help="Page number")
+    page_size = cli.SwitchAttr("--page-size", int, default=20, help="Entries per page")
+
+    def main(self, text):
+        wb = WordBook.open()
+        if wb is None:
+            return
+
+        entries, total = wb.search_entries(text, self.page, self.page_size, self.exact)
+
+        if not entries:
+            print("(empty)")
+            wb.close()
+            return
+
+        total_pages = max(1, -(-total // self.page_size))
+        caption = (
+            f"Search results for '{text}'{' (exact)' if self.exact else ''}"
+            f"  —  Page {self.page}/{total_pages}  ({total} entries)"
+        )
+        table = _render_table(
+            entries, self.page, self.page_size, total, caption=caption
+        )
+        console.print(table)
         wb.close()
 
 

@@ -144,6 +144,69 @@ class TestWbDelete(unittest.TestCase):
             mo.return_value.delete.assert_called_once_with(999)
 
 
+class TestWbSearch(unittest.TestCase):
+    def _entry(self, **kw):
+        defaults = dict(
+            id=1, text="hello", source_language="en", target_language="zh",
+            translator="youdaodict", timestamp=1000.0, last_access=1001.0,
+            access_count=2,
+        )
+        defaults.update(kw)
+        return WordBookEntry(**defaults)
+
+    @patch("sys.argv", ["", "wb", "search", "hello"])
+    def test_search_fuzzy(self):
+        entries = [self._entry(id=1), self._entry(id=2, text="hello_world")]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.search_entries.return_value = (entries, 2)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.search_entries.assert_called_once_with("hello", 1, 20, False)
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--exact"])
+    def test_search_exact(self):
+        entries = [self._entry(id=1)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.search_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.search_entries.assert_called_once_with("hello", 1, 20, True)
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--page", "2", "--page-size", "5"])
+    def test_search_pagination(self):
+        entries = [self._entry(id=i) for i in range(1, 6)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.search_entries.return_value = (entries, 50)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.search_entries.assert_called_once_with("hello", 2, 5, False)
+
+    @patch("sys.argv", ["", "wb", "search", "zzz"])
+    def test_search_empty(self):
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.search_entries.return_value = ([], 0)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.search_entries.assert_called_once_with("zzz", 1, 20, False)
+
+    @patch("sys.argv", ["", "wb", "search", "hello"])
+    def test_search_open_fails(self):
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value = None
+            try:
+                run()
+            except SystemExit:
+                pass
+
+
 class TestWbConfig(unittest.TestCase):
     @patch("sys.argv", ["", "wb", "config"])
     def test_config_show(self):

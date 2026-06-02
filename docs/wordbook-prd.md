@@ -40,17 +40,17 @@
 
 ### 2.4 单词本管理
 
-| 操作         | 说明                                                                  |
-| ------------ | --------------------------------------------------------------------- |
-| 交互浏览     | `dict-tiny wb` 显示帮助信息                                           |
-| 查看帮助     | `dict-tiny wb --help` 显示帮助信息                                    |
-| 列出记录     | `dict-tiny wb list`，默认按时间倒序分页展示（每页 20 条）             |
-| 查看详情     | `dict-tiny wb detail <索引>`                                          |
-| 重新查询     | `dict-tiny wb query <索引>` 对历史记录再次翻译                        |
-| 删除记录     | `dict-tiny wb delete <索引>`                                          |
+| 操作         | 说明                                                          |
+| ------------ | ------------------------------------------------------------- |
+| 交互浏览     | `dict-tiny wb` 显示帮助信息                                   |
+| 查看帮助     | `dict-tiny wb --help` 显示帮助信息                            |
+| 列出记录     | `dict-tiny wb list`，默认按时间倒序分页展示（每页 20 条）     |
+| 查看详情     | `dict-tiny wb detail <索引>`                                  |
+| 重新查询     | `dict-tiny wb query <索引>` 对历史记录再次翻译                |
+| 删除记录     | `dict-tiny wb delete <索引>`                                  |
 | 查看状态     | `dict-tiny wb config` 查看当前数量 / 默认记录设置             |
-| 删除数据库   | `dict-tiny wb db-delete` 删除数据库文件，下次使用时自动新建           |
-| 设置默认记录 | `dict-tiny wb config --record <on\|off>` 切换默认是否记录查询         |
+| 删除数据库   | `dict-tiny wb db-delete` 删除数据库文件，下次使用时自动新建   |
+| 设置默认记录 | `dict-tiny wb config --record <on\|off>` 切换默认是否记录查询 |
 
 ### 2.1a 惰性初始化
 
@@ -71,7 +71,28 @@
 
 所有 DB 操作内部统一 `try/except`，任何异常静默降级为不记录，不干扰翻译主流程。用户自行修改或损坏 DB 文件不会导致 CLI 报错。
 
-### 2.5 容量与清理
+### 2.5 文本搜索
+
+- `dict-tiny wb search <text>` — 对 `text` 字段做模糊匹配（`LIKE`），列出所有包含搜索词的记录
+- 支持 `--exact` 精确匹配（`=`）
+- 支持 `--page` / `--page-size` 翻页
+- 结果以表格展示，格式同 `wb list`
+
+```bash
+# 模糊搜索
+$ dict-tiny wb search hello
+  1. hello             | en → zh      | 2026-05-27 14:30 | ×5
+ 42. hello_world       | en → zh      | 2026-05-26 10:00 | ×1
+
+# 精确匹配
+$ dict-tiny wb search hello --exact
+  1. hello             | en → zh      | 2026-05-27 14:30 | ×5
+
+# 翻页
+$ dict-tiny wb search hello --page 2
+```
+
+### 2.6 容量与清理
 
 固定静默上限 10000 条，达到后自动淘汰最久未访问的记录，对用户完全透明，无需关心也无需配置。
 

@@ -127,6 +127,40 @@ class TestWordBook(unittest.TestCase):
         self.assertEqual(total, 1)
         self.assertEqual(entries[0].text, 'new')
 
+    # ── search ─────────────────────────────────────────────
+
+    def test_search_fuzzy(self):
+        for text in ("hello", "hello_world", "hell", "world"):
+            self.wb.record(text, "en", "zh", "YoudaoDict")
+        entries, total = self.wb.search_entries("hello")
+        self.assertEqual(total, 2)
+        self.assertEqual({e.text for e in entries}, {"hello", "hello_world"})
+
+    def test_search_exact(self):
+        for text in ("hello", "hello_world"):
+            self.wb.record(text, "en", "zh", "YoudaoDict")
+        entries, total = self.wb.search_entries("hello", exact=True)
+        self.assertEqual(total, 1)
+        self.assertEqual(entries[0].text, "hello")
+
+    def test_search_no_match(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.search_entries("zzz_not_there")
+        self.assertEqual(total, 0)
+        self.assertEqual(len(entries), 0)
+
+    def test_search_pagination(self):
+        for i in range(5):
+            self.wb.record(f"hello_{i}", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.search_entries("hello", page=1, page_size=2)
+        self.assertEqual(total, 5)
+        self.assertEqual(len(entries), 2)
+
+    def test_search_empty_db(self):
+        entries, total = self.wb.search_entries("hello")
+        self.assertEqual(total, 0)
+        self.assertEqual(len(entries), 0)
+
     # ── delete ─────────────────────────────────────────────
 
     def test_delete(self):
