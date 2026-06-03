@@ -314,7 +314,7 @@ Each subcommand supports `--help` to show its available switches, e.g.
 ##### `wb list` — list entries
 
 ```bash
-$ dict-tiny wb list
+$ dict-tiny wb list --sort freq
 
    ID   Text           Lang         Created        Count
  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
