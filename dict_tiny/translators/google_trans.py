@@ -7,12 +7,10 @@ from dict_tiny.config import (
     GOOGLE_NAME,
     GOOGLE_TRANS_API_BASE_URL,
     GOOGLE_TRANS_API_HEADER,
-    ISO639LCodes,
 )
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
-    is_alphabet,
     normal_error_printer,
     normal_info_printer,
 )
@@ -37,36 +35,19 @@ class GoogleTrans(DefaultTrans):
                 help="Use Google Translate",
             ),
         )
+
+        # Why Flag instead of SwitchAttr? If "--detect-language" took a string
+        # argument, only the first word would be consumed — the rest would leak
+        # into positional args. Using Flag + the full *words text is correct for
+        # multi-word input.
         dict_tiny_cls.detect_language = cli.Flag(
             "--detect-language",
             group=cls.display_name,
             help="Detect the language of the given text",
         )
-        # TODO
-        # @cli.switch("--detect-language", str)
-        # def detect_language(self, text):
-        #     """
-        #     Detect the language of the given text.
-        #     """
-        #     self.stop = True
-        #     detect_language(text)
-        #
-        # dict_tiny_cls.detect_language = detect_language
 
     def pre_action(self, text):
         super().pre_action(text)
-        # exchange Chinese and English
-        source_guess = (
-            ISO639LCodes.English.value
-            if is_alphabet(text) == ISO639LCodes.English.value
-            else ISO639LCodes.Chinese.value
-        )
-        if not self.target_language or self.target_language == source_guess:
-            self.target_language = (
-                ISO639LCodes.Chinese.value
-                if source_guess == ISO639LCodes.English.value
-                else ISO639LCodes.English.value
-            )
 
     def do_translate(self, text):
         if self.dict_tiny_obj.detect_language:

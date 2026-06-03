@@ -254,6 +254,8 @@ name: Spanish
 
 **Note:**
 
+- `--detect-language` must be used together with `-g` / `--google`, as it is a Google Translate feature.
+
 - Make sure Google services are available in your network environment.
 
 - The source and target languages for Google Translate are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes.
@@ -281,7 +283,7 @@ name: Spanish
   ```
 
 - Set the environment variable `$DICT_TINY_TARGET_LAN` so you don't have to specify the target language each time. If you also pass `--target-language` on the command line, it overrides the environment variable.
-- The default `target-language` is `Chinese` .
+- The default `target-language` is `English` .
 
 ### Interactive mode
 
@@ -432,7 +434,6 @@ Word book database deleted.
 
   You can use the environment variable `$DICT_TINY_DEFAULT_TRANS` to set the default translator. Options: `youdaodict` or `googletranslate`.
 
-- For Youdao Dict and Google Translate, if the target language is not specified, Chinese and English are used as the target language for one another.
 - In non-interactive mode, multiple translators can be used at the same time, for example `dict-tiny formulation -y -g`.
 
   ```bash
