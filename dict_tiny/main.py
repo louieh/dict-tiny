@@ -13,7 +13,11 @@ from dict_tiny.config import (
 )
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
-from dict_tiny.util import normal_error_printer, normal_warn_printer
+from dict_tiny.util import (
+    normal_error_printer,
+    normal_separator_printer,
+    normal_warn_printer,
+)
 from dict_tiny.wordbook import WordBook
 from dict_tiny.wordbook_cli import WordBookApp
 
@@ -116,10 +120,12 @@ class Dict_tiny(cli.Application):
             return
 
         # not interactive mode
-        for trans_obj in trans_objs:
+        for i, trans_obj in enumerate(trans_objs):
             if trans_obj is None:
                 continue
             trans_obj.translate()
+            if i < len(trans_objs) - 1:
+                normal_separator_printer("-" * 20)
 
         if self.wordbook:
             self.wordbook.close()

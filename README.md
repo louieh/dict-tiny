@@ -50,27 +50,36 @@ $ dict-tiny -y -i
 
 ### Options
 
-```
-dict-tiny [SWITCHES] [SUBCOMMAND [SWITCHES]] words...
-```
+```bash
+$ dict-tiny
 
-| Category       | Switch                      | Description                             |
-| -------------- | --------------------------- | --------------------------------------- |
-| **Translator** | `-y`, `--youdao`            | Use Youdao Dictionary                   |
-|                | `-g`, `--google`            | Use Google Translate                    |
-| **Language**   | `--sl`, `--source-language` | Source language code                    |
-|                | `--tl`, `--target-language` | Target language code                    |
-|                | `--detect-language`         | Detect language (requires `-g`)         |
-| **Output**     | `-m`, `--more`              | More detailed translation (Youdao only) |
-| **Input**      | `-c`, `--clipboard`         | Use clipboard content                   |
-| **Mode**       | `-i`, `--interactive`       | Interactive mode with tab completion    |
-| **Word book**  | `--record`                  | Record this query to word book          |
-|                | `--no-record`               | Skip recording this query               |
-| **Other**      | `-h`, `--help`              | Show help and exit                      |
-|                | `--help-all`                | Show all help and exit                  |
-|                | `-v`, `--version`           | Show version and exit                   |
+Usage:
+    dict-tiny [SWITCHES] [SUBCOMMAND [SWITCHES]] words...
 
-See `dict-tiny --help` for full details.
+GoogleTranslate:
+    --detect-language                      Detect the language of the given text
+    -g, --google                           Use Google Translate
+
+Meta-switches:
+    -h, --help                             Prints this help message and quits
+    --help-all                             Prints help messages of all sub-commands and quits
+    -v, --version                          Prints the program's version and quits
+
+Switches:
+    -c, --clipboard                        Use the contents of the clipboard.
+    -i, --interactive                      Interactive mode
+    --no-record                            Skip recording this query
+    --record                               Record query to word book
+    --sl, --source-language VALUE:str      Source language (YoudaoDict only supports en/fr/ja/ko)
+    --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
+
+YoudaoDict:
+    -m, --more                             Get more details
+    -y, --youdao                           Use Youdao Dictionary to translate
+
+Sub-commands:
+    wb                                     see 'dict-tiny wb --help' for more info
+```
 
 ### Youdao Dict
 
@@ -225,7 +234,7 @@ detected language: en
 <summary>Specify target / source language</summary>
 
 ```bash
-$ dict-tiny -g "operation system" --target-language ja
+$ dict-tiny -g operation system --target-language ja
 
 >>> GoogleTranslate <<<
 operation system
@@ -253,7 +262,7 @@ $ dict-tiny -g book --target-language German --source-language English
 book
 ======
 output: Buch
-source language: English
+source language: english
 ```
 
 </details>
@@ -313,6 +322,7 @@ formulation
 
 n. （政策、计划等的）制定，构想；（想法的）阐述方式，表达方法；（药品或化妆品的）配方，配方产品
 复数: formulations
+--------------------
 >>> GoogleTranslate <<<
 formulation
 =============
@@ -333,7 +343,7 @@ $ dict-tiny wb config --record on
 ### Commands
 
 ```
-dict-tiny wb <command> [...]
+$ dict-tiny wb <command> [...]
 
 Commands: list, detail, query, search, delete, config, db-delete
 ```
@@ -366,9 +376,14 @@ When the entry limit (10000) is reached, the least recently queried entry is evi
 | `--page N`      | Page number (default: 1)          |
 | `--page-size N` | Entries per page (default: 20)    |
 
-**Note:** The Lang column shows the effective languages — defaults are shown if not
-explicitly set (e.g. Youdao defaults to `zh↔en`). Use `wb detail <ID>` to see the
-raw stored values.
+**Note:**
+
+- The Lang column shows the effective languages — defaults are shown if not
+  explicitly set (e.g. Youdao defaults to `zh↔en`). Use `wb detail <ID>` to see the
+  raw stored values.
+
+- The stored translator, source language, and target language are updated to the
+  values used in the most recent query for that entry.
 
 </details>
 
@@ -445,8 +460,7 @@ Entry ID:1 deleted.
 
 ```bash
 $ dict-tiny wb config
-
-  Entries:          3 / 10000
+  Entries:          5 / 10000
   Default Recording: OFF
 ```
 
@@ -455,9 +469,7 @@ $ dict-tiny wb config --record on
 Default recording: ON
 ```
 
-| Option                         | Description                         |
-| ------------------------------ | ----------------------------------- |
-| `--record on` / `--record off` | Enable or disable default recording |
+Use `--record on` or `--record off` to enable or disable default recording.
 
 </details>
 
@@ -476,7 +488,8 @@ Word book database deleted.
 ### Notes
 
 - Subcommands like `detail`, `query`, and `delete` take the entry ID as shown in
-  the first column of `wb list` output.
+  the first column of `wb list` output. The ID is auto-incremented and may be
+  non-contiguous; it does not reflect the current display order.
 
 - Top-level flags (`-y`, `-g`, `--record`, `--no-record`, `--sl`, `--tl`) **must** come before `wb`:
 
