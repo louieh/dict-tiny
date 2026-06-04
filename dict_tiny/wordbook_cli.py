@@ -297,5 +297,13 @@ class WbDbDelete(cli.Application):
         if wb is None:
             print("No database to delete.")
             return
+        confirm = (
+            input("Are you sure you want to delete the entire word book database? (y/N): ")
+            .strip()
+            .lower()
+        )
+        if confirm != "y" and confirm != "yes":
+            print("Cancelled.")
+            return
         wb.delete_db()
         print("Word book database deleted.")

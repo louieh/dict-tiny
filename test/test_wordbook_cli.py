@@ -298,7 +298,8 @@ class TestWbConfig(unittest.TestCase):
 
 class TestWbDbDelete(unittest.TestCase):
     @patch("sys.argv", ["", "wb", "db-delete"])
-    def test_db_delete(self):
+    @patch("builtins.input", return_value="y")
+    def test_db_delete(self, mock_input):
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mock_wb = MagicMock()
             mock_wb._path = "/fake/path"

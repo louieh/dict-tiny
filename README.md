@@ -487,6 +487,9 @@ Word book database deleted.
 
 ### Notes
 
+- Input text is limited to 3000 characters. Both Youdao Dict and Google Translate
+  will reject longer input.
+
 - Subcommands like `detail`, `query`, and `delete` take the entry ID as shown in
   the first column of `wb list` output. The ID is auto-incremented and may be
   non-contiguous; it does not reflect the current display order.
