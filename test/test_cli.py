@@ -116,45 +116,41 @@ class TestTranslateErrorHandling(unittest.TestCase):
         trans.display_name = "TestTrans"
         return trans
 
-    def test_translate_catches_custom_exception(self):
+    def test_translate_returns_false_on_custom_exception(self):
         trans = self._make_trans()
         with patch.object(trans, 'do_translate',
                           side_effect=TextInputError("too long")):
-            try:
-                trans.translate()
-            except Exception:
-                self.fail("translate() should catch CustomException")
+            result = trans.translate()
+            self.assertFalse(result)
 
-    def test_translate_catches_not_implemented(self):
+    def test_translate_returns_false_on_not_implemented(self):
         trans = self._make_trans()
         with patch.object(trans, 'do_translate',
                           side_effect=NotImplementedError):
-            try:
-                trans.translate()
-            except Exception:
-                self.fail("translate() should catch NotImplementedError")
+            result = trans.translate()
+            self.assertFalse(result)
 
-    def test_translate_catches_generic_exception(self):
+    def test_translate_returns_false_on_generic_exception(self):
         trans = self._make_trans()
         with patch.object(trans, 'do_translate',
                           side_effect=RuntimeError("network error")):
-            try:
-                trans.translate()
-            except Exception:
-                self.fail("translate() should catch generic Exception")
+            result = trans.translate()
+            self.assertFalse(result)
 
     def test_translate_skips_extra_action_on_false(self):
         trans = self._make_trans()
         with patch.object(trans, 'do_translate', return_value=False):
             with patch.object(trans, 'extra_action') as mock_ea:
-                trans.translate()
+                result = trans.translate()
+                self.assertFalse(result)
                 mock_ea.assert_not_called()
 
     def test_translate_calls_extra_action_on_true(self):
         trans = self._make_trans()
         with patch.object(trans, 'do_translate', return_value=True):
             with patch.object(trans, 'extra_action') as mock_ea:
-                trans.translate()
+                result = trans.translate()
+                self.assertTrue(result)
                 mock_ea.assert_called_once_with("hello")
 
     def test_extra_action_no_wordbook(self):
@@ -162,6 +158,56 @@ class TestTranslateErrorHandling(unittest.TestCase):
         self.mock_obj.wordbook = None
         trans = self._make_trans()
         trans.extra_action("hello")  # should not raise
+
+    def test_extra_action_with_wordbook_records(self):
+        """extra_action should record to wordbook when available"""
+        mock_wb = MagicMock()
+        self.mock_obj.wordbook = mock_wb
+        trans = self._make_trans()
+        trans.extra_action("hello")
+        mock_wb.record.assert_called_once_with(
+            "hello", None, None, "test"
+        )
+
+    def test_trans_obj_getter_returns_none_without_flag(self):
+        class MockNoFlag:
+            source_language = None
+            target_language = None
+        trans_cls = type("FakeTrans", (DefaultTrans,), {"name": "faketrans"})
+        result = trans_cls.trans_obj_getter("hello", MockNoFlag())
+        self.assertIsNone(result)
+
+    def test_trans_obj_getter_returns_instance_with_flag(self):
+        mock_cls = MagicMock()
+        mock_cls.source_language = None
+        mock_cls.target_language = None
+        mock_cls.more_detail = False
+        mock_cls.wordbook = None
+        mock_cls.stop = False
+        mock_cls.clipBoardContent = None
+
+        class TestTrans(DefaultTrans):
+            name = "testtrans"
+            display_name = "TestTrans"
+
+        setattr(mock_cls, "use_testtrans", True)
+        result = TestTrans.trans_obj_getter("hello", mock_cls)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, TestTrans)
+
+    def test_pre_action_text_length_check_passes(self):
+        trans = self._make_trans()
+        trans.pre_action("normal text")
+
+    def test_print_separator_and_input_no_error(self):
+        """print_separator and print_input should not raise"""
+        trans = self._make_trans()
+        with patch("dict_tiny.translators.translator.normal_separator_printer"):
+            with patch("dict_tiny.translators.translator.normal_title_printer"):
+                with patch("dict_tiny.translators.translator.get_terminal_size_column",
+                          return_value=80):
+                    trans.print_separator()
+                    trans.print_input("hello")
 
 
 class TestRecordingDecision(unittest.TestCase):
@@ -214,5 +260,67 @@ class TestRecordingDecision(unittest.TestCase):
                     pass
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestDictTinyMain(unittest.TestCase):
+    @patch("sys.argv", ["", "hello"])
+    @patch.dict("os.environ", {"DICT_TINY_DEFAULT_TRANS": "googletranslate"})
+    def test_env_default_translator(self):
+        """DICT_TINY_DEFAULT_TRANS env var selects Google Translate as default"""
+        with patch(
+            "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+            return_value=True,
+        ):
+            with patch(
+                "dict_tiny.translators.google_trans.GoogleTrans.do_translate",
+                return_value=True,
+            ) as mock_gt:
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                mock_gt.assert_called_once()
+
+    @patch("sys.argv", ["", "-g", "-y", "-i", "hello"])
+    def test_interactive_with_multiple_translators_returns_warning(self):
+        """When both -g and -y are used with -i, a warning is shown"""
+        with patch(
+            "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+            return_value=True,
+        ):
+            with patch(
+                "dict_tiny.translators.google_trans.GoogleTrans.do_translate",
+                return_value=True,
+            ):
+                with patch(
+                    "dict_tiny.main.normal_warn_printer"
+                ) as mock_warn:
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    mock_warn.assert_called_once_with(
+                        "You can only enter the interactive mode of one translator"
+                    )
+
+
+class TestDefaultTransInit(unittest.TestCase):
+    def test_source_language_lowered(self):
+        mock_obj = MagicMock()
+        mock_obj.source_language = "EN"
+        mock_obj.target_language = None
+        trans = DefaultTrans("hello", mock_obj)
+        self.assertEqual(trans.source_language, "en")
+
+    def test_target_language_lowered(self):
+        mock_obj = MagicMock()
+        mock_obj.source_language = None
+        mock_obj.target_language = "JA"
+        trans = DefaultTrans("hello", mock_obj)
+        self.assertEqual(trans.target_language, "ja")
+
+    def test_languages_none_when_not_set(self):
+        mock_obj = MagicMock()
+        mock_obj.source_language = None
+        mock_obj.target_language = None
+        trans = DefaultTrans("hello", mock_obj)
+        self.assertIsNone(trans.source_language)
+        self.assertIsNone(trans.target_language)

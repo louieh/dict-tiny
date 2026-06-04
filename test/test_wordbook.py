@@ -242,5 +242,14 @@ class TestWordBookExtraAction(unittest.TestCase):
         mock_wb.record.assert_called_once_with('hello', 'en', 'zh', 'YoudaoDict')
 
 
+class TestWordBookOpen(unittest.TestCase):
+    def test_open_returns_none_on_failure(self):
+        wb = WordBook.open("/nonexistent/deep/db/test.db")
+        self.assertIsNone(wb)
+
+    def test_db_exists_returns_false_for_missing(self):
+        self.assertFalse(WordBook.db_exists("/nonexistent/deep/db/test.db"))
+
+
 if __name__ == "__main__":
     unittest.main()
