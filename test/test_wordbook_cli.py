@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from dict_tiny.main import run
@@ -74,8 +75,9 @@ class TestWbList(unittest.TestCase):
                 run()
             except SystemExit:
                 pass
+            expected_since = datetime(2024, 1, 1).timestamp()
             mo.return_value.list_entries.assert_called_once_with(
-                1, 20, "created", since=1704038400.0
+                1, 20, "created", since=expected_since
             )
 
     @patch("sys.argv", ["", "wb", "list", "--since", "not-a-date"])
@@ -238,8 +240,9 @@ class TestWbSearch(unittest.TestCase):
                 run()
             except SystemExit:
                 pass
+            expected_since = datetime(2024, 1, 1).timestamp()
             mo.return_value.list_entries.assert_called_once_with(
-                1, 20, sort_by="created", since=1704038400.0, search="hello", exact=False
+                1, 20, sort_by="created", since=expected_since, search="hello", exact=False
             )
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "invalid"])
