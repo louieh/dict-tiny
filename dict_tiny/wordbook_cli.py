@@ -5,7 +5,7 @@ from rich.box import SIMPLE_HEAVY
 from rich.console import Console
 from rich.table import Table
 
-from dict_tiny.config import MAX_ENTRIES, YOUDAO_NAME
+from dict_tiny.config import GOOGLE_NAME, MAX_ENTRIES, YOUDAO_NAME, ISO639LCodes
 from dict_tiny.errors import CustomException
 from dict_tiny.translators import _ALL_TRANSLATORS, DEFAULT_TRANSLATOR
 from dict_tiny.util import normal_error_printer
@@ -38,10 +38,18 @@ def _render_table(entries, page, page_size, total, caption):
     for entry in entries:
         dt = datetime.fromtimestamp(entry.timestamp)
         time_str = dt.strftime("%Y-%m-%d %H:%M")
+        if (
+            not entry.target_language
+            and entry.translator
+            and entry.translator == GOOGLE_NAME
+        ):
+            entry.target_language = (
+                ISO639LCodes.English.value
+            )  # Google Translate defaults to English if target not specified
         if entry.source_language or entry.target_language:
             lang = f"{entry.source_language or ''}→{entry.target_language or ''}"
         elif entry.translator and entry.translator == YOUDAO_NAME:
-            lang = "zh↔en"
+            lang = f"{ISO639LCodes.Chinese.value}↔{ISO639LCodes.English.value}"
         else:
             lang = ""
         table.add_row(

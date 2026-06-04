@@ -339,6 +339,11 @@ automatically evicted to make room for new ones.
 | `--page N`      | Page number (default: 1)             |
 | `--page-size N` | Entries per page (default: 20)       |
 
+**Note:** The Lang column in `wb list` shows the effective source/target
+languages — if unspecified, the translator's defaults are shown (e.g. Youdao
+defaults to `zh↔en`). `wb detail <ID>` shows the raw stored values, which
+may be empty if the user did not specify them.
+
 ##### `wb detail <ID>` — show entry details
 
 ```bash
