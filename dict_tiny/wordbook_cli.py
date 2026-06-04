@@ -293,6 +293,9 @@ class WbConfig(cli.Application):
 @WordBookApp.subcommand("db-delete")
 class WbDbDelete(cli.Application):
     def main(self):
+        if not WordBook.db_exists():
+            print("No database to delete.")
+            return
         wb = WordBook.open()
         if wb is None:
             print("No database to delete.")
