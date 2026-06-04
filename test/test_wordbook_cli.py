@@ -304,11 +304,12 @@ class TestWbDbDelete(unittest.TestCase):
             mock_wb = MagicMock()
             mock_wb._path = "/fake/path"
             mo.return_value = mock_wb
-            try:
-                run()
-            except SystemExit:
-                pass
-            mock_wb.delete_db.assert_called_once()
+            with patch("dict_tiny.wordbook.WordBook.db_exists", return_value=True):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                mock_wb.delete_db.assert_called_once()
 
 
 class TestWbQuery(unittest.TestCase):
