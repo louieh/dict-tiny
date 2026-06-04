@@ -82,13 +82,19 @@ class WordBook:
             return False
         try:
             now = time.time()
-            count = self._conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
-            if count >= MAX_ENTRIES:
-                self._conn.execute(
-                    "DELETE FROM entries WHERE id = ("
-                    "SELECT id FROM entries ORDER BY last_access ASC LIMIT 1"
-                    ")"
-                )
+            existing = self._conn.execute(
+                "SELECT id FROM entries WHERE text = ?", (text,)
+            ).fetchone()
+            if existing is None:
+                count = self._conn.execute(
+                    "SELECT COUNT(*) FROM entries"
+                ).fetchone()[0]
+                if count >= MAX_ENTRIES:
+                    self._conn.execute(
+                        "DELETE FROM entries WHERE id = ("
+                        "SELECT id FROM entries ORDER BY last_access ASC LIMIT 1"
+                        ")"
+                    )
             self._conn.execute(
                 "INSERT INTO entries (text, source_language, target_language,"
                 " translator, timestamp, last_access, access_count)"
