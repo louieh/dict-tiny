@@ -1,161 +1,158 @@
-import unittest
 from unittest.mock import MagicMock, patch
 
 from dict_tiny.util import (
+    Downloader,
+    get_cn_length,
+    get_terminal_size_column,
     is_alphabet,
     parse_le,
-    get_cn_length,
-    remove_html_tags,
-    get_terminal_size_column,
     print_equal,
-    Downloader,
+    remove_html_tags,
 )
 
 
-class TestIsAlphabet(unittest.TestCase):
+class TestIsAlphabet:
     def test_empty(self):
-        self.assertEqual(is_alphabet(""), "other")
-        self.assertEqual(is_alphabet(" "), "other")
+        assert is_alphabet("") == "other"
+        assert is_alphabet(" ") == "other"
 
     def test_english(self):
-        self.assertEqual(is_alphabet("book"), "en")
-        self.assertEqual(is_alphabet("database"), "en")
-        self.assertEqual(is_alphabet("Hello"), "en")
-        self.assertEqual(is_alphabet("hello world"), "en")
+        assert is_alphabet("book") == "en"
+        assert is_alphabet("database") == "en"
+        assert is_alphabet("Hello") == "en"
+        assert is_alphabet("hello world") == "en"
 
     def test_chinese(self):
-        self.assertEqual(is_alphabet("书"), "zh")
-        self.assertEqual(is_alphabet("数据库"), "zh")
-        self.assertEqual(is_alphabet("你好世界"), "zh")
+        assert is_alphabet("书") == "zh"
+        assert is_alphabet("数据库") == "zh"
+        assert is_alphabet("你好世界") == "zh"
 
     def test_mixed_more_chinese(self):
-        self.assertEqual(is_alphabet("如何用Python实现web scraping"), "zh")
-        self.assertEqual(is_alphabet("Hello世界"), "zh")
+        assert is_alphabet("如何用Python实现web scraping") == "zh"
+        assert is_alphabet("Hello世界") == "zh"
 
     def test_mixed_more_english(self):
-        self.assertEqual(is_alphabet("How are you 你好"), "en")
+        assert is_alphabet("How are you 你好") == "en"
 
     def test_equal_english_chinese(self):
-        self.assertEqual(is_alphabet("book书"), "zh")
+        assert is_alphabet("book书") == "zh"
 
     def test_equal_mixed(self):
-        self.assertEqual(is_alphabet("你 A"), "zh")
+        assert is_alphabet("你 A") == "zh"
 
     def test_mixed_more_english_2(self):
-        self.assertEqual(is_alphabet("How are you 你好"), "en")
+        assert is_alphabet("How are you 你好") == "en"
 
     def test_hyphenated_english(self):
-        self.assertEqual(is_alphabet("don't"), "en")
-        self.assertEqual(is_alphabet("well-known"), "en")
-        self.assertEqual(is_alphabet("state-of-the-art"), "en")
-        self.assertEqual(is_alphabet("don't 我不知道"), "zh")
+        assert is_alphabet("don't") == "en"
+        assert is_alphabet("well-known") == "en"
+        assert is_alphabet("state-of-the-art") == "en"
+        assert is_alphabet("don't 我不知道") == "zh"
 
     def test_non_alpha(self):
-        self.assertEqual(is_alphabet("123"), "other")
-        self.assertEqual(is_alphabet("..."), "other")
-        self.assertEqual(is_alphabet("!@#"), "other")
-        self.assertEqual(is_alphabet("   "), "other")
+        assert is_alphabet("123") == "other"
+        assert is_alphabet("...") == "other"
+        assert is_alphabet("!@#") == "other"
+        assert is_alphabet("   ") == "other"
 
 
-class TestParseLe(unittest.TestCase):
+class TestParseLe:
     def test_no_source_no_target(self):
-        self.assertEqual(parse_le("", ""), "en")
+        assert parse_le("", "") == "en"
 
     def test_source_english(self):
-        self.assertEqual(parse_le("en", ""), "en")
+        assert parse_le("en", "") == "en"
 
     def test_target_japanese(self):
-        self.assertEqual(parse_le("", "ja"), "ja")
-        self.assertEqual(parse_le("en", "ja"), "en")
+        assert parse_le("", "ja") == "ja"
+        assert parse_le("en", "ja") == "en"
 
     def test_source_french(self):
-        self.assertEqual(parse_le("fr", ""), "fr")
+        assert parse_le("fr", "") == "fr"
 
     def test_source_korean(self):
-        self.assertEqual(parse_le("ko", ""), "ko")
+        assert parse_le("ko", "") == "ko"
 
     def test_source_unsupported(self):
-        self.assertEqual(parse_le("pl", "en"), "en")
-        self.assertEqual(parse_le("", "pl"), "en")
+        assert parse_le("pl", "en") == "en"
+        assert parse_le("", "pl") == "en"
 
     def test_source_and_target_unsupported(self):
-        self.assertEqual(parse_le("pl", "de"), "en")
+        assert parse_le("pl", "de") == "en"
 
 
-class TestGetCnLength(unittest.TestCase):
+class TestGetCnLength:
     def test_empty(self):
-        self.assertEqual(get_cn_length(""), 0)
+        assert get_cn_length("") == 0
 
     def test_english_only(self):
-        self.assertEqual(get_cn_length("hello"), 0)
+        assert get_cn_length("hello") == 0
 
     def test_chinese_only(self):
-        self.assertEqual(get_cn_length("你好世界"), 4)
-        self.assertEqual(get_cn_length("书"), 1)
+        assert get_cn_length("你好世界") == 4
+        assert get_cn_length("书") == 1
 
     def test_mixed(self):
-        self.assertEqual(get_cn_length("hello你好"), 2)
-        self.assertEqual(get_cn_length("Python编程"), 2)
+        assert get_cn_length("hello你好") == 2
+        assert get_cn_length("Python编程") == 2
 
     def test_numbers_and_symbols(self):
-        self.assertEqual(get_cn_length("123"), 0)
-        self.assertEqual(get_cn_length("!@#"), 0)
+        assert get_cn_length("123") == 0
+        assert get_cn_length("!@#") == 0
 
 
-class TestRemoveHtmlTags(unittest.TestCase):
+class TestRemoveHtmlTags:
     def test_no_tags(self):
-        self.assertEqual(remove_html_tags("hello world"), "hello world")
+        assert remove_html_tags("hello world") == "hello world"
 
     def test_with_tags(self):
-        self.assertEqual(remove_html_tags("<b>hello</b>"), "hello")
-        self.assertEqual(remove_html_tags("<br/>"), "")
-        self.assertEqual(remove_html_tags("<div>hello</div>world"), "helloworld")
+        assert remove_html_tags("<b>hello</b>") == "hello"
+        assert remove_html_tags("<br/>") == ""
+        assert remove_html_tags("<div>hello</div>world") == "helloworld"
 
     def test_nested_tags(self):
-        self.assertEqual(remove_html_tags("<div><b>hello</b></div>"), "hello")
+        assert remove_html_tags("<div><b>hello</b></div>") == "hello"
 
     def test_empty(self):
-        self.assertEqual(remove_html_tags(""), "")
-        self.assertEqual(remove_html_tags("<div></div>"), "")
+        assert remove_html_tags("") == ""
+        assert remove_html_tags("<div></div>") == ""
 
     def test_mixed_content(self):
         text = "Hello <b>bold</b> and <i>italic</i>."
-        self.assertEqual(remove_html_tags(text), "Hello bold and italic.")
+        assert remove_html_tags(text) == "Hello bold and italic."
 
 
-class TestGetTerminalSizeColumn(unittest.TestCase):
+class TestGetTerminalSizeColumn:
     def test_returns_int(self):
         result = get_terminal_size_column()
-        self.assertIsInstance(result, int)
-        self.assertGreater(result, 0)
+        assert isinstance(result, int)
+        assert result > 0
 
     def test_fallback_on_error(self):
         with patch("os.get_terminal_size", side_effect=OSError("no tty")):
-            self.assertEqual(get_terminal_size_column(), 20)
+            assert get_terminal_size_column() == 20
 
 
-class TestPrintEqual(unittest.TestCase):
+class TestPrintEqual:
     def test_long_string_uses_eight_equal_format(self):
         with patch("dict_tiny.util.get_terminal_size_column", return_value=80):
             with patch("dict_tiny.util.normal_title_printer") as mock_print:
                 print_equal("book")
                 mock_print.assert_called_once()
                 call_arg = mock_print.call_args[0][0]
-                self.assertIn("book", call_arg)
-                self.assertTrue(call_arg.startswith("========"))
+                assert "book" in call_arg
+                assert call_arg.startswith("========")
 
     def test_short_string_fallback(self):
-        # When terminal is too narrow, just prints the string
         with patch("dict_tiny.util.get_terminal_size_column", return_value=10):
             with patch("dict_tiny.util.normal_title_printer") as mock_print:
                 print_equal("a" * 20)
                 mock_print.assert_called_once_with("a" * 20)
 
 
-class TestDownloader(unittest.TestCase):
+class TestDownloader:
     def _make(self):
         dl = Downloader(retries=1, backoff_factor=0, timeout=5)
-        # Pre-populate _session with a mock so the lazy property doesn't trigger
         dl._session = MagicMock()
         return dl
 
@@ -165,7 +162,7 @@ class TestDownloader(unittest.TestCase):
         resp.status_code = 200
         dl._session.request.return_value = resp
         result = dl.download("GET", "http://example.com")
-        self.assertIs(result, resp)
+        assert result is resp
 
     def test_download_returns_none_on_non_200(self):
         dl = self._make()
@@ -174,8 +171,8 @@ class TestDownloader(unittest.TestCase):
         dl._session.request.return_value = resp
         with patch("dict_tiny.util.normal_warn_printer") as mock_warn:
             result = dl.download("GET", "http://example.com")
-            self.assertIsNone(result)
-            mock_warn.assert_called_once()
+        assert result is None
+        mock_warn.assert_called_once()
 
     def test_download_handles_connection_error(self):
         dl = self._make()
@@ -186,8 +183,8 @@ class TestDownloader(unittest.TestCase):
         )
         with patch("dict_tiny.util.normal_error_printer") as mock_err:
             result = dl.download("GET", "http://example.com")
-            self.assertIsNone(result)
-            mock_err.assert_called_once()
+        assert result is None
+        mock_err.assert_called_once()
 
     def test_download_handles_timeout(self):
         dl = self._make()
@@ -196,16 +193,16 @@ class TestDownloader(unittest.TestCase):
         dl._session.request.side_effect = requests.exceptions.Timeout()
         with patch("dict_tiny.util.normal_error_printer") as mock_err:
             result = dl.download("GET", "http://example.com")
-            self.assertIsNone(result)
-            mock_err.assert_called_once()
+        assert result is None
+        mock_err.assert_called_once()
 
     def test_download_handles_generic_exception(self):
         dl = self._make()
         dl._session.request.side_effect = RuntimeError("boom")
         with patch("dict_tiny.util.normal_error_printer") as mock_err:
             result = dl.download("GET", "http://example.com")
-            self.assertIsNone(result)
-            mock_err.assert_called_once()
+        assert result is None
+        mock_err.assert_called_once()
 
     def test_download_pops_timeout_kwarg(self):
         dl = self._make()
@@ -214,22 +211,22 @@ class TestDownloader(unittest.TestCase):
         dl._session.request.return_value = resp
         dl.download("GET", "http://example.com", timeout=10, headers={"X": "y"})
         args, kwargs = dl._session.request.call_args
-        self.assertEqual(args[0], "GET")
-        self.assertEqual(args[1], "http://example.com")
-        self.assertEqual(kwargs["timeout"], 10)
-        self.assertEqual(kwargs["headers"], {"X": "y"})
+        assert args[0] == "GET"
+        assert args[1] == "http://example.com"
+        assert kwargs["timeout"] == 10
+        assert kwargs["headers"] == {"X": "y"}
 
     def test_get_and_post_delegate_to_download(self):
         dl = self._make()
         with patch.object(dl, "download", return_value="ok") as mock_dl:
-            self.assertEqual(dl.get("http://e.com"), "ok")
+            assert dl.get("http://e.com") == "ok"
             mock_dl.assert_called_with("GET", "http://e.com")
-            self.assertEqual(dl.post("http://e.com", json={"a": 1}), "ok")
+            assert dl.post("http://e.com", json={"a": 1}) == "ok"
             mock_dl.assert_called_with("POST", "http://e.com", json={"a": 1})
 
     def test_session_lazy_init(self):
         dl = Downloader(retries=1, backoff_factor=0, timeout=5)
-        self.assertIsNone(dl._session)
+        assert dl._session is None
         with patch("requests.Session") as MockSession:
             with patch("requests.adapters.HTTPAdapter"):
                 with patch("requests.adapters.Retry"):
@@ -237,9 +234,5 @@ class TestDownloader(unittest.TestCase):
                     MockSession.return_value = mock_session
                     session1 = dl.session
                     session2 = dl.session
-                    self.assertIs(session1, session2)
+                    assert session1 is session2
                     MockSession.assert_called_once()
-
-
-if __name__ == "__main__":
-    unittest.main()

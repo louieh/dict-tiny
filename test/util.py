@@ -1,5 +1,7 @@
 from functools import wraps
 
+import pytest
+
 from dict_tiny.main import run
 
 
@@ -11,6 +13,6 @@ def assert_not_raises(test_func):
         except SystemExit:
             pass
         except Exception as e:
-            self.fail(f"Unexpected exception: {e}")
+            pytest.fail(f"Unexpected exception: {e}")
 
     return wrapper

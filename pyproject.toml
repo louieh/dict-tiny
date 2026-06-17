@@ -20,6 +20,11 @@ dependencies = [
     "rich>=15.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.0",
+]
+
 [project.scripts]
 dict-tiny = "dict_tiny.main:run"
 

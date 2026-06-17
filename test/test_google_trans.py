@@ -1,11 +1,10 @@
-import unittest
+from test.util import assert_not_raises
 from unittest.mock import MagicMock, patch
 
-from test.util import assert_not_raises
 from dict_tiny.translators.google_trans import GoogleTrans
 
 
-class TestGoogleTransIntegration(unittest.TestCase):
+class TestGoogleTransIntegration:
     @patch("sys.argv", ["", "-g", "book"])
     @assert_not_raises
     def test_translate(self):
@@ -25,8 +24,8 @@ class TestGoogleTransIntegration(unittest.TestCase):
         pass
 
 
-class TestGoogleTransUnit(unittest.TestCase):
-    def setUp(self):
+class TestGoogleTransUnit:
+    def setup_method(self):
         self.mock_obj = MagicMock()
         self.mock_obj.source_language = None
         self.mock_obj.target_language = None
@@ -36,16 +35,15 @@ class TestGoogleTransUnit(unittest.TestCase):
 
     def test_do_translate_detect_language_returns_false(self):
         self.mock_obj.detect_language = True
-        with patch.object(self.trans, 'detect_language',
-                          return_value=True):
+        with patch.object(self.trans, "detect_language", return_value=True):
             result = self.trans.do_translate("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_do_translate_empty_response(self):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = None
             result = self.trans.do_translate("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_do_translate_invalid_json(self):
         resp = MagicMock()
@@ -54,7 +52,7 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.do_translate("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_do_translate_non_200(self):
         resp = MagicMock()
@@ -62,7 +60,7 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.do_translate("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_do_translate_success(self):
         resp = MagicMock()
@@ -73,13 +71,13 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.do_translate("hello")
-            self.assertTrue(result)
+        assert result
 
     def test_detect_language_empty_response(self):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = None
             result = self.trans.detect_language("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_detect_language_invalid_json(self):
         resp = MagicMock()
@@ -88,7 +86,7 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.detect_language("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_detect_language_non_200(self):
         resp = MagicMock()
@@ -96,7 +94,7 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.detect_language("hello")
-            self.assertFalse(result)
+        assert not result
 
     def test_detect_language_success(self):
         resp = MagicMock()
@@ -107,4 +105,4 @@ class TestGoogleTransUnit(unittest.TestCase):
         with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
             mock_dl.post.return_value = resp
             result = self.trans.detect_language("hello")
-            self.assertTrue(result)
+        assert result

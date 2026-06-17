@@ -1,4 +1,3 @@
-import unittest
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
@@ -6,16 +5,22 @@ from dict_tiny.main import run
 from dict_tiny.wordbook import WordBookEntry
 
 
-class TestWbList(unittest.TestCase):
-    def _entry(self, **kw):
-        defaults = dict(
-            id=1, text="hello", source_language="en", target_language="zh",
-            translator="youdaodict", timestamp=1000.0, last_access=1001.0,
-            access_count=2,
-        )
-        defaults.update(kw)
-        return WordBookEntry(**defaults)
+def _entry(**kw):
+    defaults = dict(
+        id=1,
+        text="hello",
+        source_language="en",
+        target_language="zh",
+        translator="youdaodict",
+        timestamp=1000.0,
+        last_access=1001.0,
+        access_count=2,
+    )
+    defaults.update(kw)
+    return WordBookEntry(**defaults)
 
+
+class TestWbList:
     @patch("sys.argv", ["", "wb", "list"])
     def test_list_empty(self):
         try:
@@ -25,7 +30,7 @@ class TestWbList(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "list", "--page", "1", "--page-size", "5"])
     def test_list_pagination(self):
-        entries = [self._entry(id=i) for i in range(1, 6)]
+        entries = [_entry(id=i) for i in range(1, 6)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 20)
             try:
@@ -36,7 +41,7 @@ class TestWbList(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "list", "--sort", "freq"])
     def test_list_sort_freq(self):
-        entries = [self._entry(id=1, access_count=5)]
+        entries = [_entry(id=1, access_count=5)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -47,7 +52,7 @@ class TestWbList(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "list", "--sort", "recent"])
     def test_list_sort_recent(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -63,12 +68,11 @@ class TestWbList(unittest.TestCase):
                 run()
             except SystemExit:
                 pass
-            # list_entries should NOT be called for invalid sort
             mo.return_value.list_entries.assert_not_called()
 
     @patch("sys.argv", ["", "wb", "list", "--since", "2024-01-01"])
     def test_list_since(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -99,12 +103,17 @@ class TestWbList(unittest.TestCase):
                 pass
 
 
-class TestWbDetail(unittest.TestCase):
+class TestWbDetail:
     @patch("sys.argv", ["", "wb", "detail", "1"])
     def test_detail_found(self):
         entry = WordBookEntry(
-            id=1, text="hello", source_language="en", target_language="zh",
-            translator="youdaodict", timestamp=1000000.0, last_access=1000001.0,
+            id=1,
+            text="hello",
+            source_language="en",
+            target_language="zh",
+            translator="youdaodict",
+            timestamp=1000000.0,
+            last_access=1000001.0,
             access_count=3,
         )
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
@@ -126,7 +135,7 @@ class TestWbDetail(unittest.TestCase):
             mo.return_value.get_entry.assert_called_once_with(999)
 
 
-class TestWbDelete(unittest.TestCase):
+class TestWbDelete:
     @patch("sys.argv", ["", "wb", "delete", "1"])
     def test_delete_ok(self):
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
@@ -148,19 +157,10 @@ class TestWbDelete(unittest.TestCase):
             mo.return_value.delete.assert_called_once_with(999)
 
 
-class TestWbSearch(unittest.TestCase):
-    def _entry(self, **kw):
-        defaults = dict(
-            id=1, text="hello", source_language="en", target_language="zh",
-            translator="youdaodict", timestamp=1000.0, last_access=1001.0,
-            access_count=2,
-        )
-        defaults.update(kw)
-        return WordBookEntry(**defaults)
-
+class TestWbSearch:
     @patch("sys.argv", ["", "wb", "search", "hello"])
     def test_search_fuzzy(self):
-        entries = [self._entry(id=1), self._entry(id=2, text="hello_world")]
+        entries = [_entry(id=1), _entry(id=2, text="hello_world")]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 2)
             try:
@@ -173,7 +173,7 @@ class TestWbSearch(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--exact"])
     def test_search_exact(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -186,7 +186,7 @@ class TestWbSearch(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--page", "2", "--page-size", "5"])
     def test_search_pagination(self):
-        entries = [self._entry(id=i) for i in range(1, 6)]
+        entries = [_entry(id=i) for i in range(1, 6)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 50)
             try:
@@ -220,7 +220,7 @@ class TestWbSearch(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "freq"])
     def test_search_sort_freq(self):
-        entries = [self._entry(id=1, access_count=5)]
+        entries = [_entry(id=1, access_count=5)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -233,7 +233,7 @@ class TestWbSearch(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--since", "2024-01-01"])
     def test_search_since(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -242,7 +242,12 @@ class TestWbSearch(unittest.TestCase):
                 pass
             expected_since = datetime(2024, 1, 1).timestamp()
             mo.return_value.list_entries.assert_called_once_with(
-                1, 20, sort_by="created", since=expected_since, search="hello", exact=False
+                1,
+                20,
+                sort_by="created",
+                since=expected_since,
+                search="hello",
+                exact=False,
             )
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "invalid"])
@@ -255,12 +260,13 @@ class TestWbSearch(unittest.TestCase):
             mo.return_value.list_entries.assert_not_called()
 
 
-class TestWbConfig(unittest.TestCase):
+class TestWbConfig:
     @patch("sys.argv", ["", "wb", "config"])
     def test_config_show(self):
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_config.return_value = {
-                "count": 5, "default_record": False,
+                "count": 5,
+                "default_record": False,
             }
             mo.return_value.count.return_value = 5
             try:
@@ -296,7 +302,7 @@ class TestWbConfig(unittest.TestCase):
             mo.return_value.set_default_record.assert_not_called()
 
 
-class TestWbDbDelete(unittest.TestCase):
+class TestWbDbDelete:
     @patch("sys.argv", ["", "wb", "db-delete"])
     @patch("builtins.input", return_value="y")
     def test_db_delete(self, mock_input):
@@ -362,19 +368,10 @@ class TestWbDbDelete(unittest.TestCase):
                     pass
 
 
-class TestWbListCombo(unittest.TestCase):
-    def _entry(self, **kw):
-        defaults = dict(
-            id=1, text="hello", source_language="en", target_language="zh",
-            translator="youdaodict", timestamp=1000.0, last_access=1001.0,
-            access_count=2,
-        )
-        defaults.update(kw)
-        return WordBookEntry(**defaults)
-
+class TestWbListCombo:
     @patch("sys.argv", ["", "wb", "list", "--sort", "freq", "--since", "2024-01-01"])
     def test_list_sort_freq_with_since(self):
-        entries = [self._entry(id=1, access_count=5)]
+        entries = [_entry(id=1, access_count=5)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -388,7 +385,7 @@ class TestWbListCombo(unittest.TestCase):
 
     @patch("sys.argv", ["", "wb", "list", "--page", "2", "--page-size", "10"])
     def test_list_with_pagination_and_default_sort(self):
-        entries = [self._entry(id=i) for i in range(1, 11)]
+        entries = [_entry(id=i) for i in range(1, 11)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 50)
             try:
@@ -406,11 +403,16 @@ class TestWbListCombo(unittest.TestCase):
                 pass
 
 
-class TestWbQuery(unittest.TestCase):
+class TestWbQuery:
     def _make_entry(self, **kw):
         defaults = dict(
-            id=1, text="hello", source_language="en", target_language="ja",
-            translator="youdaodict", timestamp=1000000.0, last_access=1000001.0,
+            id=1,
+            text="hello",
+            source_language="en",
+            target_language="ja",
+            translator="youdaodict",
+            timestamp=1000000.0,
+            last_access=1000001.0,
             access_count=2,
         )
         defaults.update(kw)
@@ -473,7 +475,6 @@ class TestWbQuery(unittest.TestCase):
 
     @patch("sys.argv", ["", "-g", "wb", "query", "1"])
     def test_query_google_override(self):
-        """-g flag overrides the stored translator"""
         entry = self._make_entry(translator="youdaodict")
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
@@ -493,7 +494,6 @@ class TestWbQuery(unittest.TestCase):
 
     @patch("sys.argv", ["", "--record", "wb", "query", "1"])
     def test_query_translation_fails_no_record(self):
-        """When translation returns False, should not record"""
         entry = self._make_entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
@@ -531,7 +531,7 @@ class TestWbQuery(unittest.TestCase):
                 mo.return_value.record.assert_not_called()
 
 
-class TestWbDetailEdgeCases(unittest.TestCase):
+class TestWbDetailEdgeCases:
     @patch("sys.argv", ["", "wb", "detail", "1"])
     def test_detail_open_returns_none(self):
         with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
@@ -541,7 +541,7 @@ class TestWbDetailEdgeCases(unittest.TestCase):
                 pass
 
 
-class TestWbDeleteEdgeCases(unittest.TestCase):
+class TestWbDeleteEdgeCases:
     @patch("sys.argv", ["", "wb", "delete", "1"])
     def test_delete_open_returns_none(self):
         with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
@@ -551,19 +551,10 @@ class TestWbDeleteEdgeCases(unittest.TestCase):
                 pass
 
 
-class TestWbSearchCombo(unittest.TestCase):
-    def _entry(self, **kw):
-        defaults = dict(
-            id=1, text="hello", source_language="en", target_language="zh",
-            translator="youdaodict", timestamp=1000.0, last_access=1001.0,
-            access_count=2,
-        )
-        defaults.update(kw)
-        return WordBookEntry(**defaults)
-
+class TestWbSearchCombo:
     @patch("sys.argv", ["", "wb", "search", "hello", "--exact", "--sort", "recent"])
     def test_search_exact_with_sort(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -574,9 +565,12 @@ class TestWbSearchCombo(unittest.TestCase):
                 1, 20, sort_by="recent", since=None, search="hello", exact=True
             )
 
-    @patch("sys.argv", ["", "wb", "search", "hello", "--since", "2024-06-01", "--sort", "freq"])
+    @patch(
+        "sys.argv",
+        ["", "wb", "search", "hello", "--since", "2024-06-01", "--sort", "freq"],
+    )
     def test_search_since_with_sort(self):
-        entries = [self._entry(id=1)]
+        entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
             try:
@@ -598,7 +592,7 @@ class TestWbSearchCombo(unittest.TestCase):
             mo.return_value.list_entries.assert_not_called()
 
 
-class TestWbConfigEdgeCases(unittest.TestCase):
+class TestWbConfigEdgeCases:
     @patch("sys.argv", ["", "wb", "config"])
     def test_config_open_returns_none(self):
         with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
@@ -615,7 +609,3 @@ class TestWbConfigEdgeCases(unittest.TestCase):
             except SystemExit:
                 pass
             mo.return_value.set_default_record.assert_called_once_with(True)
-
-
-if __name__ == "__main__":
-    unittest.main()

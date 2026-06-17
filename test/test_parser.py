@@ -1,12 +1,11 @@
-import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
-from dict_tiny.translators.YoudaoParser.ENParser import ENParser, ECParser, CEParser
+from dict_tiny.translators.YoudaoParser.ENParser import CEParser, ECParser, ENParser
 from dict_tiny.translators.YoudaoParser.FRParser import FRParser
+from dict_tiny.translators.YoudaoParser.YoudaoParser import YoudaoParser
 
 
-class TestYoudaoParserBase(unittest.TestCase):
+class TestYoudaoParserBase:
     def test_parse_no_word_data_with_ref(self):
         data = {
             "ec": {"word": {}, "$ref": "$.ec2"},
@@ -17,7 +16,7 @@ class TestYoudaoParserBase(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.YoudaoParser.normal_warn_printer"
         ) as mock_warn:
             parser.parse()
-            mock_warn.assert_not_called()
+        mock_warn.assert_not_called()
 
     def test_parse_ref_not_found(self):
         data = {"ec": {"word": {}, "$ref": "$.nonexistent"}}
@@ -26,15 +25,15 @@ class TestYoudaoParserBase(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.YoudaoParser.normal_warn_printer"
         ) as mock_warn:
             parser.parse()
-            mock_warn.assert_called_once_with("cannot find main key")
+        mock_warn.assert_called_once_with("cannot find main key")
 
     def test_parse_empty_data(self):
         parser = YoudaoParser("ec", {}, MagicMock())
         result = parser.parse()
-        self.assertFalse(result)
+        assert not result
 
 
-class TestENParser(unittest.TestCase):
+class TestENParser:
     def test_parse_phone(self):
         word_data = {"usphone": "bʊk", "ukphone": "bʊk"}
         parser = ENParser("ec", {"ec": {"word": word_data}}, MagicMock())
@@ -42,7 +41,7 @@ class TestENParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.ENParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone(word_data)
-            mock_print.assert_called_once_with("[美]bʊk [英]bʊk")
+        mock_print.assert_called_once_with("[美]bʊk [英]bʊk")
 
     def test_parse_phone_us_only(self):
         word_data = {"usphone": "bʊk"}
@@ -51,7 +50,7 @@ class TestENParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.ENParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone(word_data)
-            mock_print.assert_called_once_with("[美]bʊk")
+        mock_print.assert_called_once_with("[美]bʊk")
 
     def test_parse_phone_empty(self):
         parser = ENParser("ec", {"ec": {"word": {}}}, MagicMock())
@@ -59,7 +58,7 @@ class TestENParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.ENParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone({})
-            mock_print.assert_not_called()
+        mock_print.assert_not_called()
 
     def test_parse_simple_content_with_trs(self):
         word_data = {
@@ -70,8 +69,8 @@ class TestENParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
         ) as mock_print:
             parser.parse_simple_content(word_data)
-            mock_print.assert_any_call("n. 书，书籍")
-            mock_print.assert_any_call("v. 预订")
+        mock_print.assert_any_call("n. 书，书籍")
+        mock_print.assert_any_call("v. 预订")
 
     def test_parse_simple_content_with_wfs(self):
         word_data = {
@@ -85,10 +84,10 @@ class TestENParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
         ) as mock_print:
             parser.parse_simple_content(word_data)
-            mock_print.assert_any_call("复数: books, 过去式: booked")
+        mock_print.assert_any_call("复数: books, 过去式: booked")
 
 
-class TestECParser(unittest.TestCase):
+class TestECParser:
     def test_parse_detail_content_collins(self):
         data = {
             "ec": {"word": {}},
@@ -132,13 +131,13 @@ class TestECParser(unittest.TestCase):
                 "dict_tiny.translators.YoudaoParser.ENParser.print_equal"
             ) as mock_equal:
                 parser.parse_detail_content()
-                mock_equal.assert_called_once_with("N-COUNT 可数名词")
-                mock_print.assert_any_call("a written work")
-                mock_print.assert_any_call(" 例: This is a book.")
-                mock_print.assert_any_call("     这是一本书。")
+        mock_equal.assert_called_once_with("N-COUNT 可数名词")
+        mock_print.assert_any_call("a written work")
+        mock_print.assert_any_call(" 例: This is a book.")
+        mock_print.assert_any_call("     这是一本书。")
 
 
-class TestCEParser(unittest.TestCase):
+class TestCEParser:
     def test_parse_detail_content_wuguanghua(self):
         data = {
             "ec": {"word": {}},
@@ -169,12 +168,12 @@ class TestCEParser(unittest.TestCase):
                 "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
             ) as mock_info:
                 parser.parse_detail_content()
-                mock_title.assert_any_call("once")
-                mock_info.assert_any_call("  He once lived in Shanghai.")
-                mock_info.assert_any_call("  他曾经在上海住过。")
+        mock_title.assert_any_call("once")
+        mock_info.assert_any_call("  He once lived in Shanghai.")
+        mock_info.assert_any_call("  他曾经在上海住过。")
 
 
-class TestFRParser(unittest.TestCase):
+class TestFRParser:
     def test_parse_phone(self):
         word_data = [{"phone": "bɔ̃ʒu:r"}]
         parser = FRParser("fc", {"fc": {"word": word_data}}, MagicMock())
@@ -182,10 +181,10 @@ class TestFRParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.FRParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone(word_data)
-            mock_print.assert_called_once_with("bɔ̃ʒu:r")
+        mock_print.assert_called_once_with("bɔ̃ʒu:r")
 
 
-class TestJAParser(unittest.TestCase):
+class TestJAParser:
     def test_parse_phone_jc(self):
         word_data = {"head": {"hw": "ほん", "rs": "hon", "pjm": "ほん", "ppjm": "ホン"}}
         from dict_tiny.translators.YoudaoParser.JAParser import JCParser
@@ -195,7 +194,7 @@ class TestJAParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.JAParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone(word_data)
-            mock_print.assert_called_once_with("ほん hon 【平】ほん 【片】ホン")
+        mock_print.assert_called_once_with("ほん hon 【平】ほん 【片】ホン")
 
     def test_parse_phone_cj(self):
         word_data = {"head": {"sound": "つうやく"}}
@@ -206,8 +205,4 @@ class TestJAParser(unittest.TestCase):
             "dict_tiny.translators.YoudaoParser.JAParser.normal_title_printer"
         ) as mock_print:
             parser.parse_phone(word_data)
-            mock_print.assert_called_once_with("つうやく")
-
-
-if __name__ == "__main__":
-    unittest.main()
+        mock_print.assert_called_once_with("つうやく")
