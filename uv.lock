@@ -117,9 +117,13 @@ dependencies = [
     { name = "plumbum" },
     { name = "prompt-toolkit" },
     { name = "pyperclip" },
-    { name = "pytest" },
     { name = "requests" },
     { name = "rich" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
 ]
 
 [package.metadata]
@@ -127,10 +131,11 @@ requires-dist = [
     { name = "plumbum", specifier = ">=1.10.0" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
     { name = "pyperclip", specifier = ">=1.11.0" },
-    { name = "pytest", specifier = ">=9.1.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.1.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "rich", specifier = ">=15.0.0" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "idna"
