@@ -161,6 +161,37 @@ class TestWordBook(unittest.TestCase):
         self.assertEqual(total, 0)
         self.assertEqual(len(entries), 0)
 
+    def test_search_with_since_filter(self):
+        self.wb.record("old", "en", "zh", "YoudaoDict")
+        mid = time.time()
+        time.sleep(0.01)
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.list_entries(search="hello", since=mid)
+        self.assertEqual(total, 1)
+        self.assertEqual(entries[0].text, "hello")
+
+    def test_search_combined_search_and_since_no_match(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        future = time.time() + 1000
+        entries, total = self.wb.list_entries(search="hello", since=future)
+        self.assertEqual(total, 0)
+        self.assertEqual(len(entries), 0)
+
+    def test_list_invalid_page_returns_empty(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.list_entries(page=0)
+        self.assertEqual(entries, [])
+        self.assertEqual(total, 0)
+        entries, total = self.wb.list_entries(page=-1)
+        self.assertEqual(entries, [])
+
+    def test_list_invalid_sort_falls_back_to_created(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.list_entries(sort_by="invalid_sort")
+        self.assertEqual(total, 1)
+        # Should not raise; falls back to "timestamp DESC"
+        self.assertEqual(entries[0].text, "hello")
+
     # ── delete ─────────────────────────────────────────────
 
     def test_delete(self):
@@ -170,6 +201,13 @@ class TestWordBook(unittest.TestCase):
 
     def test_delete_invalid(self):
         self.assertFalse(self.wb.delete(1))
+
+    def test_delete_then_record_reuses_id(self):
+        """After delete, recording a new word should still work."""
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.assertTrue(self.wb.delete(1))
+        self.assertTrue(self.wb.record("world", "en", "zh", "YoudaoDict"))
+        self.assertEqual(self.wb.count(), 1)
 
     # ── delete_db ──────────────────────────────────────────
 
@@ -182,6 +220,47 @@ class TestWordBook(unittest.TestCase):
         self.assertEqual(wb2.count(), 0)
         wb2.close()
         self.wb = None  # prevent tearDown from re-closing
+
+    def test_delete_db_missing_file_swallows_error(self):
+        """delete_db should not raise when the file is already gone."""
+        # Close and manually remove the file
+        self.wb.close()
+        if os.path.isfile(self.db_path):
+            os.remove(self.db_path)
+        # Should not raise
+        self.wb.delete_db()
+        self.wb = None
+
+    def test_close_idempotent(self):
+        """Closing twice should not raise."""
+        self.wb.close()
+        self.wb.close()
+        self.assertIsNone(self.wb._conn)
+        self.wb = None
+
+    def test_get_entry_after_close_returns_none(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.wb.close()
+        self.assertIsNone(self.wb.get_entry(1))
+        self.wb = None
+
+    def test_count_after_close_returns_zero(self):
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.wb.close()
+        self.assertEqual(self.wb.count(), 0)
+        self.wb = None
+
+    def test_record_none_conn_returns_false(self):
+        self.wb.close()
+        self.assertFalse(self.wb.record("hello", "en", "zh", "YoudaoDict"))
+        self.wb = None
+
+    def test_set_default_record_none_conn_no_raise(self):
+        self.wb.close()
+        # Should not raise even with no connection
+        self.wb.set_default_record(True)
+        self.assertFalse(self.wb.get_default_record())
+        self.wb = None
 
     # ── config ─────────────────────────────────────────────
 

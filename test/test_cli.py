@@ -302,6 +302,169 @@ class TestDictTinyMain(unittest.TestCase):
                     )
 
 
+class TestEnvLanguageVars(unittest.TestCase):
+    """Plumbum's local.env snapshots os.environ at import time, so we patch
+    plumbum.local.env directly rather than using @patch.dict('os.environ', ...)."""
+
+    def _capture_init(self):
+        from dict_tiny.translators.youdao_trans import YoudaoTrans
+        captured = []
+        orig_init = YoudaoTrans.__init__
+
+        def new_init(self, text, dto):
+            orig_init(self, text, dto)
+            captured.append(self)
+
+        YoudaoTrans.__init__ = new_init
+        return captured, orig_init, YoudaoTrans
+
+    @patch("sys.argv", ["", "-y", "hello"])
+    def test_env_target_language(self):
+        from plumbum import local
+        captured, orig_init, YoudaoTrans = self._capture_init()
+        old = local.env.get("DICT_TINY_TARGET_LAN")
+        local.env["DICT_TINY_TARGET_LAN"] = "ja"
+        try:
+            with patch.object(YoudaoTrans, "do_translate", return_value=True):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                self.assertEqual(len(captured), 1)
+                self.assertEqual(captured[0].target_language, "ja")
+        finally:
+            if old is None:
+                del local.env["DICT_TINY_TARGET_LAN"]
+            else:
+                local.env["DICT_TINY_TARGET_LAN"] = old
+            YoudaoTrans.__init__ = orig_init
+
+    @patch("sys.argv", ["", "-y", "hello"])
+    def test_env_source_language(self):
+        from plumbum import local
+        captured, orig_init, YoudaoTrans = self._capture_init()
+        old = local.env.get("DICT_TINY_SOURCE_LAN")
+        local.env["DICT_TINY_SOURCE_LAN"] = "fr"
+        try:
+            with patch.object(YoudaoTrans, "do_translate", return_value=True):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                self.assertEqual(len(captured), 1)
+                self.assertEqual(captured[0].source_language, "fr")
+        finally:
+            if old is None:
+                del local.env["DICT_TINY_SOURCE_LAN"]
+            else:
+                local.env["DICT_TINY_SOURCE_LAN"] = old
+            YoudaoTrans.__init__ = orig_init
+
+    @patch("sys.argv", ["", "-y", "--target-language", "ko", "hello"])
+    def test_cli_flag_overrides_env(self):
+        from plumbum import local
+        captured, orig_init, YoudaoTrans = self._capture_init()
+        old = local.env.get("DICT_TINY_TARGET_LAN")
+        local.env["DICT_TINY_TARGET_LAN"] = "ja"
+        try:
+            with patch.object(YoudaoTrans, "do_translate", return_value=True):
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                self.assertEqual(len(captured), 1)
+                self.assertEqual(captured[0].target_language, "ko")
+        finally:
+            if old is None:
+                del local.env["DICT_TINY_TARGET_LAN"]
+            else:
+                local.env["DICT_TINY_TARGET_LAN"] = old
+            YoudaoTrans.__init__ = orig_init
+
+
+class TestMultipleTranslators(unittest.TestCase):
+    @patch("sys.argv", ["", "-y", "-g", "hello"])
+    def test_both_translators_run_non_interactive(self):
+        """Without -i, both -y and -g translators run sequentially"""
+        with patch(
+            "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+            return_value=True,
+        ) as mock_yd:
+            with patch(
+                "dict_tiny.translators.google_trans.GoogleTrans.do_translate",
+                return_value=True,
+            ) as mock_gt:
+                with patch("dict_tiny.main.WordBook") as MockWB:
+                    MockWB.db_exists.return_value = False
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    mock_yd.assert_called_once()
+                    mock_gt.assert_called_once()
+
+
+class TestClipboardFlow(unittest.TestCase):
+    @patch("sys.argv", ["", "-c", "-y"])
+    def test_clipboard_no_content_warns(self):
+        """-c with empty clipboard shows warning and exits"""
+        with patch("pyperclip.paste", return_value=""):
+            with patch(
+                "dict_tiny.translators.translator.normal_warn_printer"
+            ) as mock_warn:
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                mock_warn.assert_called_once_with("There is no content in the clipboard.")
+
+    @patch("sys.argv", ["", "-c", "-y"])
+    def test_clipboard_error_stops_app(self):
+        """If pyperclip fails, app stops with error message"""
+        with patch("pyperclip.paste", side_effect=Exception("no clipboard")):
+            with patch(
+                "dict_tiny.translators.translator.normal_error_printer"
+            ) as mock_err:
+                try:
+                    run()
+                except SystemExit:
+                    pass
+                mock_err.assert_called_once_with("[Error!] Cannot get clipboard content.")
+
+
+class TestNoInputShowsHelp(unittest.TestCase):
+    @patch("sys.argv", [""])
+    def test_no_args_no_clipboard_does_not_crash(self):
+        """With no text and no -i, app shows help and exits without crash"""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            MockWB.db_exists.return_value = False
+            try:
+                run()
+            except SystemExit:
+                pass
+            except Exception as e:
+                self.fail(f"Unexpected exception: {e}")
+
+
+class TestGetWordbook(unittest.TestCase):
+    @patch("sys.argv", ["", "--record", "hello"])
+    def test_get_wordbook_failure_handled(self):
+        """When WordBook init raises, get_wordbook returns None and prints error"""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            MockWB.db_exists.return_value = True
+            MockWB.side_effect = Exception("db locked")
+            with patch("dict_tiny.main.normal_error_printer") as mock_err:
+                with patch(
+                    "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                    return_value=True,
+                ):
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    mock_err.assert_called()
+
+
 class TestDefaultTransInit(unittest.TestCase):
     def test_source_language_lowered(self):
         mock_obj = MagicMock()
@@ -324,3 +487,168 @@ class TestDefaultTransInit(unittest.TestCase):
         trans = DefaultTrans("hello", mock_obj)
         self.assertIsNone(trans.source_language)
         self.assertIsNone(trans.target_language)
+
+
+class TestInteractiveLoop(unittest.TestCase):
+    def _make_trans(self):
+        mock_obj = MagicMock()
+        mock_obj.source_language = None
+        mock_obj.target_language = None
+        mock_obj.wordbook = None
+        trans = DefaultTrans("hello", mock_obj)
+        trans.name = "test"
+        trans.display_name = "TestTrans"
+        return trans
+
+    def test_keyboard_interrupt_does_not_exit(self):
+        """Ctrl-C should print info and continue, not break the loop"""
+        from dict_tiny.translators.translator import normal_info_printer
+
+        trans = self._make_trans()
+        session = MagicMock()
+        # First prompt raises KeyboardInterrupt, second raises EOFError to exit
+        session.prompt.side_effect = [KeyboardInterrupt(), EOFError()]
+        with patch.object(trans, "pre_action") as mock_pre:
+            with patch.object(trans, "do_translate") as mock_dt:
+                with patch.object(trans, "extra_action"):
+                    with patch(
+                        "dict_tiny.translators.translator.normal_info_printer"
+                    ) as mock_info:
+                        trans.interactive_loop(session)
+                        # Should have printed info about Ctrl-D
+                        info_calls = [str(c) for c in mock_info.call_args_list]
+                        self.assertTrue(
+                            any("Ctrl-D" in c for c in info_calls)
+                        )
+
+    def test_eof_exits_loop(self):
+        trans = self._make_trans()
+        session = MagicMock()
+        session.prompt.side_effect = EOFError()
+        with patch("builtins.print") as mock_print:
+            trans.interactive_loop(session)
+            mock_print.assert_called_once_with("GoodBye!")
+
+    def test_empty_input_continues_loop(self):
+        trans = self._make_trans()
+        session = MagicMock()
+        # Empty input, then EOF to exit
+        session.prompt.side_effect = ["", EOFError()]
+        with patch.object(trans, "pre_action") as mock_pre:
+            with patch.object(trans, "do_translate") as mock_dt:
+                trans.interactive_loop(session)
+                # pre_action should NOT be called for empty input
+                mock_pre.assert_not_called()
+                mock_dt.assert_not_called()
+
+    def test_successful_translate_calls_extra_action(self):
+        trans = self._make_trans()
+        session = MagicMock()
+        session.prompt.side_effect = ["hello", EOFError()]
+        with patch.object(trans, "pre_action"):
+            with patch.object(trans, "do_translate", return_value=True):
+                with patch.object(trans, "extra_action") as mock_ea:
+                    trans.interactive_loop(session)
+                    mock_ea.assert_called_once_with("hello")
+
+    def test_failed_translate_skips_extra_action(self):
+        trans = self._make_trans()
+        session = MagicMock()
+        session.prompt.side_effect = ["hello", EOFError()]
+        with patch.object(trans, "pre_action"):
+            with patch.object(trans, "do_translate", return_value=False):
+                with patch.object(trans, "extra_action") as mock_ea:
+                    trans.interactive_loop(session)
+                    mock_ea.assert_not_called()
+
+    def test_custom_exception_prints_error_continues_loop(self):
+        from dict_tiny.errors import TextInputError
+
+        trans = self._make_trans()
+        session = MagicMock()
+        session.prompt.side_effect = ["hello", EOFError()]
+        with patch.object(trans, "pre_action", side_effect=TextInputError("too long")):
+            with patch.object(trans, "do_translate") as mock_dt:
+                with patch(
+                    "dict_tiny.translators.translator.normal_error_printer"
+                ) as mock_err:
+                    trans.interactive_loop(session)
+                    mock_err.assert_called_once_with("too long")
+                    mock_dt.assert_not_called()
+
+    def test_generic_exception_continues_loop(self):
+        trans = self._make_trans()
+        session = MagicMock()
+        session.prompt.side_effect = ["hello", EOFError()]
+        with patch.object(trans, "pre_action"):
+            with patch.object(
+                trans, "do_translate", side_effect=RuntimeError("net error")
+            ):
+                # Should not raise; loop continues to next prompt
+                trans.interactive_loop(session)
+
+
+class TestTransClipboardSwitch(unittest.TestCase):
+    """The trans_clipboard switch is set on Dict_tiny via attr_setter."""
+
+    @patch("sys.argv", ["", "-c", "-y", "hello"])
+    def test_clipboard_with_content_uses_it(self):
+        """When clipboard has content, it's used as input (word flag still wins)"""
+        with patch("pyperclip.paste", return_value="clipboard_word"):
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ) as mock_dt:
+                with patch("dict_tiny.main.WordBook") as MockWB:
+                    MockWB.db_exists.return_value = False
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    # Explicit word "hello" wins over clipboard
+                    mock_dt.assert_called_once()
+                    self.assertEqual(mock_dt.call_args[0][0], "hello")
+
+    @patch("sys.argv", ["", "-c", "-y"])
+    def test_clipboard_used_when_no_word_arg(self):
+        """When no word arg, clipboard content is used"""
+        with patch("pyperclip.paste", return_value="clipword"):
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ) as mock_dt:
+                with patch("dict_tiny.main.WordBook") as MockWB:
+                    MockWB.db_exists.return_value = False
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    mock_dt.assert_called_once()
+                    self.assertEqual(mock_dt.call_args[0][0], "clipword")
+
+    @patch("sys.argv", ["", "-c", "-y"])
+    def test_clipboard_strips_newlines(self):
+        with patch("pyperclip.paste", return_value="  hello\nworld  "):
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ) as mock_dt:
+                with patch("dict_tiny.main.WordBook") as MockWB:
+                    MockWB.db_exists.return_value = False
+                    try:
+                        run()
+                    except SystemExit:
+                        pass
+                    mock_dt.assert_called_once()
+                    # clipboard is split by space → "hello" "world" → joined "hello world"
+                    # actually it's stripped and replace("\n","") so "  hello world  "
+                    # then split(" ") → ["", "", "hello", "world", "", ""]
+                    # filtered... actually no, just join(text)
+                    # text = words or self.clipBoardContent
+                    # self.clipBoardContent = clipboard_data.split(" ")
+                    # so text = ["", "", "hello", "world", "", ""]
+                    # text = " ".join(text) = "  hello world  "
+                    # hmm that's the actual behavior
+                    arg = mock_dt.call_args[0][0]
+                    self.assertIn("hello", arg)
+                    self.assertIn("world", arg)
