@@ -3,25 +3,29 @@ import tempfile
 import time
 from unittest.mock import MagicMock
 
+import pytest
+
 from dict_tiny.config import MAX_ENTRIES
 from dict_tiny.wordbook import WordBook
 
 
 class TestWordBook:
-    def setup_method(self):
-        self.tmpdir = tempfile.mkdtemp()
-        self.db_path = os.path.join(self.tmpdir, "test.db")
-        self.wb = WordBook(self.db_path)
-
-    def teardown_method(self):
-        if self.wb:
-            self.wb.close()
+    @pytest.fixture(autouse=True)
+    def _setup_db(self):
+        tmpdir = tempfile.mkdtemp()
+        db_path = os.path.join(tmpdir, "test.db")
+        wb = WordBook(db_path)
+        self.tmpdir = tmpdir
+        self.db_path = db_path
+        self.wb = wb
+        yield
+        wb.close()
         try:
-            os.remove(self.db_path)
+            os.remove(db_path)
         except OSError:
             pass
         try:
-            os.rmdir(self.tmpdir)
+            os.rmdir(tmpdir)
         except OSError:
             pass
 
@@ -210,43 +214,36 @@ class TestWordBook:
         wb2 = WordBook(self.db_path)
         assert wb2.count() == 0
         wb2.close()
-        self.wb = None
 
     def test_delete_db_missing_file_swallows_error(self):
         self.wb.close()
         if os.path.isfile(self.db_path):
             os.remove(self.db_path)
         self.wb.delete_db()
-        self.wb = None
 
     def test_close_idempotent(self):
         self.wb.close()
         self.wb.close()
         assert self.wb._conn is None
-        self.wb = None
 
     def test_get_entry_after_close_returns_none(self):
         self.wb.record("hello", "en", "zh", "YoudaoDict")
         self.wb.close()
         assert self.wb.get_entry(1) is None
-        self.wb = None
 
     def test_count_after_close_returns_zero(self):
         self.wb.record("hello", "en", "zh", "YoudaoDict")
         self.wb.close()
         assert self.wb.count() == 0
-        self.wb = None
 
     def test_record_none_conn_returns_false(self):
         self.wb.close()
         assert not self.wb.record("hello", "en", "zh", "YoudaoDict")
-        self.wb = None
 
     def test_set_default_record_none_conn_no_raise(self):
         self.wb.close()
         self.wb.set_default_record(True)
         assert not self.wb.get_default_record()
-        self.wb = None
 
     # ── config ─────────────────────────────────────────────
 
@@ -265,7 +262,6 @@ class TestWordBook:
         wb3 = WordBook(self.db_path)
         assert not wb3.get_default_record()
         wb3.close()
-        self.wb = None
 
     # ── db_exists ──────────────────────────────────────────
 

@@ -56,7 +56,8 @@ class TestYoudaoInit:
 
 
 class TestYoudaoDoTranslate:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def _clear_parser_cache(self):
         from dict_tiny.translators.youdao_trans import _PARSER_CACHE
 
         _PARSER_CACHE.clear()
@@ -210,7 +211,8 @@ class TestYoudaoApiDownload:
 
 
 class TestGetParserCls:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def _clear_parser_cache(self):
         from dict_tiny.translators.youdao_trans import _PARSER_CACHE
 
         _PARSER_CACHE.clear()

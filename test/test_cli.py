@@ -31,7 +31,8 @@ class TestCliInit:
 
 
 class TestTextLengthLimit:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def _setup(self):
         self.mock_obj = MagicMock()
         self.mock_obj.source_language = None
         self.mock_obj.target_language = None
@@ -102,7 +103,8 @@ class TestCliIntegration:
 
 
 class TestTranslateErrorHandling:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def _setup(self):
         self.mock_obj = MagicMock()
         self.mock_obj.source_language = None
         self.mock_obj.target_language = None

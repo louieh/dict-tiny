@@ -1,6 +1,8 @@
 from test.util import assert_not_raises
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from dict_tiny.translators.google_trans import GoogleTrans
 
 
@@ -25,7 +27,8 @@ class TestGoogleTransIntegration:
 
 
 class TestGoogleTransUnit:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def setup(self):
         self.mock_obj = MagicMock()
         self.mock_obj.source_language = None
         self.mock_obj.target_language = None
