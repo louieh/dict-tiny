@@ -1,4 +1,3 @@
-from test.util import assert_not_raises
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,22 +7,40 @@ from dict_tiny.translators.google_trans import GoogleTrans
 
 class TestGoogleTransIntegration:
     @patch("sys.argv", ["", "-g", "book"])
-    @assert_not_raises
     def test_translate(self):
-        pass
+        from dict_tiny.main import run
+
+        try:
+            run()
+        except SystemExit:
+            pass
+        except Exception as e:
+            pytest.fail(f"Unexpected exception: {e}")
 
     @patch(
         "sys.argv",
         ["", "-g", "book", "--source-language", "en", "--target-language", "ja"],
     )
-    @assert_not_raises
     def test_translate_with_sou_tar_lang(self):
-        pass
+        from dict_tiny.main import run
+
+        try:
+            run()
+        except SystemExit:
+            pass
+        except Exception as e:
+            pytest.fail(f"Unexpected exception: {e}")
 
     @patch("sys.argv", ["", "-g", "book", "--detect-language"])
-    @assert_not_raises
     def test_detect_language(self):
-        pass
+        from dict_tiny.main import run
+
+        try:
+            run()
+        except SystemExit:
+            pass
+        except Exception as e:
+            pytest.fail(f"Unexpected exception: {e}")
 
 
 class TestGoogleTransUnit:
