@@ -10,7 +10,7 @@ def _entry(**kw):
         id=1,
         text="hello",
         source_language="en",
-        target_language="zh",
+        target_language="ja",
         translator="youdaodict",
         timestamp=1000.0,
         last_access=1001.0,
@@ -21,8 +21,11 @@ def _entry(**kw):
 
 
 class TestWbList:
+    """wb list command tests."""
+
     @patch("sys.argv", ["", "wb", "list"])
     def test_list_empty(self):
+        """Does not crash when wordbook is empty."""
         try:
             run()
         except SystemExit:
@@ -30,6 +33,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--page", "1", "--page-size", "5"])
     def test_list_pagination(self):
+        """Passes page and page_size to list_entries."""
         entries = [_entry(id=i) for i in range(1, 6)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 20)
@@ -41,6 +45,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--sort", "freq"])
     def test_list_sort_freq(self):
+        """Passes sort_by='freq' to list_entries."""
         entries = [_entry(id=1, access_count=5)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -52,6 +57,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--sort", "recent"])
     def test_list_sort_recent(self):
+        """Passes sort_by='recent' to list_entries."""
         entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -63,6 +69,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--sort", "invalid"])
     def test_list_invalid_sort(self):
+        """Does not call list_entries when sort is invalid."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -72,6 +79,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--since", "2024-01-01"])
     def test_list_since(self):
+        """Passes since timestamp to list_entries."""
         entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -86,6 +94,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list", "--since", "not-a-date"])
     def test_list_invalid_since(self):
+        """Does not call list_entries when since is not a valid date."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -95,6 +104,7 @@ class TestWbList:
 
     @patch("sys.argv", ["", "wb", "list"])
     def test_list_open_fails(self):
+        """Does not crash when WordBook.open returns None."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value = None
             try:
@@ -102,10 +112,49 @@ class TestWbList:
             except SystemExit:
                 pass
 
+    @patch("sys.argv", ["", "wb", "list", "--sort", "freq", "--since", "2024-01-01"])
+    def test_list_sort_freq_with_since(self):
+        """Combines sort=freq and since filter correctly."""
+        entries = [_entry(id=1, access_count=5)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            expected_since = datetime(2024, 1, 1).timestamp()
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, "freq", since=expected_since
+            )
+
+    @patch("sys.argv", ["", "wb", "list", "--page", "2", "--page-size", "10"])
+    def test_list_with_pagination_and_default_sort(self):
+        """Combines page/pagination with default sort."""
+        entries = [_entry(id=i) for i in range(1, 11)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 50)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_called_once_with(2, 10, "created")
+
+    @patch("sys.argv", ["", "wb", "list"])
+    def test_list_open_returns_none(self):
+        """Does not crash when WordBook.open returns None (alias)."""
+        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
+            try:
+                run()
+            except SystemExit:
+                pass
+
 
 class TestWbDetail:
+    """wb detail command tests."""
+
     @patch("sys.argv", ["", "wb", "detail", "1"])
     def test_detail_found(self):
+        """Calls get_entry with the given ID."""
         entry = WordBookEntry(
             id=1,
             text="hello",
@@ -126,6 +175,7 @@ class TestWbDetail:
 
     @patch("sys.argv", ["", "wb", "detail", "999"])
     def test_detail_not_found(self):
+        """Handles missing entry gracefully."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = None
             try:
@@ -134,10 +184,22 @@ class TestWbDetail:
                 pass
             mo.return_value.get_entry.assert_called_once_with(999)
 
+    @patch("sys.argv", ["", "wb", "detail", "1"])
+    def test_detail_open_returns_none(self):
+        """Does not crash when WordBook.open returns None."""
+        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
+            try:
+                run()
+            except SystemExit:
+                pass
+
 
 class TestWbDelete:
+    """wb delete command tests."""
+
     @patch("sys.argv", ["", "wb", "delete", "1"])
     def test_delete_ok(self):
+        """Calls delete with the given ID when successful."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.delete.return_value = True
             try:
@@ -148,6 +210,7 @@ class TestWbDelete:
 
     @patch("sys.argv", ["", "wb", "delete", "999"])
     def test_delete_not_found(self):
+        """Handles delete for non-existent entry."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.delete.return_value = False
             try:
@@ -156,10 +219,22 @@ class TestWbDelete:
                 pass
             mo.return_value.delete.assert_called_once_with(999)
 
+    @patch("sys.argv", ["", "wb", "delete", "1"])
+    def test_delete_open_returns_none(self):
+        """Does not crash when WordBook.open returns None."""
+        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
+            try:
+                run()
+            except SystemExit:
+                pass
+
 
 class TestWbSearch:
+    """wb search command tests."""
+
     @patch("sys.argv", ["", "wb", "search", "hello"])
     def test_search_fuzzy(self):
+        """Performs fuzzy search by default."""
         entries = [_entry(id=1), _entry(id=2, text="hello_world")]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 2)
@@ -173,6 +248,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--exact"])
     def test_search_exact(self):
+        """Performs exact search when --exact is given."""
         entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -186,6 +262,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--page", "2", "--page-size", "5"])
     def test_search_pagination(self):
+        """Passes pagination along with search query."""
         entries = [_entry(id=i) for i in range(1, 6)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 50)
@@ -199,6 +276,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "zzz"])
     def test_search_empty(self):
+        """Returns empty results when nothing matches."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = ([], 0)
             try:
@@ -211,6 +289,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello"])
     def test_search_open_fails(self):
+        """Does not crash when WordBook.open returns None."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value = None
             try:
@@ -220,6 +299,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "freq"])
     def test_search_sort_freq(self):
+        """Passes sort_by='freq' along with search query."""
         entries = [_entry(id=1, access_count=5)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -233,6 +313,7 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--since", "2024-01-01"])
     def test_search_since(self):
+        """Passes since filter along with search query."""
         entries = [_entry(id=1)]
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.list_entries.return_value = (entries, 1)
@@ -252,6 +333,49 @@ class TestWbSearch:
 
     @patch("sys.argv", ["", "wb", "search", "hello", "--sort", "invalid"])
     def test_search_invalid_sort(self):
+        """Does not call list_entries when sort is invalid."""
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_not_called()
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--exact", "--sort", "recent"])
+    def test_search_exact_with_sort(self):
+        """Combines exact search with sort_by='recent'."""
+        entries = [_entry(id=1)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="recent", since=None, search="hello", exact=True
+            )
+
+    @patch(
+        "sys.argv",
+        ["", "wb", "search", "hello", "--since", "2024-06-01", "--sort", "freq"],
+    )
+    def test_search_since_with_sort(self):
+        """Combines since filter with sort_by='freq'."""
+        entries = [_entry(id=1)]
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            mo.return_value.list_entries.return_value = (entries, 1)
+            try:
+                run()
+            except SystemExit:
+                pass
+            expected_since = datetime(2024, 6, 1).timestamp()
+            mo.return_value.list_entries.assert_called_once_with(
+                1, 20, sort_by="freq", since=expected_since, search="hello", exact=False
+            )
+
+    @patch("sys.argv", ["", "wb", "search", "hello", "--since", "not-a-date"])
+    def test_search_invalid_since_no_list_call(self):
+        """Does not call list_entries when since is invalid."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -261,8 +385,11 @@ class TestWbSearch:
 
 
 class TestWbConfig:
+    """wb config command tests."""
+
     @patch("sys.argv", ["", "wb", "config"])
     def test_config_show(self):
+        """Prints current config without crashing."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_config.return_value = {
                 "count": 5,
@@ -276,6 +403,7 @@ class TestWbConfig:
 
     @patch("sys.argv", ["", "wb", "config", "--record", "on"])
     def test_config_record_on(self):
+        """Sets default_record to True."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -285,6 +413,7 @@ class TestWbConfig:
 
     @patch("sys.argv", ["", "wb", "config", "--record", "off"])
     def test_config_record_off(self):
+        """Sets default_record to False."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -294,6 +423,7 @@ class TestWbConfig:
 
     @patch("sys.argv", ["", "wb", "config", "--record", "invalid"])
     def test_config_record_invalid(self):
+        """Does not change config when --record value is invalid."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             try:
                 run()
@@ -301,11 +431,33 @@ class TestWbConfig:
                 pass
             mo.return_value.set_default_record.assert_not_called()
 
+    @patch("sys.argv", ["", "wb", "config"])
+    def test_config_open_returns_none(self):
+        """Does not crash when WordBook.open returns None."""
+        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
+            try:
+                run()
+            except SystemExit:
+                pass
+
+    @patch("sys.argv", ["", "wb", "config", "--record", "ON"])
+    def test_config_record_case_insensitive(self):
+        """Accepts case-insensitive 'on'/'off' values."""
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            try:
+                run()
+            except SystemExit:
+                pass
+            mo.return_value.set_default_record.assert_called_once_with(True)
+
 
 class TestWbDbDelete:
+    """wb db-delete command tests."""
+
     @patch("sys.argv", ["", "wb", "db-delete"])
     @patch("builtins.input", return_value="y")
     def test_db_delete(self, mock_input):
+        """Deletes database when user confirms with 'y'."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mock_wb = MagicMock()
             mock_wb._path = "/fake/path"
@@ -320,6 +472,7 @@ class TestWbDbDelete:
     @patch("sys.argv", ["", "wb", "db-delete"])
     @patch("builtins.input", return_value="n")
     def test_db_delete_cancelled(self, mock_input):
+        """Does not delete when user cancels with 'n'."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mock_wb = MagicMock()
             mock_wb._path = "/fake/path"
@@ -334,6 +487,7 @@ class TestWbDbDelete:
     @patch("sys.argv", ["", "wb", "db-delete"])
     @patch("builtins.input", return_value="yes")
     def test_db_delete_yes_accepts_yes(self, mock_input):
+        """Also accepts 'yes' as confirmation."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mock_wb = MagicMock()
             mock_wb._path = "/fake/path"
@@ -347,6 +501,7 @@ class TestWbDbDelete:
 
     @patch("sys.argv", ["", "wb", "db-delete"])
     def test_db_delete_no_db_early_exit(self):
+        """Exits early when database does not exist."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mock_wb = MagicMock()
             mo.return_value = mock_wb
@@ -360,6 +515,7 @@ class TestWbDbDelete:
 
     @patch("sys.argv", ["", "wb", "db-delete"])
     def test_db_delete_open_returns_none(self):
+        """Does not crash when WordBook.open returns None."""
         with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
             with patch("dict_tiny.wordbook.WordBook.db_exists", return_value=True):
                 try:
@@ -368,58 +524,12 @@ class TestWbDbDelete:
                     pass
 
 
-class TestWbListCombo:
-    @patch("sys.argv", ["", "wb", "list", "--sort", "freq", "--since", "2024-01-01"])
-    def test_list_sort_freq_with_since(self):
-        entries = [_entry(id=1, access_count=5)]
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.list_entries.return_value = (entries, 1)
-            try:
-                run()
-            except SystemExit:
-                pass
-            expected_since = datetime(2024, 1, 1).timestamp()
-            mo.return_value.list_entries.assert_called_once_with(
-                1, 20, "freq", since=expected_since
-            )
-
-    @patch("sys.argv", ["", "wb", "list", "--page", "2", "--page-size", "10"])
-    def test_list_with_pagination_and_default_sort(self):
-        entries = [_entry(id=i) for i in range(1, 11)]
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.list_entries.return_value = (entries, 50)
-            try:
-                run()
-            except SystemExit:
-                pass
-            mo.return_value.list_entries.assert_called_once_with(2, 10, "created")
-
-    @patch("sys.argv", ["", "wb", "list"])
-    def test_list_open_returns_none(self):
-        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
-            try:
-                run()
-            except SystemExit:
-                pass
-
-
 class TestWbQuery:
-    def _make_entry(self, **kw):
-        defaults = dict(
-            id=1,
-            text="hello",
-            source_language="en",
-            target_language="ja",
-            translator="youdaodict",
-            timestamp=1000000.0,
-            last_access=1000001.0,
-            access_count=2,
-        )
-        defaults.update(kw)
-        return WordBookEntry(**defaults)
+    """wb query command tests."""
 
     @patch("sys.argv", ["", "wb", "query", "1"])
     def test_query_not_found(self):
+        """Handles missing entry."""
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = None
             try:
@@ -430,7 +540,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "--no-record", "wb", "query", "1"])
     def test_query_no_record_flag(self):
-        entry = self._make_entry()
+        """Does not record when --no-record is set."""
+        entry = _entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -445,7 +556,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "--record", "wb", "query", "1"])
     def test_query_record_flag(self):
-        entry = self._make_entry()
+        """Records translation when --record is set."""
+        entry = _entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -460,7 +572,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "wb", "query", "1"])
     def test_query_uses_stored_translator(self):
-        entry = self._make_entry()
+        """Uses the translator stored in the entry."""
+        entry = _entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -475,7 +588,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "-g", "wb", "query", "1"])
     def test_query_google_override(self):
-        entry = self._make_entry(translator="youdaodict")
+        """Overrides stored translator with -g flag."""
+        entry = _entry(translator="youdaodict")
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -494,7 +608,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "--record", "wb", "query", "1"])
     def test_query_translation_fails_no_record(self):
-        entry = self._make_entry()
+        """Does not record when translation fails."""
+        entry = _entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -509,6 +624,7 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "wb", "query", "1"])
     def test_query_open_returns_none(self):
+        """Does not crash when WordBook.open returns None."""
         with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
             try:
                 run()
@@ -517,7 +633,8 @@ class TestWbQuery:
 
     @patch("sys.argv", ["", "wb", "query", "1"])
     def test_query_translator_init_error_no_record(self):
-        entry = self._make_entry()
+        """Does not record when translator raises an exception."""
+        entry = _entry()
         with patch("dict_tiny.wordbook.WordBook.open") as mo:
             mo.return_value.get_entry.return_value = entry
             with patch(
@@ -529,83 +646,3 @@ class TestWbQuery:
                 except SystemExit:
                     pass
                 mo.return_value.record.assert_not_called()
-
-
-class TestWbDetailEdgeCases:
-    @patch("sys.argv", ["", "wb", "detail", "1"])
-    def test_detail_open_returns_none(self):
-        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
-            try:
-                run()
-            except SystemExit:
-                pass
-
-
-class TestWbDeleteEdgeCases:
-    @patch("sys.argv", ["", "wb", "delete", "1"])
-    def test_delete_open_returns_none(self):
-        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
-            try:
-                run()
-            except SystemExit:
-                pass
-
-
-class TestWbSearchCombo:
-    @patch("sys.argv", ["", "wb", "search", "hello", "--exact", "--sort", "recent"])
-    def test_search_exact_with_sort(self):
-        entries = [_entry(id=1)]
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.list_entries.return_value = (entries, 1)
-            try:
-                run()
-            except SystemExit:
-                pass
-            mo.return_value.list_entries.assert_called_once_with(
-                1, 20, sort_by="recent", since=None, search="hello", exact=True
-            )
-
-    @patch(
-        "sys.argv",
-        ["", "wb", "search", "hello", "--since", "2024-06-01", "--sort", "freq"],
-    )
-    def test_search_since_with_sort(self):
-        entries = [_entry(id=1)]
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            mo.return_value.list_entries.return_value = (entries, 1)
-            try:
-                run()
-            except SystemExit:
-                pass
-            expected_since = datetime(2024, 6, 1).timestamp()
-            mo.return_value.list_entries.assert_called_once_with(
-                1, 20, sort_by="freq", since=expected_since, search="hello", exact=False
-            )
-
-    @patch("sys.argv", ["", "wb", "search", "hello", "--since", "not-a-date"])
-    def test_search_invalid_since_no_list_call(self):
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            try:
-                run()
-            except SystemExit:
-                pass
-            mo.return_value.list_entries.assert_not_called()
-
-
-class TestWbConfigEdgeCases:
-    @patch("sys.argv", ["", "wb", "config"])
-    def test_config_open_returns_none(self):
-        with patch("dict_tiny.wordbook.WordBook.open", return_value=None):
-            try:
-                run()
-            except SystemExit:
-                pass
-
-    @patch("sys.argv", ["", "wb", "config", "--record", "ON"])
-    def test_config_record_case_insensitive(self):
-        with patch("dict_tiny.wordbook.WordBook.open") as mo:
-            try:
-                run()
-            except SystemExit:
-                pass
-            mo.return_value.set_default_record.assert_called_once_with(True)
