@@ -40,10 +40,12 @@ class TestYoudaoParserBase:
         assert not result
 
 
-class TestENParser:
-    """ENParser (English parser) phone and simple content parsing."""
+class TestEnglishParsers:
+    """ENParser/ECParser/CEParser English-related parser tests."""
 
-    def test_parse_phone(self):
+    # ── ENParser phone ──────────────────────────────────────
+
+    def test_en_parser_parse_phone(self):
         """Displays both US and UK phonetics."""
         word_data = {"usphone": "bʊk", "ukphone": "bʊk"}
         parser = ENParser("ec", {"ec": {"word": word_data}}, MagicMock())
@@ -53,7 +55,7 @@ class TestENParser:
             parser.parse_phone(word_data)
         mock_print.assert_called_once_with("[美]bʊk [英]bʊk")
 
-    def test_parse_phone_us_only(self):
+    def test_en_parser_parse_phone_us_only(self):
         """Displays only US phonetics when UK is missing."""
         word_data = {"usphone": "bʊk"}
         parser = ENParser("ec", {"ec": {"word": word_data}}, MagicMock())
@@ -63,7 +65,7 @@ class TestENParser:
             parser.parse_phone(word_data)
         mock_print.assert_called_once_with("[美]bʊk")
 
-    def test_parse_phone_empty(self):
+    def test_en_parser_parse_phone_empty(self):
         """Does not print when phone data is empty."""
         parser = ENParser("ec", {"ec": {"word": {}}}, MagicMock())
         with patch(
@@ -72,7 +74,9 @@ class TestENParser:
             parser.parse_phone({})
         mock_print.assert_not_called()
 
-    def test_parse_simple_content_with_trs(self):
+    # ── ENParser simple content ─────────────────────────────
+
+    def test_en_parser_parse_simple_content_with_trs(self):
         """Prints translations (trs) with part-of-speech labels."""
         word_data = {
             "trs": [{"pos": "n.", "tran": "书，书籍"}, {"pos": "v.", "tran": "预订"}]
@@ -85,7 +89,7 @@ class TestENParser:
         mock_print.assert_any_call("n. 书，书籍")
         mock_print.assert_any_call("v. 预订")
 
-    def test_parse_simple_content_with_wfs(self):
+    def test_en_parser_parse_simple_content_with_wfs(self):
         """Prints word forms (wfs) like plural and past tense."""
         word_data = {
             "wfs": [
@@ -100,11 +104,9 @@ class TestENParser:
             parser.parse_simple_content(word_data)
         mock_print.assert_any_call("复数: books, 过去式: booked")
 
+    # ── ECParser detail content ─────────────────────────────
 
-class TestECParser:
-    """ECParser (English-Chinese) detail content parsing (Collins)."""
-
-    def test_parse_detail_content_collins(self):
+    def test_ec_parser_parse_detail_content_collins(self):
         """Parses Collins dictionary entries with POS, translation, and example sentences."""
         data = {
             "ec": {"word": {}},
@@ -153,11 +155,9 @@ class TestECParser:
         mock_print.assert_any_call(" 例: This is a book.")
         mock_print.assert_any_call("     这是一本书。")
 
+    # ── CEParser detail content ─────────────────────────────
 
-class TestCEParser:
-    """CEParser (Chinese-English) detail content parsing (Wuguanghua)."""
-
-    def test_parse_detail_content_wuguanghua(self):
+    def test_ce_parser_parse_detail_content_wuguanghua(self):
         """Parses Wuguanghua dictionary entries with translations and example sentences."""
         data = {
             "ec": {"word": {}},
@@ -193,8 +193,8 @@ class TestCEParser:
         mock_info.assert_any_call("  他曾经在上海住过。")
 
 
-class TestFRParser:
-    """FRParser (French) phone and simple content parsing."""
+class TestFrenchParser:
+    """FRParser French parser tests."""
 
     def test_parse_phone(self):
         """Displays French phonetic notation."""
@@ -264,8 +264,8 @@ class TestFRParser:
         mock_print.assert_any_call("  这是一本书。")
 
 
-class TestJAParser:
-    """JAParser (Japanese) phone and simple content parsing for JC (Jp-Ch) and CJ (Ch-Jp) modes."""
+class TestJapaneseParser:
+    """JAParser (Japanese) phone and simple content parsing for JC/CJ modes."""
 
     def test_parse_phone_jc(self):
         """Displays Japanese reading with hiragana, romaji, and katakana."""
@@ -340,8 +340,8 @@ class TestJAParser:
         mock_print.assert_any_call("こんにちは")
 
 
-class TestKOParser:
-    """KOParser (Korean) phone, simple content, and detail content parsing for KC (Ko-Ch) and CK (Ch-Ko) modes."""
+class TestKoreanParser:
+    """KOParser Korean phone/simple/detail content for KC (Ko-Ch) and CK (Ch-Ko) modes."""
 
     def test_parse_phone(self):
         """Displays Korean phonetic notation."""

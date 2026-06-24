@@ -6,6 +6,8 @@ from pathlib import Path
 from dict_tiny.config import (
     BACKOFF_FACTOR,
     DEFAULT_LE,
+    DEFAULT_TERMINAL_SIZE_COLUMN,
+    EIGHT_EQUAL_FORMAT_THRESHOLD,
     RETRY,
     TIMEOUT,
     ISO639LCodes,
@@ -18,7 +20,7 @@ def get_terminal_size_column():
     try:
         return os.get_terminal_size().columns
     except Exception:
-        return 20
+        return DEFAULT_TERMINAL_SIZE_COLUMN
 
 
 class Downloader:
@@ -154,7 +156,7 @@ def print_equal(string):
     """
 
     equal_length = get_terminal_size_column() - len(string) - get_cn_length(string) - 2
-    if equal_length >= 16:  # 8 equal each side
+    if equal_length >= EIGHT_EQUAL_FORMAT_THRESHOLD:  # 8 equal each side
         normal_title_printer("======== %s ========" % string)
     elif equal_length <= 1:
         normal_title_printer(string)
