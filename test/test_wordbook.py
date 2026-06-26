@@ -29,6 +29,12 @@ class TestWordBook:
 
     # ── record ────────────────────────────────────────────
 
+    def test_record_none_language(self):
+        """Accepts None for source/target language."""
+        assert self.wb.record("hello", None, "zh", "YoudaoDict")
+        assert self.wb.record("world", "en", None, "YoudaoDict")
+        assert self.wb.record("foo", None, None, "YoudaoDict")
+
     def test_record_new(self):
         """Records a new entry successfully."""
         result = self.wb.record("hello", "en", "zh", "YoudaoDict")
@@ -174,6 +180,13 @@ class TestWordBook:
         assert total == 0
         assert len(entries) == 0
 
+    def test_search_empty_string(self):
+        """Returns all entries when search string is empty."""
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.wb.record("world", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.list_entries(search="")
+        assert total == 2
+
     def test_search_with_since_filter(self):
         """Combines search query with since filter."""
         self.wb.record("old", "en", "zh", "YoudaoDict")
@@ -201,6 +214,21 @@ class TestWordBook:
         entries, total = self.wb.list_entries(page=-1)
         assert entries == []
 
+    def test_list_page_beyond_total(self):
+        """Returns empty list when page exceeds available data."""
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        entries, total = self.wb.list_entries(page=999)
+        assert entries == []
+        assert total == 1
+
+    def test_list_after_close(self):
+        """Returns empty results when listing after close."""
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.wb.close()
+        entries, total = self.wb.list_entries()
+        assert entries == []
+        assert total == 0
+
     def test_list_invalid_sort_falls_back_to_created(self):
         """Falls back to created sort for unknown sort_by value."""
         self.wb.record("hello", "en", "zh", "YoudaoDict")
@@ -218,6 +246,12 @@ class TestWordBook:
 
     def test_delete_invalid(self):
         """Returns False when deleting non-existent entry."""
+        assert not self.wb.delete(1)
+
+    def test_delete_after_close(self):
+        """Returns False when deleting after close."""
+        self.wb.record("hello", "en", "zh", "YoudaoDict")
+        self.wb.close()
         assert not self.wb.delete(1)
 
     def test_delete_then_record_reuses_id(self):
@@ -295,6 +329,12 @@ class TestWordBook:
         self._wordbooks.append(wb3)
         assert not wb3.get_default_record()
         wb3.close()
+
+    def test_get_config_after_close(self):
+        """Returns default values when getting config after close."""
+        self.wb.close()
+        config = self.wb.get_config()
+        assert config == {"count": 0, "default_record": False}
 
     # ── db_exists ──────────────────────────────────────────
 
