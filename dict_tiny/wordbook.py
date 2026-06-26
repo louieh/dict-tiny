@@ -9,6 +9,19 @@ from dict_tiny.util import get_data_dir
 
 @dataclass
 class WordBookEntry:
+    """A single wordbook entry record.
+
+    Attributes:
+        id: Unique identifier (primary key).
+        text: The queried word or phrase.
+        source_language: Language of the source text.
+        target_language: Language to translate into.
+        translator: Translator backend used (e.g. "youdaodict").
+        timestamp: Creation time as Unix timestamp.
+        last_access: Most recent access time as Unix timestamp.
+        access_count: Number of times this entry has been accessed.
+    """
+
     id: int
     text: str
     source_language: str | None
@@ -20,7 +33,19 @@ class WordBookEntry:
 
 
 class WordBook:
+    """Persistent word book backed by a SQLite database.
+
+    Stores translation query records with access tracking, configurable
+    maximum capacity, and automatic eviction of least-recently-used entries.
+    """
+
     def __init__(self, path=None):
+        """Initialize the wordbook database connection.
+
+        Args:
+            path: Database file path. Defaults to ``<data_dir>/wordbook.db``.
+                  The parent directory is created if it does not exist.
+        """
         if path is None:
             path = str(get_data_dir() / "wordbook.db")
         self._path = path
@@ -47,11 +72,20 @@ class WordBook:
 
     @classmethod
     def db_exists(cls, path=None):
+        """Check whether the wordbook database file exists on disk.
+
+        Args:
+            path: Database file path. Defaults to ``<data_dir>/wordbook.db``.
+
+        Returns:
+            True if the file exists, False otherwise.
+        """
         if path is None:
             path = str(get_data_dir() / "wordbook.db")
         return os.path.isfile(path)
 
     def _init_db(self):
+        """Create tables and indexes if they do not already exist."""
         self._conn.executescript("""
             CREATE TABLE IF NOT EXISTS entries (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,6 +112,22 @@ class WordBook:
     # ── core CRUD ──────────────────────────────────────────────
 
     def record(self, text, source_language, target_language, translator):
+        """Record or update a translation query.
+
+        If the entry limit (``MAX_ENTRIES``) is reached, the least-recently-
+        accessed entry is evicted before inserting the new one.  If the text
+        already exists its timestamp and access count are updated in place.
+
+        Args:
+            text: The queried word or phrase.
+            source_language: Language of the source text.
+            target_language: Language to translate into.
+            translator: Translator backend identifier.
+
+        Returns:
+            True on success, False if the database is unavailable or an error
+            occurs.
+        """
         if not self._conn:
             return False
         try:
@@ -86,9 +136,7 @@ class WordBook:
                 "SELECT id FROM entries WHERE text = ?", (text,)
             ).fetchone()
             if existing is None:
-                count = self._conn.execute(
-                    "SELECT COUNT(*) FROM entries"
-                ).fetchone()[0]
+                count = self._conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
                 if count >= MAX_ENTRIES:
                     self._conn.execute(
                         "DELETE FROM entries WHERE id = ("
@@ -112,6 +160,15 @@ class WordBook:
             return False
 
     def get_entry(self, entry_id):
+        """Retrieve a single entry by its ID.
+
+        Args:
+            entry_id: The entry's primary key.
+
+        Returns:
+            A :class:`WordBookEntry` if found, or None if the entry does not
+            exist, the ID is invalid, or the database is unavailable.
+        """
         if not self._conn or entry_id < 1:
             return None
         try:
@@ -128,6 +185,15 @@ class WordBook:
             return None
 
     def delete(self, entry_id):
+        """Delete an entry by its ID.
+
+        Args:
+            entry_id: The entry's primary key.
+
+        Returns:
+            True if a row was deleted, False otherwise (including when the
+            entry does not exist or the database is unavailable).
+        """
         if not self._conn:
             return False
         try:
@@ -148,6 +214,27 @@ class WordBook:
         search=None,
         exact=False,
     ):
+        """List entries with pagination, sorting, and filtering.
+
+        Args:
+            page: Page number (1-based).
+            page_size: Number of entries per page.
+            sort_by: Sort order. One of ``"created"``, ``"freq"``, or
+                     ``"recent"``. Falls back to ``"created"`` for unknown
+                     values.
+            since: Optional Unix timestamp; only entries created at or after
+                   this time are included.
+            search: Optional search string. Performs a fuzzy ``LIKE`` match
+                    unless ``exact`` is True.
+            exact: When True, ``search`` performs an exact match instead of
+                   fuzzy.
+
+        Returns:
+            A tuple ``(entries, total)`` where ``entries`` is a list of
+            :class:`WordBookEntry` objects for the requested page, and
+            ``total`` is the total number of matching entries across all pages.
+            Returns ``([], 0)`` on error or when the database is unavailable.
+        """
         if not self._conn or page < 1:
             return [], 0
         sort_map = {
@@ -185,6 +272,11 @@ class WordBook:
             return [], 0
 
     def count(self):
+        """Return the total number of entries in the wordbook.
+
+        Returns:
+            Entry count, or 0 if the database is unavailable.
+        """
         if not self._conn:
             return 0
         try:
@@ -195,10 +287,22 @@ class WordBook:
     # ── config ─────────────────────────────────────────────────
 
     def get_config(self):
+        """Return a summary dict with the current entry count and default
+        recording preference.
+
+        Returns:
+            A dict with keys ``"count"`` and ``"default_record"``.
+        """
         count = self.count()
         return {"count": count, "default_record": self.get_default_record()}
 
     def get_default_record(self):
+        """Return whether the ``--record`` flag is enabled by default.
+
+        Returns:
+            True if default recording is on, False otherwise (also returned
+            when the database is unavailable or the config row is missing).
+        """
         if not self._conn:
             return False
         try:
@@ -210,6 +314,11 @@ class WordBook:
             return False
 
     def set_default_record(self, on):
+        """Persist the default recording preference.
+
+        Args:
+            on: True to enable default recording, False to disable.
+        """
         if not self._conn:
             return
         try:
@@ -224,6 +333,7 @@ class WordBook:
     # ── lifecycle ──────────────────────────────────────────────
 
     def delete_db(self):
+        """Close the connection and remove the database file from disk."""
         self.close()
         try:
             os.remove(self._path)
@@ -231,6 +341,7 @@ class WordBook:
             pass
 
     def close(self):
+        """Close the database connection if it is open."""
         if self._conn:
             try:
                 self._conn.close()
