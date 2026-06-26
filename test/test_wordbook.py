@@ -271,7 +271,6 @@ class TestWordBook:
         wb2 = WordBook(self.db_path)
         self._wordbooks.append(wb2)
         assert wb2.count() == 0
-        wb2.close()
 
     def test_delete_db_missing_file_swallows_error(self):
         """Does not raise when database file is already missing."""
@@ -319,16 +318,13 @@ class TestWordBook:
         config = self.wb.get_config()
         assert config["default_record"]
 
-        self.wb.close()
         wb2 = WordBook(self.db_path)
         self._wordbooks.append(wb2)
         assert wb2.get_default_record()
         wb2.set_default_record(False)
-        wb2.close()
         wb3 = WordBook(self.db_path)
         self._wordbooks.append(wb3)
         assert not wb3.get_default_record()
-        wb3.close()
 
     def test_get_config_after_close(self):
         """Returns default values when getting config after close."""
@@ -370,6 +366,7 @@ class TestWordBookExtraAction:
         mock_wb = MagicMock()
         mock_dt = MagicMock()
         mock_dt.wordbook = mock_wb
+        mock_dt.should_record = True
         mock_dt.source_language = "en"
         mock_dt.target_language = "zh"
         mock_dt.detect_language = False
@@ -381,6 +378,21 @@ class TestWordBookExtraAction:
         trans.extra_action("hello")
 
         mock_wb.record.assert_called_once_with("hello", "en", "zh", "YoudaoDict")
+
+    def test_extra_action_skipped_when_should_record_false(self):
+        """Does not record when should_record is False."""
+        mock_wb = MagicMock()
+        mock_dt = MagicMock()
+        mock_dt.wordbook = mock_wb
+        mock_dt.should_record = False
+
+        from dict_tiny.translators.translator import DefaultTrans
+
+        trans = DefaultTrans("hello", mock_dt)
+        trans.name = "YoudaoDict"
+        trans.extra_action("hello")
+
+        mock_wb.record.assert_not_called()
 
 
 class TestWordBookOpen:
