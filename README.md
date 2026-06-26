@@ -511,6 +511,20 @@ Word book database deleted.
 
 Command-line flags override environment variables.
 
+## Uninstall
+
+Before uninstalling, you may want to delete the word book database:
+
+```bash
+$ dict-tiny wb db-delete
+```
+
+Then uninstall the package:
+
+```bash
+$ pip uninstall dict-tiny
+```
+
 ## License
 
 [MIT](https://github.com/louieh/dict-tiny/blob/master/LICENSE)
