@@ -99,8 +99,9 @@ class DefaultTrans(object):
         raise NotImplementedError
 
     def extra_action(self, text):
-        wb = self.dict_tiny_obj.wordbook
-        if wb:
+        if not self.dict_tiny_obj.should_record:
+            return
+        if wb := self.dict_tiny_obj.wordbook:
             wb.record(text, self.source_language, self.target_language, self.name)
 
     def pre_action(self, text):
