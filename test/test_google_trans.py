@@ -64,6 +64,24 @@ class TestGoogleTransUnit:
             result = self.trans.do_translate("hello")
         assert result
 
+    def test_do_translate_with_source_language(self):
+        """Prints 'source language' when source_language is explicitly set."""
+        self.mock_obj.source_language = "en"
+        trans = GoogleTrans("hello", self.mock_obj)
+        resp = MagicMock()
+        resp.json.return_value = {
+            "code": 200,
+            "data": {"translatedText": "你好", "detectedSourceLanguage": "en"},
+        }
+        with patch("dict_tiny.translators.google_trans.downloader") as mock_dl:
+            mock_dl.post.return_value = resp
+            with patch(
+                "dict_tiny.translators.google_trans.normal_info_printer"
+            ) as mock_print:
+                result = trans.do_translate("hello")
+        assert result
+        mock_print.assert_any_call("source language: en")
+
     # ── detect_language ──────────────────────────────────────
 
     def test_detect_language_empty_response(self):

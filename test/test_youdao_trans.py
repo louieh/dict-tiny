@@ -280,3 +280,76 @@ class TestYoudaoDoTranslate:
                 trans.do_translate("book")
                 args, kwargs = MockParser.call_args
                 assert args[3] is True  # print_detail
+
+    # ── Multi-language le mapping ────────────────────────────
+
+    def _make_multi_lang_trans(self, source, target):
+        mock_obj = MagicMock()
+        mock_obj.source_language = source
+        mock_obj.target_language = target
+        mock_obj.more_detail = False
+        return YoudaoTrans("book", mock_obj)
+
+    @pytest.mark.parametrize(
+        "source,target,expected_le",
+        [
+            ("fr", None, "fr"),
+            (None, "fr", "fr"),
+            ("ja", None, "ja"),
+            (None, "ja", "ja"),
+            ("ko", None, "ko"),
+            (None, "ko", "ko"),
+        ],
+    )
+    def test_multi_lang_le(self, source, target, expected_le):
+        """Maps fr/ja/ko to correct le parameter for API."""
+        trans = self._make_multi_lang_trans(source, target)
+        assert trans.trans_le == expected_le
+
+    def test_french_source_uses_fc_parser(self):
+        """French source (fr→zh) dispatches to FCParser."""
+        trans = self._make_trans(source="fr")
+        resp = {
+            "meta": {"guessLanguage": "fr", "le": "fr", "dicts": {"fc": {"word": {}}}}
+        }
+        with patch.object(YoudaoTrans, "youdao_api_download", return_value=resp):
+            with patch(
+                "dict_tiny.translators.YoudaoParser.FRParser.FCParser"
+            ) as MockParser:
+                MockParser.return_value.parse.return_value = True
+                result = trans.do_translate("bonjour")
+        assert result
+        args, _ = MockParser.call_args
+        assert args[0] == "fc"
+
+    def test_japanese_target_uses_cj_parser(self):
+        """Chinese source (from guessLanguage) dispatches to CJParser with le='ja'."""
+        trans = self._make_trans()
+        resp = {
+            "meta": {"guessLanguage": "zh", "le": "ja", "dicts": {"cj": {"word": {}}}}
+        }
+        with patch.object(YoudaoTrans, "youdao_api_download", return_value=resp):
+            with patch(
+                "dict_tiny.translators.YoudaoParser.JAParser.CJParser"
+            ) as MockParser:
+                MockParser.return_value.parse.return_value = True
+                result = trans.do_translate("书")
+        assert result
+        args, _ = MockParser.call_args
+        assert args[0] == "cj"
+
+    def test_korean_source_uses_kc_parser(self):
+        """Korean source (ko→zh) dispatches to KCParser."""
+        trans = self._make_trans(source="ko")
+        resp = {
+            "meta": {"guessLanguage": "ko", "le": "ko", "dicts": {"kc": {"word": {}}}}
+        }
+        with patch.object(YoudaoTrans, "youdao_api_download", return_value=resp):
+            with patch(
+                "dict_tiny.translators.YoudaoParser.KOParser.KCParser"
+            ) as MockParser:
+                MockParser.return_value.parse.return_value = True
+                result = trans.do_translate("책")
+        assert result
+        args, _ = MockParser.call_args
+        assert args[0] == "kc"
