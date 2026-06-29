@@ -33,6 +33,32 @@ class TestYoudaoParserBase:
             parser.parse()
         mock_warn.assert_called_once_with("cannot find main key")
 
+    def test_parse_web_trans_fallback(self):
+        """Falls back to web_trans when word data is empty and no $ref exists."""
+        data = {
+            "ec": {"word": {}, "web_trans": ["书", "书籍", "预定"]},
+        }
+        parser = YoudaoParser("ec", data, MagicMock())
+        with patch(
+            "dict_tiny.translators.YoudaoParser.YoudaoParser.normal_info_printer"
+        ) as mock_info:
+            result = parser.parse()
+        assert result
+        mock_info.assert_called_once_with("书, 书籍, 预定")
+
+    def test_parse_web_trans_single_item(self):
+        """Prints single web_trans item correctly."""
+        data = {
+            "ec": {"word": {}, "web_trans": ["hello"]},
+        }
+        parser = YoudaoParser("ec", data, MagicMock())
+        with patch(
+            "dict_tiny.translators.YoudaoParser.YoudaoParser.normal_info_printer"
+        ) as mock_info:
+            result = parser.parse()
+        assert result
+        mock_info.assert_called_once_with("hello")
+
     def test_parse_empty_data(self):
         """Returns False when dict data is empty."""
         parser = YoudaoParser("ec", {}, MagicMock())
@@ -191,6 +217,119 @@ class TestEnglishParsers:
         mock_title.assert_any_call("once")
         mock_info.assert_any_call("  He once lived in Shanghai.")
         mock_info.assert_any_call("  他曾经在上海住过。")
+
+    def test_ce_parser_parse_detail_content_newhh(self):
+        """Parses Newhh (新世纪汉英词典) entries with word, pinyin, cat, note, and examples."""
+        data = {
+            "ec": {"word": {}},
+            "newhh": {
+                "source": {"name": "新世纪汉英大词典"},
+                "dataList": [
+                    {
+                        "word": "曾经",
+                        "pinyin": "céngjīng",
+                        "cat": "adv.",
+                        "note": "表示从前有过某种行为或情况",
+                        "sense": [
+                            {
+                                "def": ["once; formerly"],
+                                "examples": [
+                                    "他<em>曾经</em>在上海住过。",
+                                    "她<em>曾经</em>来过这里。",
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            },
+        }
+        parser = CEParser("ec", data, MagicMock())
+        with patch(
+            "dict_tiny.translators.YoudaoParser.ENParser.normal_title_printer"
+        ) as mock_title:
+            with patch(
+                "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
+            ) as mock_info:
+                parser.parse_detail_content()
+        mock_title.assert_called_once_with("曾经 [céngjīng] (adv.)")
+        mock_info.assert_any_call("表示从前有过某种行为或情况")
+        mock_info.assert_any_call("once; formerly")
+        mock_info.assert_any_call("  例: 他曾经在上海住过。")
+        mock_info.assert_any_call("  例: 她曾经来过这里。")
+
+    def test_ce_parser_parse_detail_content_newhh_no_note(self):
+        """Parses Newhh entry without the optional note field."""
+        data = {
+            "ec": {"word": {}},
+            "newhh": {
+                "source": {"name": "新世纪汉英大词典"},
+                "dataList": [
+                    {
+                        "word": "书",
+                        "pinyin": "shū",
+                        "cat": "n.",
+                        "sense": [
+                            {
+                                "def": ["book"],
+                                "examples": [],
+                            }
+                        ],
+                    }
+                ],
+            },
+        }
+        parser = CEParser("ec", data, MagicMock())
+        with patch(
+            "dict_tiny.translators.YoudaoParser.ENParser.normal_title_printer"
+        ) as mock_title:
+            with patch(
+                "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
+            ) as mock_info:
+                parser.parse_detail_content()
+        mock_title.assert_called_once_with("书 [shū] (n.)")
+        mock_info.assert_any_call("book")
+        # note should not be printed when absent
+        for call in mock_info.call_args_list:
+            assert "表示" not in str(call)
+
+    def test_ce_parser_parse_detail_content_newhh_multiple_senses(self):
+        """Parses Newhh entry with multiple sense groups."""
+        data = {
+            "ec": {"word": {}},
+            "newhh": {
+                "source": {"name": "新世纪汉英大词典"},
+                "dataList": [
+                    {
+                        "word": "打",
+                        "pinyin": "dǎ",
+                        "cat": "v.",
+                        "sense": [
+                            {
+                                "def": ["strike; hit; knock"],
+                                "examples": ["<em>打</em>门 knock at the door"],
+                            },
+                            {
+                                "def": ["play"],
+                                "examples": [
+                                    "<em>打</em>篮球 play basketball",
+                                    "<em>打</em>牌 play cards",
+                                ],
+                            },
+                        ],
+                    }
+                ],
+            },
+        }
+        parser = CEParser("ec", data, MagicMock())
+        with patch(
+            "dict_tiny.translators.YoudaoParser.ENParser.normal_info_printer"
+        ) as mock_info:
+            parser.parse_detail_content()
+        mock_info.assert_any_call("strike; hit; knock")
+        mock_info.assert_any_call("  例: 打门 knock at the door")
+        mock_info.assert_any_call("play")
+        mock_info.assert_any_call("  例: 打篮球 play basketball")
+        mock_info.assert_any_call("  例: 打牌 play cards")
 
 
 class TestFrenchParser:

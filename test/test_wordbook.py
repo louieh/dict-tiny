@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from dict_tiny.config import MAX_ENTRIES
 from dict_tiny.wordbook import WordBook
 
 
@@ -50,16 +49,17 @@ class TestWordBook:
         assert entry.access_count == 2
         assert entry.translator == "GoogleTranslate"
 
-    def test_record_eviction(self):
+    def test_record_eviction(self, monkeypatch):
         """Evicts least recently accessed entry when at MAX_ENTRIES."""
-        for i in range(MAX_ENTRIES):
+        monkeypatch.setattr("dict_tiny.wordbook.MAX_ENTRIES", 5)
+        for i in range(5):
             self.wb.record(f"word{i}", "en", "zh", "YoudaoDict")
-        assert self.wb.count() == MAX_ENTRIES
+        assert self.wb.count() == 5
 
         self.wb.record("overflow", "en", "zh", "YoudaoDict")
-        assert self.wb.count() == MAX_ENTRIES
+        assert self.wb.count() == 5
 
-        entries, _ = self.wb.list_entries(page=1, page_size=MAX_ENTRIES)
+        entries, _ = self.wb.list_entries(page=1, page_size=5)
         texts = {e.text for e in entries}
         assert "overflow" in texts
         assert "word0" not in texts
