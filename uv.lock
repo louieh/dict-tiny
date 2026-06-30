@@ -111,7 +111,7 @@ wheels = [
 
 [[package]]
 name = "dict-tiny"
-version = "2.1.0rc2"
+version = "2.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "plumbum" },
