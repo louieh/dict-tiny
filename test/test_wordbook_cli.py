@@ -265,6 +265,16 @@ class TestWbSearch:
             run_cli()
             mo.return_value.list_entries.assert_not_called()
 
+    @patch("sys.argv", ["", "wb", "search", "hello"])
+    def test_search_with_results_renders_table(self):
+        """When entries are found, renders table with caption and prints."""
+        with patch("dict_tiny.wordbook.WordBook.open") as mo:
+            entry = _entry(id=1, text="hello", timestamp=1000.0)
+            mo.return_value.list_entries.return_value = ([entry], 1)
+            with patch("dict_tiny.wordbook_cli.console") as mock_console:
+                run_cli()
+                mock_console.print.assert_called_once()
+
 
 class TestWbConfig:
     """wb config command tests."""

@@ -439,3 +439,114 @@ class TestInteractiveLoop:
                 with patch("builtins.print") as mock_print:
                     trans.interactive_loop(session)
                     mock_print.assert_any_call("GoodBye!")
+
+
+# ── Interactive: get_prompt_session & interactive ──────────
+
+
+class TestGetPromptSession:
+    """get_prompt_session() and interactive() entry point."""
+
+    def test_get_prompt_session_creates_session(self):
+        """get_prompt_session returns a PromptSession with completer."""
+        trans = make_trans()
+        with patch("prompt_toolkit.PromptSession") as MockPS:
+            with patch("dict_tiny.translators.translator.normal_separator_printer"):
+                with patch("dict_tiny.translators.translator.normal_info_printer"):
+                    with patch("dict_tiny.completer.YoudaoCompleter"):
+                        trans.get_prompt_session()
+                        MockPS.assert_called_once()
+                        _, kwargs = MockPS.call_args
+                        assert "completer" in kwargs
+                        assert kwargs["complete_while_typing"] is False
+                        assert kwargs["complete_in_thread"] is True
+
+    def test_get_prompt_session_parses_le(self):
+        """get_prompt_session uses parse_le for completer language."""
+        trans = make_trans(source_language="en", target_language="ja")
+        with patch("dict_tiny.completer.YoudaoCompleter") as MockComp:
+            with patch("dict_tiny.translators.translator.normal_separator_printer"):
+                with patch("dict_tiny.translators.translator.normal_info_printer"):
+                    with patch("prompt_toolkit.PromptSession"):
+                        trans.get_prompt_session()
+                        MockComp.assert_called_once_with("en")
+
+    def test_interactive_calls_get_prompt_session_and_loop(self):
+        """interactive() calls get_prompt_session then interactive_loop."""
+        trans = make_trans()
+        mock_session = MagicMock()
+        with patch.object(
+            trans, "get_prompt_session", return_value=mock_session
+        ) as mock_gps:
+            with patch.object(trans, "interactive_loop") as mock_loop:
+                trans.interactive()
+                mock_gps.assert_called_once()
+                mock_loop.assert_called_once_with(mock_session)
+
+
+# ── CLI: translator init exceptions ────────────────────────
+
+
+class TestTranslatorInitErrors:
+    """Exception handling during translator initialization in main()."""
+
+    @patch("sys.argv", ["", "hello"])
+    def test_custom_exception_on_translator_init(self):
+        """CustomException during translator init prints error and returns."""
+        from dict_tiny.errors import CustomException
+
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.google_trans.GoogleTrans.trans_obj_getter",
+                side_effect=CustomException("bad param"),
+            ):
+                with patch("dict_tiny.main.normal_error_printer") as mock_err:
+                    run_cli()
+                    mock_err.assert_called_once_with("bad param")
+
+    @patch("sys.argv", ["", "hello"])
+    def test_generic_exception_on_translator_init(self):
+        """Generic Exception during translator init prints error and returns."""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.google_trans.GoogleTrans.trans_obj_getter",
+                side_effect=RuntimeError("init failed"),
+            ):
+                with patch("dict_tiny.main.normal_error_printer") as mock_err:
+                    run_cli()
+                    error_msg = mock_err.call_args[0][0]
+                    assert "init failed" in error_msg
+
+    @patch("sys.argv", ["", "-i", "--record", "hello"])
+    def test_interactive_mode_closes_wordbook(self):
+        """In interactive mode, wordbook is closed after the loop."""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            mock_wb = MagicMock()
+            MockWB.return_value = mock_wb
+            MockWB.db_exists.return_value = False
+            with patch(
+                "dict_tiny.translators.youdao_trans.YoudaoTrans.do_translate",
+                return_value=True,
+            ):
+                run_cli()
+                mock_wb.close.assert_called()
+
+
+# ── CLI: subcommand path ───────────────────────────────────
+
+
+class TestSubcommandPath:
+    """main() behavior when nested_command is set."""
+
+    @patch("sys.argv", ["", "wb", "list"])
+    def test_nested_command_closes_wordbook_and_returns(self):
+        """When nested_command is set, wordbook is closed and main returns early."""
+        with patch("dict_tiny.main.WordBook") as MockWB:
+            mock_wb = MagicMock()
+            MockWB.return_value = mock_wb
+            MockWB.db_exists.return_value = True
+            with patch.object(mock_wb, "get_default_record", return_value=True):
+                run_cli()
+                mock_wb.close.assert_called_once()
