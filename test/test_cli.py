@@ -1,9 +1,7 @@
-from test.helpers import run_cli
+from test.helpers import make_trans, run_cli
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from dict_tiny.config import MAX_TEXT_LENGTH, ISO639LCodes
+from dict_tiny.config import ISO639LCodes
 from dict_tiny.errors import TextInputError
 from dict_tiny.translators import _ALL_TRANSLATORS
 from dict_tiny.translators.translator import DefaultTrans
@@ -57,173 +55,6 @@ class TestCliInit:
         trans = DefaultTrans("hello", mock_obj)
         assert trans.source_language is None
         assert trans.target_language is None
-
-
-# ── Text Validation ────────────────────────────────────────
-
-
-class TestTextLengthLimit:
-    """pre_action text length validation (shared across all translators)."""
-
-    @pytest.fixture(autouse=True)
-    def _setup(self):
-        self.mock_obj = MagicMock()
-        self.mock_obj.source_language = None
-        self.mock_obj.target_language = None
-
-    def test_normal_text_passes(self):
-        trans = DefaultTrans("hello", self.mock_obj)
-        trans.pre_action("hello")
-
-    def test_exact_limit_passes(self):
-        text = "a" * MAX_TEXT_LENGTH
-        trans = DefaultTrans(text, self.mock_obj)
-        trans.pre_action(text)
-
-    def test_oversized_text_raises(self):
-        text = "a" * (MAX_TEXT_LENGTH + 1)
-        trans = DefaultTrans(text, self.mock_obj)
-        with pytest.raises(TextInputError):
-            trans.pre_action(text)
-
-    def test_chinese_oversized_text_raises(self):
-        text = "中" * (MAX_TEXT_LENGTH + 1)
-        trans = DefaultTrans(text, self.mock_obj)
-        with pytest.raises(TextInputError):
-            trans.pre_action(text)
-
-
-# ── Translator Methods ─────────────────────────────────────
-
-
-class TestTranslateErrorHandling:
-    """translate(), extra_action, trans_obj_getter, and print helpers."""
-
-    @pytest.fixture(autouse=True)
-    def _setup(self):
-        self.mock_obj = MagicMock()
-        self.mock_obj.source_language = None
-        self.mock_obj.target_language = None
-        self.mock_obj.wordbook = None
-        self.mock_obj.more_detail = False
-
-    def _make_trans(self, text="hello"):
-        trans = DefaultTrans(text, self.mock_obj)
-        trans.name = "test"
-        trans.display_name = "TestTrans"
-        return trans
-
-    # ── translate() ────────────────────────────────────────
-
-    def test_translate_returns_false_on_custom_exception(self):
-        trans = self._make_trans()
-        with patch.object(
-            trans, "do_translate", side_effect=TextInputError("too long")
-        ):
-            result = trans.translate()
-        assert not result
-
-    def test_translate_returns_false_on_not_implemented(self):
-        trans = self._make_trans()
-        with patch.object(trans, "do_translate", side_effect=NotImplementedError):
-            result = trans.translate()
-        assert not result
-
-    def test_translate_returns_false_on_generic_exception(self):
-        trans = self._make_trans()
-        with patch.object(
-            trans, "do_translate", side_effect=RuntimeError("network error")
-        ):
-            result = trans.translate()
-        assert not result
-
-    def test_translate_skips_extra_action_on_false(self):
-        """When do_translate returns False, extra_action is not called."""
-        trans = self._make_trans()
-        with patch.object(trans, "do_translate", return_value=False):
-            with patch.object(trans, "extra_action") as mock_ea:
-                result = trans.translate()
-        assert not result
-        mock_ea.assert_not_called()
-
-    def test_translate_calls_extra_action_on_true(self):
-        """When do_translate returns True, extra_action is called with the text."""
-        trans = self._make_trans()
-        with patch.object(trans, "do_translate", return_value=True):
-            with patch.object(trans, "extra_action") as mock_ea:
-                result = trans.translate()
-        assert result
-        mock_ea.assert_called_once_with("hello")
-
-    # ── extra_action() ─────────────────────────────────────
-
-    def test_extra_action_no_wordbook(self):
-        """extra_action does not crash when wordbook is None."""
-        self.mock_obj.wordbook = None
-        trans = self._make_trans()
-        trans.extra_action("hello")
-
-    def test_extra_action_with_wordbook_records(self):
-        """extra_action records to wordbook when available."""
-        mock_wb = MagicMock()
-        self.mock_obj.wordbook = mock_wb
-        trans = self._make_trans()
-        trans.extra_action("hello")
-        mock_wb.record.assert_called_once_with("hello", None, None, "test")
-
-    # ── trans_obj_getter() ─────────────────────────────────
-
-    def test_trans_obj_getter_returns_none_without_flag(self):
-        """Without the use_<name> flag, trans_obj_getter returns None."""
-
-        class MockNoFlag:
-            source_language = None
-            target_language = None
-
-        trans_cls = type("FakeTrans", (DefaultTrans,), {"name": "faketrans"})
-        result = trans_cls.trans_obj_getter("hello", MockNoFlag())
-        assert result is None
-
-    def test_trans_obj_getter_returns_instance_with_flag(self):
-        """With the use_<name> flag, trans_obj_getter returns a translator instance."""
-        mock_cls = MagicMock()
-        mock_cls.source_language = None
-        mock_cls.target_language = None
-        setattr(mock_cls, "use_testtrans", True)
-
-        class TestTrans(DefaultTrans):
-            name = "testtrans"
-            display_name = "TestTrans"
-
-        result = TestTrans.trans_obj_getter("hello", mock_cls)
-        assert result is not None
-        assert isinstance(result, TestTrans)
-
-    # ── Output helpers ─────────────────────────────────────
-
-    def test_print_separator_and_input_no_error(self):
-        """print_separator and print_input do not raise."""
-        trans = self._make_trans()
-        with patch("dict_tiny.translators.translator.normal_separator_printer"):
-            with patch("dict_tiny.translators.translator.normal_title_printer"):
-                with patch(
-                    "dict_tiny.translators.translator.get_terminal_size_column",
-                    return_value=80,
-                ):
-                    trans.print_separator()
-                    trans.print_input("hello")
-
-    def test_print_input_truncated_when_longer_than_terminal(self):
-        """print_input truncates the separator line when text exceeds terminal width."""
-        trans = self._make_trans()
-        with patch("dict_tiny.translators.translator.normal_title_printer") as mock_p:
-            with patch(
-                "dict_tiny.translators.translator.get_terminal_size_column",
-                return_value=20,
-            ):
-                trans.print_input("A" * 50)
-                called_arg = mock_p.call_args[0][0]
-                assert len(called_arg) <= 20
 
 
 # ── CLI: Wordbook Recording ────────────────────────────────
@@ -525,19 +356,9 @@ class TestNoInputShowsHelp:
 class TestInteractiveLoop:
     """Interactive mode (-i) prompt loop behavior."""
 
-    def _make_trans(self):
-        mock_obj = MagicMock()
-        mock_obj.source_language = None
-        mock_obj.target_language = None
-        mock_obj.wordbook = None
-        trans = DefaultTrans("hello", mock_obj)
-        trans.name = "test"
-        trans.display_name = "TestTrans"
-        return trans
-
     def test_keyboard_interrupt_does_not_exit(self):
         """Ctrl-C prints info and continues, does not break the loop."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = [KeyboardInterrupt(), EOFError()]
         with patch.object(trans, "pre_action"):
@@ -552,7 +373,7 @@ class TestInteractiveLoop:
 
     def test_eof_exits_loop(self):
         """Ctrl-D (EOF) exits the loop and prints GoodBye."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = EOFError()
         with patch("builtins.print") as mock_print:
@@ -561,7 +382,7 @@ class TestInteractiveLoop:
 
     def test_empty_input_continues_loop(self):
         """Empty input skips translate and continues the loop."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = ["", EOFError()]
         with patch.object(trans, "pre_action") as mock_pre:
@@ -572,7 +393,7 @@ class TestInteractiveLoop:
 
     def test_successful_translate_calls_extra_action(self):
         """After successful translate, extra_action is called."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = ["hello", EOFError()]
         with patch.object(trans, "pre_action"):
@@ -583,7 +404,7 @@ class TestInteractiveLoop:
 
     def test_failed_translate_skips_extra_action(self):
         """When translate returns False, extra_action is not called."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = ["hello", EOFError()]
         with patch.object(trans, "pre_action"):
@@ -594,7 +415,7 @@ class TestInteractiveLoop:
 
     def test_custom_exception_prints_error_continues_loop(self):
         """CustomException prints the error and continues the loop."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = ["hello", EOFError()]
         with patch.object(trans, "pre_action", side_effect=TextInputError("too long")):
@@ -608,7 +429,7 @@ class TestInteractiveLoop:
 
     def test_generic_exception_continues_loop(self):
         """Generic exceptions (e.g. RuntimeError) are caught silently, loop continues."""
-        trans = self._make_trans()
+        trans = make_trans()
         session = MagicMock()
         session.prompt.side_effect = ["hello", EOFError()]
         with patch.object(trans, "pre_action"):
@@ -618,18 +439,3 @@ class TestInteractiveLoop:
                 with patch("builtins.print") as mock_print:
                     trans.interactive_loop(session)
                     mock_print.assert_any_call("GoodBye!")
-
-
-# ── Integration Tests ──────────────────────────────────────
-
-
-class TestCliIntegration:
-    """Smoke tests that call real APIs (no mocking)."""
-
-    @patch("sys.argv", ["", "-y", "book"])
-    def test_cli_youdao_translate(self):
-        run_cli()
-
-    @patch("sys.argv", ["", "-y", "book", "--target-language", "ja"])
-    def test_cli_youdao_japanese(self):
-        run_cli()

@@ -34,6 +34,11 @@ Home = "https://github.com/louieh/dict-tiny"
 [tool.setuptools.packages.find]
 include = ["dict_tiny*"]
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: mark test as integration test (calls real APIs, skipped in CI)",
+]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
