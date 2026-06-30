@@ -3,70 +3,56 @@ from html import unescape
 from plumbum import cli
 
 from dict_tiny.config import (
-    GOOGLE_TRANS_API_BASE_URL,
+    GOOGLE_DISPLAY,
     GOOGLE_NAME,
-    ISO639LCodes,
+    GOOGLE_TRANS_API_BASE_URL,
     GOOGLE_TRANS_API_HEADER,
-    MAX_TEXT_LENGTH,
 )
-from dict_tiny.errors import TextInputError
 from dict_tiny.translators.translator import DefaultTrans
 from dict_tiny.util import (
     downloader,
-    normal_info_printer,
-    is_alphabet,
     normal_error_printer,
+    normal_info_printer,
 )
 
 
 class GoogleTrans(DefaultTrans):
+    name = GOOGLE_NAME
+    display_name = GOOGLE_DISPLAY
 
     def __init__(self, text, dict_tiny_obj):
         super().__init__(text, dict_tiny_obj)
-        self.name = GOOGLE_NAME
 
     @classmethod
     def attr_setter(cls, dict_tiny_cls):
         super().attr_setter(dict_tiny_cls)
-        dict_tiny_cls.use_googletrans = cli.Flag(
-            ["-g", "--google"], group=GOOGLE_NAME, help="Use Google Translate"
+        setattr(
+            dict_tiny_cls,
+            f"use_{cls.name}",
+            cli.Flag(
+                ["-g", "--google"],
+                group=cls.display_name,
+                help="Use Google Translate",
+            ),
         )
+
+        # Why Flag instead of SwitchAttr? If "--detect-language" took a string
+        # argument, only the first word would be consumed — the rest would leak
+        # into positional args. Using Flag + the full *words text is correct for
+        # multi-word input.
         dict_tiny_cls.detect_language = cli.Flag(
             "--detect-language",
-            group=GOOGLE_NAME,
+            group=cls.display_name,
             help="Detect the language of the given text",
         )
-        # TODO
-        # @cli.switch("--detect-language", str)
-        # def detect_language(self, text):
-        #     """
-        #     Detect the language of the given text.
-        #     """
-        #     self.stop = True
-        #     detect_language(text)
-        #
-        # dict_tiny_cls.detect_language = detect_language
 
     def pre_action(self, text):
-        if len(text) > MAX_TEXT_LENGTH:
-            raise TextInputError("The entered text is too long")
-        # exchange Chinese and English
-        source_guess = (
-            ISO639LCodes.English.value
-            if is_alphabet(text) == ISO639LCodes.English.value
-            else ISO639LCodes.Chinese.value
-        )
-        if not self.target_language or self.target_language == source_guess:
-            self.target_language = (
-                ISO639LCodes.Chinese.value
-                if source_guess == ISO639LCodes.English.value
-                else ISO639LCodes.English.value
-            )
+        super().pre_action(text)
 
     def do_translate(self, text):
         if self.dict_tiny_obj.detect_language:
             self.detect_language(text)
-            return
+            return False
 
         data = {"text": text}
         if self.target_language:
@@ -80,15 +66,15 @@ class GoogleTrans(DefaultTrans):
             headers=GOOGLE_TRANS_API_HEADER,
         )
         if not resp:
-            return
+            return False
         try:
             resp_json = resp.json()
         except Exception as e:
             normal_error_printer(f"resp.json error，resp: {resp.text}")
-            return
+            return False
         if resp_json["code"] != 200:
             normal_error_printer(resp_json["msg"])
-            return
+            return False
         res = {"output": unescape(resp_json["data"]["translatedText"])}
         if not self.source_language:
             res.update(
@@ -98,6 +84,7 @@ class GoogleTrans(DefaultTrans):
             res.update({"source language": self.source_language})
         for k, v in res.items():
             normal_info_printer("{}: {}".format(k, v))
+        return True
 
     def detect_language(self, text):
         """
@@ -112,14 +99,15 @@ class GoogleTrans(DefaultTrans):
             headers=GOOGLE_TRANS_API_HEADER,
         )
         if not resp:
-            return
+            return False
         try:
             resp_json = resp.json()
         except Exception as e:
             normal_error_printer(f"resp.json error，resp: {resp.text}")
-            return
+            return False
         if resp_json["code"] != 200:
             normal_error_printer(resp_json["msg"])
-            return
+            return False
         for k, v in resp_json["data"].items():
             normal_info_printer("{}: {}".format(k, v))
+        return True

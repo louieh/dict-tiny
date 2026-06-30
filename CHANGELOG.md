@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.1.0] - 2026-06-02
+
+### Added
+
+- Add word book to record and query translation history.
+- New `wb` subcommand with `list`, `detail`, `query`, `delete`, `search`, `config`, `db-delete` subcommands.
+- Add `--record` / `--no-record` flags to control word book recording.
+
 ## [2.0.0] - 2026-05-22
 
 ### Removed

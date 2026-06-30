@@ -6,66 +6,87 @@ A command-line tool that integrates Youdao Dict and Google Translate.
 
 Just for fun :)
 
-## Features
-
-- Youdao dictionary
-- Google Translate
-- Interactive mode with word auto-completion
+- **Youdao Dict** — bilingual dictionary with phonetic symbols, definitions, examples
+- **Google Translate** — multi-language translation and language detection
+- **Interactive mode** — continuous querying with tab auto-completion
+- **Word book** — records and queries translation history
 
 </br>
+
 <p align="left"><img src="./assets/demo_2_0_0.gif" alt="demo_2_0_0" width="65%" height="65%" /></p>
 
-## Installing
+## Installation
 
-Install with `pip`. (Python >= 3.11)
+Requires Python >= 3.11.
 
 ```bash
 $ pip install dict-tiny
 ```
 
-## Upgrading
+To upgrade:
 
 ```bash
 $ pip install --upgrade dict-tiny
 ```
 
-## Options
+## Quick start
+
+```bash
+# Youdao Dict (default)
+$ dict-tiny book
+```
+
+```bash
+# Google Translate, auto-detect source
+$ dict-tiny -g book
+```
+
+```bash
+# Interactive mode with tab completion
+$ dict-tiny -y -i
+```
+
+## Usage
+
+### Options
 
 ```bash
 $ dict-tiny
 
 Usage:
-    dict-tiny [SWITCHES] words...
+    dict-tiny [SWITCHES] [SUBCOMMAND [SWITCHES]] words...
 
 GoogleTranslate:
-    --detect-language                   Detect the language of the given text
-    -g, --google                        Use Google Translate
+    --detect-language                      Detect the language of the given text
+    -g, --google                           Use Google Translate
 
 Meta-switches:
-    -h, --help                          Prints this help message and quits
-    --help-all                          Prints help messages of all sub-commands and quits
-    -v, --version                       Prints the program's version and quits
+    -h, --help                             Prints this help message and quits
+    --help-all                             Prints help messages of all sub-commands and quits
+    -v, --version                          Prints the program's version and quits
 
 Switches:
     -c, --clipboard                        Use the contents of the clipboard.
     -i, --interactive                      Interactive mode
+    --no-record                            Skip recording this query
+    --record                               Record query to word book
     --sl, --source-language VALUE:str      Source language (YoudaoDict only supports en/fr/ja/ko)
     --tl, --target-language VALUE:str      Target language (YoudaoDict only supports en/fr/ja/ko)
 
 YoudaoDict:
     -m, --more                             Get more details
     -y, --youdao                           Use Youdao Dictionary to translate
-```
 
-## Details and examples
+Sub-commands:
+    wb                                     see 'dict-tiny wb --help' for more info
+```
 
 ### Youdao Dict
 
-Add `-y` / `--youdao` to use Youdao Dict:
+Youdao is the default translator. It supports Chinese↔English, Chinese↔French,
+Chinese↔Japanese, and Chinese↔Korean. The default is Chinese↔English.
 
-Youdao only supports Chinese↔English, Chinese↔French, Chinese↔Japanese, and Chinese↔Korean translation. The default is Chinese↔English.
-
-`--source-language` / `--target-language` only accept the following codes:
+Language codes:
 
 | Code | Language |
 | ---- | -------- |
@@ -76,8 +97,11 @@ Youdao only supports Chinese↔English, Chinese↔French, Chinese↔Japanese, an
 
 Chinese is the implicit counterpart — no need to specify `zh`. For example, Chinese↔Japanese requires `--target-language ja` or `--source-language ja`.
 
+<details>
+<summary>English query</summary>
+
 ```bash
-$ dict-tiny -y book
+$ dict-tiny book
 
 >>> YoudaoDict <<<
 book
@@ -89,6 +113,11 @@ v. 预订，预约；（警方）将……记录在案；（裁判）记名警�
  【名】 （Book）（英）布克，（瑞典）博克，（朝）北（人名）
 复数: books, 第三人称单数: books, 现在分词: booking, 过去式: booked, 过去分词: booked
 ```
+
+</details>
+
+<details>
+<summary>Chinese query</summary>
 
 ```bash
 $ dict-tiny -y 书
@@ -105,48 +134,16 @@ write
 写作，编写；写道；写信；书写，写字；谱写（音乐作品）；编写（计算机程序）；将（计算机中的）数据写入（磁盘或其他储存媒体）；填写（表格、支票等），拟定；（笔）能写字；拼写；<加，南非>参加（笔试）；书写，手写（与铅印相对）；以写作为生；承保（保险单）；
 
 letter
-信，信函；字母；<美>（缝制在运动服上的）校运动队首字母标志；<英，非正式>（代表学位或职位等资格的）首字母缩略词（letters）；文学；法律文书，正 式文书（letters）；字面确切含义；（印刷）一种铅字字体；<古> 学识，渊博的学问；用字母标注；把字母印刷（或缝制等）于；<美>赢得学校运动队的字母标志；【名】 （Letter）（美、英、巴西）莱特（人名）；
+信，信函；字母；<美>（缝制在运动服上的）校运动队首字母标志；<英，非正式>（代表学位或职位等资格的）首字母缩略词（letters）；文学；法律文书，正式文书（letters）；字面确切含义；（印刷）一种铅字字体；<古> 学识，渊博的学问；用字母标注；把字母印刷（或缝制等）于；<美>赢得学校运动队的字母标志；【名】 （Letter）（美、英、巴西）莱特（人名）；
 
 script
-剧本，讲稿；笔迹，手写体；连写体，草体；字体；（一种语言的）字母系统，字母表；<英>（考生的）笔试答卷； 脚本（程序）（计算机的一系列指令）；<非正式>（医生的）处方；期待，计划；写剧本，写讲稿；事先准备，计划；
-
+剧本，讲稿；笔迹，手写体；连写体，草体；字体；（一种语言的）字母系统，字母表；<英>（考生的）笔试答卷；脚本（程序）（计算机的一系列指令）；<非正式>（医生的）处方；期待，计划；写剧本，写讲稿；事先准备，计划；
 ```
 
-Use `-m` / `--more` to get more detailed translations for the word:
+</details>
 
-```bash
-$ dict-tiny -y 曾经 -m
-
->>> YoudaoDict <<<
-曾经
-====
-céng jīng
-
-once
-一次， 一回；曾经，一度；任何一次，从来；乘以一；一.....就， 一旦；一次；
-
-ever
-曾经，从来，在任何时候；一直，始终；越来越，愈发；究竟，到底；非常，确实；【名】 （Ever）（英）埃弗，（俄）叶韦尔，（西、法）埃韦尔（人名）；
-
-
-📖 《吴光华汉英大辞典》:
-once
-  He once lived in Shanghai.
-  他曾经在上海住过。
-  She has taken part in a major battle for oil.
-  她曾经参加过石油大会战。
-  I have seen him before.
-  我曾经见到过他。
-
-
-📖 《现代汉语规范词典》:
-曾经 [céngjīng] (副词)
-参见1557页“已经”的提示。
-
-表示从前有过某种动作、行为或情况
-  例: 她曾经跳过芭蕾舞
-  例: 他十年前曾经去过日本。
-```
+<details>
+<summary>More detail with -m</summary>
 
 ```bash
 $ dict-tiny -y dictionary -m
@@ -168,9 +165,13 @@ A dictionary is a book in which the words and phrases of a language are listed a
      …一本西班牙语—英语词典。
 ```
 
-Specify `--target-language` to translate to other languages.
+</details>
+
+<details>
+<summary>Specify target / source language</summary>
 
 ```bash
+# Translate to Japanese
 $ dict-tiny -y 进击的巨人 --target-language ja
 
 >>> YoudaoDict <<<
@@ -182,6 +183,7 @@ jinjidejuren
 ```
 
 ```bash
+# French source
 $ dict-tiny -y Bonjour --source-language fr
 
 >>> YoudaoDict <<<
@@ -194,17 +196,29 @@ bɔ̃ʒu:r
 ```
 
 ```bash
-$ dict-tiny -y go는 구글이 만든 오픈 소스 프로그래밍 언어이다 --sl ko
+# Korean source
+$ dict-tiny -y "go는 구글이 만든 오픈 소스 프로그래밍 언어이다" --sl ko
 
 >>> YoudaoDict <<<
 go는 구글이 만든 오픈 소스 프로그래밍 언어이다
 =============================
-go是谷歌开发的开源程序设计语言
+go는 谷歌开发的开源程序设计语言
 ```
+
+</details>
 
 ### Google Translate
 
-Add `-g` / `--google` to use Google Translate:
+Add `-g` / `--google` to use Google Translate. Supports all [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) languages.
+
+`--source-language` specifies the source language of the input text. In most cases
+this is optional, as the Google Translate API automatically detects the source
+language. If you specify the wrong source language, the translation result may not
+be what you expect.
+
+The default target language is English. Use `--target-language` to change it, or
+set `DICT_TINY_TARGET_LAN` environment variable (command-line flag overrides
+environment variable).
 
 ```bash
 $ dict-tiny -g book
@@ -216,7 +230,8 @@ output: 书
 detected language: en
 ```
 
-Add `--target-language` to specify the language to translate results into：
+<details>
+<summary>Specify target / source language</summary>
 
 ```bash
 $ dict-tiny -g operation system --target-language ja
@@ -228,11 +243,32 @@ output: オペレーションシステム
 detected language: en
 ```
 
-Add `--source-language` to specify the source language of the input text. In most cases this is optional, as the Google Translate API automatically detects the source language.
+You can use ISO codes or full language names:
 
-If you specify the wrong source language, the translation result may not be what you expect.
+```bash
+$ dict-tiny -g book --target-language zh --source-language en
 
-Use `--detect-language` to detect the language type instead:
+>>> GoogleTranslate <<<
+book
+======
+output: 书
+source language: en
+```
+
+```bash
+$ dict-tiny -g book --target-language German --source-language English
+
+>>> GoogleTranslate <<<
+book
+======
+output: Buch
+source language: english
+```
+
+</details>
+
+<details>
+<summary>Detect language</summary>
 
 ```bash
 $ dict-tiny -g --detect-language español
@@ -246,108 +282,248 @@ language: es
 name: Spanish
 ```
 
-**Note:**
+**Note:** `--detect-language` must be used together with `-g`.
 
-- Make sure Google services are available in your network environment.
-
-- The source and target languages for Google Translate are identified using the [iso-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) codes.
-
-  ```bash
-  $ dict-tiny -g book --target-language zh --source-language en
-
-  >>> GoogleTranslate <<<
-  book
-  ======
-  output: 书
-  source language: en
-  ```
-
-  You can also enter the ISO language name:
-
-  ```bash
-  $ dict-tiny -g book --target-language German --source-language English
-
-  >>> GoogleTranslate <<<
-  book
-  ======
-  output: Buch
-  source language: English
-  ```
-
-- Set the environment variable `$DICT_TINY_TARGET_LAN` so you don't have to specify the target language each time. If you also pass `--target-language` on the command line, it overrides the environment variable.
-- The default `target-language` is `Chinese` .
+</details>
 
 ### Interactive mode
 
-You can enter interactive mode for any translator by adding `-i`. Press <kbd>Ctrl</kbd> + <kbd>d</kbd> to exit.
+Add `-i` to enter interactive mode. Press <kbd>Ctrl</kbd> + <kbd>d</kbd> to exit.
 
-In interactive mode you can:
+- Continuously query words in an interactive session
+- Press <kbd>Tab</kbd> for word auto-completion (powered by Youdao, supports Chinese, English, French, Japanese, Korean)
+- Settings (target/source language) are fixed once in interactive mode
 
-- Continuously query words in an interactive session.
-- Press <kbd>Tab</kbd> for word auto-completion (using Youdao's auto-completion function, currently only supports Chinese, English, French, Korean, Japanese)
-- Settings cannot be changed after entering interactive mode, such as target-language or source-language. You need to exit and re-enter to change them.
+```bash
+$ dict-tiny -y -i
+```
 
-### Other
+### Clipboard
 
-#### Default behavior
-
-- Youdao Dict is the default translator used when no translator is specified.
-
-  ```bash
-  $ dict-tiny 机器学习
-
-  >>> YoudaoDict <<<
-  机器学习
-  ======
-  machine learning
-  ```
-
-  You can use the environment variable `$DICT_TINY_DEFAULT_TRANS` to set the default translator. Options: `youdaodict` or `googletranslate`.
-
-- For Youdao Dict and Google Translate, if the target language is not specified, Chinese and English are used as the target language for one another.
-- In non-interactive mode, multiple translators can be used at the same time, for example `dict-tiny formulation -y -g`.
-
-  ```bash
-  $ dict-tiny formulation -y -g
-
-  >>> YoudaoDict <<<
-  formulation
-  =============
-  英[ˌfɔːmjuˈleɪʃ(ə)n]美[ˌfɔːrmjuˈleɪʃ(ə)n]
-  n. （政策、计划等的）制定，构想；（想法的）阐述方式，表达方法；（药品或化妆品的）配方，配方产品
-  >>> GoogleTranslate <<<
-  formulation
-  =============
-  output: 公式
-  detected language: en
-  ```
-
-#### Use clipboard content
-
-Use `-c`/`--clipboard` to use the contents of the clipboard:
+Use `-c` / `--clipboard` to translate clipboard content:
 
 ```bash
 $ dict-tiny -c -y
+```
+
+**Note:** `-c` has lower priority than passing a word directly.
+
+### Multiple translators
+
+Use `-y` and `-g` together to show results from both translators:
+
+```bash
+$ dict-tiny formulation -y -g
 
 >>> YoudaoDict <<<
-encounter
-===========
-英[ɪnˈkaʊntə(r)]美[ɪnˈkaʊntər]
-v. 遭遇；偶遇，邂逅
-n. 偶遇，邂逅；经历，体验；冲突；比赛，交锋
+formulation
+=============
+[美]ˌfɔːrmjuˈleɪʃ(ə)n [英]ˌfɔːmjuˈleɪʃ(ə)n
+
+n. （政策、计划等的）制定，构想；（想法的）阐述方式，表达方法；（药品或化妆品的）配方，配方产品
+复数: formulations
+--------------------
+>>> GoogleTranslate <<<
+formulation
+=============
+output: formulation
+detected language: en
 ```
+
+## Word book
+
+The word book records translation history. Recording is **off by default**.
+
+Use `--record` to record a single query, or set it as default with:
+
+```bash
+$ dict-tiny wb config --record on
+```
+
+### Commands
+
+```
+$ dict-tiny wb <command> [...]
+
+Commands: list, detail, query, search, delete, config, db-delete
+```
+
+Each subcommand supports `--help`, e.g. `dict-tiny wb list --help`.
+
+<details>
+<summary>wb list — list entries</summary>
+
+```bash
+$ dict-tiny wb list --sort freq
+
+   ID   Text           Lang         Created        Count
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     1   hello         en→zh     2026-05-28 16:36    ×252
+     2   world         en→zh     2026-05-28 16:37    ×100
+     3   apple         en→ja     2026-05-28 16:40     ×53
+     4   resilience    zh↔en     2026-06-01 16:15      ×1
+     5   guardrails    zh↔en     2026-06-01 15:22      ×1
+
+Page 1/1  (5 entries, limit 10000)
+```
+
+When the entry limit (10000) is reached, the least recently queried entry is evicted.
+
+| Option          | Description                       |
+| --------------- | --------------------------------- |
+| `--sort SORT`   | `created`, `freq`, or `recent`    |
+| `--since DATE`  | Filter by start date (YYYY-MM-DD) |
+| `--page N`      | Page number (default: 1)          |
+| `--page-size N` | Entries per page (default: 20)    |
 
 **Note:**
 
-- `-c`/`--clipboard` has lower priority than passing a word directly. If you supply both, `-c` is ignored.
+- The Lang column shows the effective languages — defaults are shown if not
+  explicitly set (e.g. Youdao defaults to `zh↔en`). Use `wb detail <ID>` to see the
+  raw stored values.
 
-### Environment variables
+- The stored translator, source language, and target language are updated to the
+  values used in the most recent query for that entry.
 
-| name                      | default    | description                                                         |
-| ------------------------- | ---------- | ------------------------------------------------------------------- |
-| `DICT_TINY_TARGET_LAN`    |            | Specify the default target language.                                |
-| `DICT_TINY_SOURCE_LAN`    |            | Specify the default source language.                                |
-| `DICT_TINY_DEFAULT_TRANS` | youdaodict | Specify the default translator.<br>`youdaodict` / `googletranslate` |
+</details>
+
+<details>
+<summary>wb detail — show entry details</summary>
+
+```bash
+$ dict-tiny wb detail 1
+
+  Text:              hello
+  Source Language:
+  Target Language:
+  Translator:        youdaodict
+  Created:           2026-06-01 10:30:00
+  Last Query:        2026-06-01 11:20:00
+  Access Count:      3
+```
+
+</details>
+
+<details>
+<summary>wb query — re-translate an entry</summary>
+
+Re-translates the entry using its stored text and languages. Supports overriding
+the translator or languages via top-level flags (e.g., `-g`, `--target-language`).
+
+```bash
+# Re-translate entry ID 1 with its stored translator
+$ dict-tiny wb query 1
+```
+
+```bash
+# Re-translate with Google Translate, target Japanese
+$ dict-tiny -g --target-language ja wb query 1
+```
+
+</details>
+
+<details>
+<summary>wb search — search entries</summary>
+
+Fuzzy search by default (`LIKE '%text%'`). Use `--exact` for exact match.
+
+```bash
+$ dict-tiny wb search hello
+```
+
+```bash
+$ dict-tiny wb search hello --exact
+```
+
+| Option          | Description                       |
+| --------------- | --------------------------------- |
+| `--exact`       | Exact match instead of fuzzy      |
+| `--sort SORT`   | `created`, `freq`, or `recent`    |
+| `--since DATE`  | Filter by start date (YYYY-MM-DD) |
+| `--page N`      | Page number (default: 1)          |
+| `--page-size N` | Entries per page (default: 20)    |
+
+</details>
+
+<details>
+<summary>wb delete — delete an entry</summary>
+
+```bash
+$ dict-tiny wb delete 1
+Entry ID:1 deleted.
+```
+
+</details>
+
+<details>
+<summary>wb config — view or change settings</summary>
+
+```bash
+$ dict-tiny wb config
+  Entries:          5 / 10000
+  Default Recording: OFF
+```
+
+```bash
+$ dict-tiny wb config --record on
+Default recording: ON
+```
+
+Use `--record on` or `--record off` to enable or disable default recording.
+
+</details>
+
+<details>
+<summary>wb db-delete — delete the database</summary>
+
+Deletes the entire word book database file.
+
+```bash
+$ dict-tiny wb db-delete
+Word book database deleted.
+```
+
+</details>
+
+### Notes
+
+- Input text is limited to 3000 characters. Both Youdao Dict and Google Translate
+  will reject longer input.
+
+- Subcommands like `detail`, `query`, and `delete` take the entry ID as shown in
+  the first column of `wb list` output. The ID is auto-incremented and may be
+  non-contiguous; it does not reflect the current display order.
+
+- Top-level flags (`-y`, `-g`, `--record`, `--no-record`, `--sl`, `--tl`) **must** come before `wb`:
+
+  ```bash
+  dict-tiny -y --no-record wb query 1   # ✓
+  dict-tiny wb query 1 -y --no-record   # ✗
+  ```
+
+## Environment variables
+
+| Variable                  | Default      | Description                                           |
+| ------------------------- | ------------ | ----------------------------------------------------- |
+| `DICT_TINY_DEFAULT_TRANS` | `youdaodict` | Default translator (`youdaodict` / `googletranslate`) |
+| `DICT_TINY_TARGET_LAN`    |              | Default target language                               |
+| `DICT_TINY_SOURCE_LAN`    |              | Default source language                               |
+
+Command-line flags override environment variables.
+
+## Uninstall
+
+Before uninstalling, you may want to delete the word book database:
+
+```bash
+$ dict-tiny wb db-delete
+```
+
+Then uninstall the package:
+
+```bash
+$ pip uninstall dict-tiny
+```
 
 ## License
 

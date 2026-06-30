@@ -1,0 +1,1136 @@
+{
+  "web_trans": {
+    "web-translation": [
+      {
+        "@same": "true",
+        "key": "Web List",
+        "key-speech": "Web+List",
+        "trans": [
+          {
+            "summary": {
+              "line": [
+                "<b>网站列表</b> (Web List) 分类 检索工具 数据库 名称 搜狐 新浪 雅虎"
+              ]
+            },
+            "value": "网站列表",
+            "support": 12,
+            "url": ""
+          }
+        ]
+      },
+      {
+        "key": "list of web browsers",
+        "key-speech": "list+of+web+browsers",
+        "trans": [
+          {
+            "value": "网页浏览器列表"
+          }
+        ]
+      },
+      {
+        "key": "web design company list",
+        "key-speech": "web+design+company+list",
+        "trans": [
+          {
+            "value": "网页设计价目表"
+          }
+        ]
+      },
+      {
+        "key": "data list Web",
+        "key-speech": "data+list+Web",
+        "trans": [
+          {
+            "value": "伺服器控制项"
+          },
+          {
+            "value": "服务器控件概述"
+          },
+          {
+            "value": "服务器控件"
+          }
+        ]
+      },
+      {
+        "key": "captch Web Black List",
+        "key-speech": "captch+Web+Black+List",
+        "trans": [
+          {
+            "value": "黑名单"
+          }
+        ]
+      },
+      {
+        "key": "bulleted list Web",
+        "key-speech": "bulleted+list+Web",
+        "trans": [
+          {
+            "value": "服务器控件概述"
+          }
+        ]
+      },
+      {
+        "key": "Web proxy list",
+        "key-speech": "Web+proxy+list",
+        "trans": [
+          {
+            "value": "代理列表"
+          }
+        ]
+      },
+      {
+        "key": "Web Content List",
+        "key-speech": "Web+Content+List",
+        "trans": [
+          {
+            "value": "网页内容列表"
+          }
+        ]
+      },
+      {
+        "key": "web page list tree",
+        "key-speech": "web+page+list+tree",
+        "trans": [
+          {
+            "value": "网页目录树"
+          }
+        ]
+      }
+    ]
+  },
+  "blng_sents_part": {
+    "sentence-count": 5,
+    "sentence-pair": [
+      {
+        "sentence": "There are a number of Web sites that list environmentally friendly hotels, B&B's and lodges around the world.",
+        "sentence-eng": "There are a number of <b>Web</b> sites that <b>list</b> environmentally friendly hotels, B&B's and lodges around the world.",
+        "sentence-translation": "有许多网站列出了世界各地的环保旅馆、民宿和旅馆。",
+        "speech-size": "32kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "10",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "13",
+                "@e": "19",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "20",
+                "@e": "22",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "23",
+                "@e": "32",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "33",
+                "@e": "42",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "43",
+                "@e": "67",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "68",
+                "@e": "74",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "76",
+                "@e": "81",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "8"
+                    }
+                  ]
+                },
+                "@id": "7"
+              },
+              {
+                "@s": "82",
+                "@e": "85",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "8"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "9"
+                    }
+                  ]
+                },
+                "@id": "8"
+              },
+              {
+                "@s": "104",
+                "@e": "109",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "9"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "9"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "2",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "2",
+                "@e": "4",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "4",
+                "@e": "6",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "6",
+                "@e": "8",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "9",
+                "@e": "13",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "9"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "13",
+                "@e": "14",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "14",
+                "@e": "16",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "16",
+                "@e": "18",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "7"
+              },
+              {
+                "@s": "19",
+                "@e": "21",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "8"
+                    }
+                  ]
+                },
+                "@id": "8"
+              },
+              {
+                "@s": "21",
+                "@e": "22",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "8"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "9"
+                    }
+                  ]
+                },
+                "@id": "9"
+              }
+            ]
+          }
+        },
+        "url": "youdao",
+        "sentence-speech": "There+are+a+number+of+Web+sites+that+list+environmentally+friendly+hotels%2C+B%26B%27s+and+lodges+around+the+world.&le=eng"
+      },
+      {
+        "sentence": "Web-savvy people may be pleased that Bouvet Island is on the list.",
+        "sentence-eng": "<b>Web</b>-savvy people may be pleased that Bouvet Island is on the <b>list</b>.",
+        "sentence-translation": "经常上网人们看到布维岛也在列表中应该会很高兴吧。",
+        "speech-size": "19kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "10",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "11",
+                "@e": "17",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "18",
+                "@e": "21",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "25",
+                "@e": "32",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "33",
+                "@e": "44",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "45",
+                "@e": "51",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "55",
+                "@e": "57",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "7"
+              },
+              {
+                "@s": "58",
+                "@e": "66",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "8"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "8"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "3",
+                "@e": "5",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "5",
+                "@e": "7",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "7",
+                "@e": "9",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "11",
+                "@e": "12",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "13",
+                "@e": "14",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "16",
+                "@e": "17",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "8"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "19",
+                "@e": "20",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "20",
+                "@e": "23",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "7"
+              }
+            ]
+          }
+        },
+        "url": "youdao",
+        "sentence-speech": "Web-savvy+people+may+be+pleased+that+Bouvet+Island+is+on+the+list.&le=eng"
+      },
+      {
+        "sentence": "The newly released \"budget wife\" list has sparked much debate among Chinese Web users.",
+        "sentence-eng": "The newly released \"budget wife\" <b>list</b> has sparked much debate among Chinese <b>Web</b> users.",
+        "sentence-translation": "最近发布的“经济适用女” 标准也在中国网友中引起热议。",
+        "speech-size": "25kb",
+        "aligned-words": {
+          "src": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "10",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "11",
+                "@e": "19",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "34",
+                "@e": "38",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "39",
+                "@e": "42",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "43",
+                "@e": "50",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "63",
+                "@e": "68",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "69",
+                "@e": "76",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "77",
+                "@e": "86",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "7"
+              }
+            ]
+          },
+          "tran": {
+            "chars": [
+              {
+                "@s": "1",
+                "@e": "3",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "0"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "0"
+                    }
+                  ]
+                },
+                "@id": "0"
+              },
+              {
+                "@s": "3",
+                "@e": "5",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "1"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "1"
+                    }
+                  ]
+                },
+                "@id": "1"
+              },
+              {
+                "@s": "14",
+                "@e": "16",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "2"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "2"
+                    }
+                  ]
+                },
+                "@id": "2"
+              },
+              {
+                "@s": "16",
+                "@e": "17",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "3"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "3"
+                    }
+                  ]
+                },
+                "@id": "3"
+              },
+              {
+                "@s": "17",
+                "@e": "18",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "5"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "4"
+                    }
+                  ]
+                },
+                "@id": "4"
+              },
+              {
+                "@s": "18",
+                "@e": "20",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "6"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "5"
+                    }
+                  ]
+                },
+                "@id": "5"
+              },
+              {
+                "@s": "20",
+                "@e": "22",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "7"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "6"
+                    }
+                  ]
+                },
+                "@id": "6"
+              },
+              {
+                "@s": "23",
+                "@e": "25",
+                "aligns": {
+                  "sc": [
+                    {
+                      "@id": "4"
+                    }
+                  ],
+                  "tc": [
+                    {
+                      "@id": "7"
+                    }
+                  ]
+                },
+                "@id": "7"
+              }
+            ]
+          }
+        },
+        "url": "youdao",
+        "sentence-speech": "The+newly+released+%22budget+wife%22+list+has+sparked+much+debate+among+Chinese+Web+users.&le=eng"
+      }
+    ],
+    "more": "blng_sents"
+  },
+  "input": "web list",
+  "typos": {
+    "typo": [
+      {
+        "word": "web host"
+      },
+      {
+        "word": "wait list",
+        "trans": "等待表；候补名单"
+      }
+    ]
+  },
+  "meta": {
+    "input": "web list",
+    "guessLanguage": "eng",
+    "isHasSimpleDict": "0",
+    "le": "en",
+    "lang": "eng",
+    "dicts": [
+      "web_trans",
+      "blng_sents_part",
+      "typos",
+      "meta",
+      "fanyi",
+      "auth_sents_part",
+      "media_sents_part",
+      "ec"
+    ]
+  },
+  "fanyi": {
+    "input": "web list",
+    "type": "en2zh-CHS",
+    "tran": "网络列表"
+  },
+  "auth_sents_part": {
+    "sentence-count": 6,
+    "more": "auth_sents",
+    "sent": [
+      {
+        "score": 0.8950082063674927,
+        "speech": "Yelp+is+looking+to+add+to+the+likes+of+Groupon+and+LinkedIn%2C+which+were+the+largest+of+the+social+web+companies+to+list+this+year.+",
+        "speech-size": "39kb",
+        "source": "FORBES: <i>Yelp Files For $100 Million IPO</i>",
+        "url": "youdao",
+        "foreign": "Yelp is looking to add to the likes of Groupon and LinkedIn, which were the largest of the social <b>web</b> companies to <b>list</b> this year. "
+      },
+      {
+        "score": 0.849571943283081,
+        "speech": "The+localization+service+may+provide+the+user+with+search+results+in+the+form+of+web+pages+that+list+which+retailers+sell+the+desired+product+in+the+vicinity+of+the+search+origin.+",
+        "speech-size": "52kb",
+        "source": "FORBES: <i>Local.com Spikes On Local Product Search Patent</i>",
+        "url": "youdao",
+        "foreign": "The localization service may provide the user with search results in the form of <b>web</b> pages that <b>list</b> which retailers sell the desired product in the vicinity of the search origin. "
+      },
+      {
+        "score": 0.9239714741706848,
+        "speech": "There+are+then+three+lines+where+applicants+can+list+the+Web+sites%2C+their+user+names+and+log-in+information+and+their+passwords.+",
+        "speech-size": "38kb",
+        "source": "FORBES: <i>Bozeman, Montana wants your Facebook password</i>",
+        "url": "youdao",
+        "foreign": "There are then three lines where applicants can <b>list</b> the <b>Web</b> sites, their user names and log-in information and their passwords. "
+      }
+    ]
+  },
+  "le": "en",
+  "media_sents_part": {
+    "query": "web list",
+    "sent": [
+      {
+        "@mediatype": "audio",
+        "snippets": {
+          "snippet": [
+            {
+              "streamUrl": "https://dict.youdao.com/pureaudio?docid=-7707670719519731279",
+              "duration": "7000",
+              "swf": "",
+              "name": "special.2009.08.28",
+              "source": "VOA",
+              "win8": "https://dict.youdao.com/pureaudio?docid=-7707670719519731279&dist=win8"
+            }
+          ]
+        },
+        "speech-size": "26kb",
+        "eng": "As you watch a video on this <b>Web</b> site, a <b>list</b> of other videos appears nearby."
+      }
+    ]
+  },
+  "lang": "eng",
+  "ec": {
+    "web_trans": ["网站列表"]
+  }
+}

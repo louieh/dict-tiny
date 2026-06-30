@@ -1,4 +1,4 @@
-from dict_tiny.util import normal_warn_printer
+from dict_tiny.util import normal_info_printer, normal_warn_printer
 
 
 class YoudaoParser(object):
@@ -10,17 +10,25 @@ class YoudaoParser(object):
 
     def parse(self):
         basic_value = self.data.get(self.main_key)
+        if basic_value is None:
+            return False
         word_data = basic_value.get("word", {})
-        if not word_data and "$ref" in basic_value:
-            new_main_key = basic_value["$ref"].replace("$.", "")
-            if new_main_key not in self.data:
-                normal_warn_printer("cannot find main key")
-                return
-            word_data = self.data[new_main_key].get("word")
+        if not word_data:
+            if "$ref" in basic_value:
+                new_main_key = basic_value["$ref"].replace("$.", "")
+                if new_main_key not in self.data:
+                    normal_warn_printer("cannot find main key")
+                    return False
+                word_data = self.data[new_main_key].get("word")
+            elif "web_trans" in basic_value:
+                web_trans = basic_value["web_trans"]
+                normal_info_printer(", ".join(web_trans))
+                return True
         self.parse_phone(word_data)
         self.parse_simple_content(word_data)
         if self.print_detail:
             self.parse_detail_content()
+        return True
 
     def parse_phone(self, word_data):
         pass

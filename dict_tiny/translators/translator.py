@@ -1,19 +1,20 @@
 from plumbum import cli
 
 from dict_tiny.config import (
-    SEPARATOR,
     DICT_TINY_SOURCE_LAN_ENV_NAME,
     DICT_TINY_TARGET_LAN_ENV_NAME,
+    MAX_TEXT_LENGTH,
+    SEPARATOR,
 )
-from dict_tiny.errors import CustomException
+from dict_tiny.errors import CustomException, TextInputError
 from dict_tiny.util import (
-    normal_error_printer,
-    normal_warn_printer,
-    normal_separator_printer,
-    normal_info_printer,
-    normal_title_printer,
-    parse_le,
     get_terminal_size_column,
+    normal_error_printer,
+    normal_info_printer,
+    normal_separator_printer,
+    normal_title_printer,
+    normal_warn_printer,
+    parse_le,
 )
 
 
@@ -78,16 +79,13 @@ class DefaultTrans(object):
 
     @classmethod
     def trans_obj_getter(cls, text, dict_tiny_obj):
-        flag = f"use_{cls.__name__.lower()}"  # use_googletrans
+        flag = f"use_{cls.name}"  # use_googletranslate
         if not getattr(dict_tiny_obj, flag, False):
             return
         return cls(text, dict_tiny_obj)
 
-    def pre_action(self, text):
-        pass
-
     def print_separator(self):
-        normal_separator_printer(SEPARATOR.format(self.name))
+        normal_separator_printer(SEPARATOR.format(self.display_name))
 
     def print_input(self, text):
         normal_title_printer(text)
@@ -101,33 +99,48 @@ class DefaultTrans(object):
         raise NotImplementedError
 
     def extra_action(self, text):
-        pass
+        if not self.dict_tiny_obj.should_record:
+            return
+        if wb := self.dict_tiny_obj.wordbook:
+            wb.record(text, self.source_language, self.target_language, self.name)
+
+    def pre_action(self, text):
+        if len(text) > MAX_TEXT_LENGTH:
+            raise TextInputError("The entered text is too long")
 
     def translate(self):
-        # 1. pre action (set default source or target language)
-        # 2. translate (fetch data)
-        # 3. print separator
-        # 4. print user input
-        # 5. print translation
-        # 6. extra action (get more detail translation)
+        """
+        1. pre action (set default source or target language)
+        2. translate (fetch data)
+        3. print separator
+        4. print user input
+        5. print translation
+        6. extra action (get more detail translation)
+        """
+
         try:
             self.print_separator()
             self.pre_action(self.text)
             self.print_input(self.text)
-            self.do_translate(self.text)
-            self.extra_action(self.text)
+            result = self.do_translate(self.text)
+            if result:
+                self.extra_action(self.text)
+            return result
         except CustomException as e:
             normal_error_printer(e.message)
+            return False
         except NotImplementedError as e:
             normal_error_printer("method is not implemented")
+            return False
         except Exception as e:
             normal_error_printer(f"translate error: {e}")
-            return
+            return False
 
     def get_prompt_session(self):
-        from dict_tiny.completer import YoudaoCompleter
         from prompt_toolkit import PromptSession
         from prompt_toolkit.styles import Style
+
+        from dict_tiny.completer import YoudaoCompleter
 
         style = Style.from_dict(
             {
@@ -144,7 +157,9 @@ class DefaultTrans(object):
             }
         )
 
-        normal_separator_printer(SEPARATOR.format(f"{self.name} interactive mode"))
+        normal_separator_printer(
+            SEPARATOR.format(f"{self.display_name} interactive mode")
+        )
         normal_info_printer("Use Ctrl-D (i.e. EOF) to exit")
 
         suggest_le = parse_le(self.source_language, self.target_language)
@@ -158,7 +173,7 @@ class DefaultTrans(object):
 
     def interactive_loop(self, session):
         message = [
-            ("class:prompt_name", self.name),
+            ("class:prompt_name", self.display_name),
             ("class:prompt_sign", " > "),
         ]
         while True:
@@ -175,7 +190,8 @@ class DefaultTrans(object):
                 try:
                     self.pre_action(text)
                     self.print_input(text)
-                    self.do_translate(text)
+                    if self.do_translate(text):
+                        self.extra_action(text)
                 except CustomException as e:
                     normal_error_printer(e.message)
                 except Exception as e:

@@ -6,6 +6,9 @@ TIMEOUT = 5
 RETRY = 3
 BACKOFF_FACTOR = 1
 MAX_TEXT_LENGTH = 3000
+MAX_ENTRIES = 10000
+DEFAULT_TERMINAL_SIZE_COLUMN = 20
+EIGHT_EQUAL_FORMAT_THRESHOLD = 16
 
 
 class ISO639LCodes(Enum):
@@ -21,7 +24,8 @@ DICT_TINY_TARGET_LAN_ENV_NAME = "DICT_TINY_TARGET_LAN"
 DICT_TINY_DEFAULT_TRANS_ENV_NAME = "DICT_TINY_DEFAULT_TRANS"
 
 # YOUDAO
-YOUDAO_NAME = "YoudaoDict"
+YOUDAO_NAME = "youdaodict"
+YOUDAO_DISPLAY = "YoudaoDict"
 YOUDAO_WEB_FAKE_HEADER = {
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
     "Accept-Encoding": "gzip, deflate",
@@ -54,7 +58,8 @@ DEFAULT_LE = ISO639LCodes.English.value
 YOUDAO_TARGET_LANG_SET = {"en", "fr", "ja", "ko"}
 
 # GOOGLE TRANS
-GOOGLE_NAME = "GoogleTranslate"
+GOOGLE_NAME = "googletranslate"
+GOOGLE_DISPLAY = "GoogleTranslate"
 GOOGLE_TRANS_API_BASE_URL = "https://tinydict-translateapi.appspot.com/goog/{}"
 GOOGLE_TRANS_API_HEADER = {
     "X-Dict-Tiny-Secret-Token": "e14d348d268dca4731a99b7055e07921"

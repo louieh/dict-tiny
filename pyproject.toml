@@ -1,6 +1,6 @@
 [project]
 name = "dict-tiny"
-version = "2.0.0"
+version = "2.1.0"
 description = "A command-line tool that integrates Youdao Dict and Google Translate."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -20,6 +20,11 @@ dependencies = [
     "rich>=15.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.0",
+]
+
 [project.scripts]
 dict-tiny = "dict_tiny.main:run"
 
@@ -28,6 +33,11 @@ Home = "https://github.com/louieh/dict-tiny"
 
 [tool.setuptools.packages.find]
 include = ["dict_tiny*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: mark test as integration test (calls real APIs, skipped in CI)",
+]
 
 [build-system]
 requires = ["setuptools>=61.0"]
